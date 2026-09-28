@@ -45,4 +45,19 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+
+  /* Regla global de accesibilidad: si el usuario ha pedido reducir el
+     movimiento en su sistema operativo, casi anulamos duraciones y
+     desplazamientos de scroll suave en TODA la aplicación. Así no hace
+     falta acordarse de añadir esta condición en cada animación futura. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
