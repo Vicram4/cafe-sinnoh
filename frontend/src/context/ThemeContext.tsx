@@ -1,13 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-
-type Theme = 'light' | 'dark' | 'system'
-
-interface ThemeContextValue {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
-
-const ThemeContext = createContext<ThemeContextValue | null>(null)
+import { useEffect, useState, type ReactNode } from 'react'
+import { ThemeContext, type Theme } from './theme-context'
 
 function getSystemPrefersDark() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -45,12 +37,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
-}
-
-// Hook de conveniencia: lanza un error claro si se usa fuera del Provider,
-// en vez de fallar de forma confusa más adelante.
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) throw new Error('useTheme debe usarse dentro de <ThemeProvider>')
-  return context
 }
