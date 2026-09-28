@@ -1,0 +1,13 @@
+# Normaliza los finales de línea: en el repositorio siempre LF.
+# Windows usa CRLF y Docker/Linux usa LF; mezclarlos rompe scripts
+# de shell dentro de contenedores y ensucia los diffs.
+* text=auto eol=lf
+
+# Archivos binarios: Git no debe tocarlos.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff2 binary
+*.pdf binary
