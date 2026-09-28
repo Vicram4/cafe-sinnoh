@@ -1,6 +1,10 @@
 import { Link } from 'react-router'
 import { shopInfo } from '../data/shop'
 
+// Se calcula una sola vez, al cargar el módulo, no en cada render:
+// evita la llamada "impura" (Date()) dentro del cuerpo del componente.
+const currentYear = new Date().getFullYear()
+
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-surface">
@@ -46,7 +50,7 @@ export function Footer() {
       </div>
 
       <p className="border-t border-border p-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {shopInfo.name}. Proyecto de fans sin ánimo de lucro, no afiliado a
+                © {currentYear} {shopInfo.name}. Proyecto de fans sin ánimo de lucro, no afiliado a
         Nintendo, Game Freak ni The Pokémon Company.
       </p>
     </footer>
