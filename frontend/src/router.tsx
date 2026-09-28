@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router'
 import { PublicLayout } from './layouts/PublicLayout'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { MenuPage } from './pages/MenuPage'
+import { ProductDetailPage } from './pages/ProductDetailPage'
+import { HomePage } from './pages/HomePage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -11,10 +13,10 @@ export const router = createBrowserRouter([
     path: '/',
     element: <PublicLayout />,
     children: [
-      { index: true, element: <PlaceholderPage title="Inicio" /> },
+            { index: true, element: <HomePage /> },
             { path: 'menu', element: <MenuPage /> },
       // ":slug" es un parámetro: /menu/espresso-monte-corona
-      { path: 'menu/:slug', element: <PlaceholderPage title="Detalle de producto" /> },
+            { path: 'menu/:slug', element: <ProductDetailPage /> },
       { path: 'cart', element: <PlaceholderPage title="Carrito" /> },
       { path: 'checkout', element: <PlaceholderPage title="Finalizar pedido" /> },
       { path: 'login', element: <PlaceholderPage title="Iniciar sesión" /> },

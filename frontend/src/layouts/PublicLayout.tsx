@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { Footer } from '../components/Footer'
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -106,9 +107,11 @@ export function PublicLayout() {
         )}
       </header>
 
-      <main className="mx-auto max-w-5xl p-4">
+            <main className="mx-auto max-w-5xl p-4">
         <Outlet />
       </main>
+
+      <Footer />
     </div>
   )
 }
