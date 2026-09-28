@@ -48,9 +48,13 @@ export const products: Product[] = [
     priceCents: 280,
     categorySlug: 'cafes',
     imageUrl: null,
-    ingredients: ['Café arábica', 'Leche'],
+        ingredients: ['Café arábica', 'Leche'],
     isAvailable: true,
     isFeatured: false,
+    locationInspiration: {
+      placeName: 'Ruta 201',
+      description: 'Un camino tranquilo entre campos de hierba, de los primeros que recorre cualquier viajero al salir de su pueblo.',
+    },
   },
   {
     id: 4,
@@ -60,9 +64,13 @@ export const products: Product[] = [
     priceCents: 250,
     categorySlug: 'bebidas',
     imageUrl: null,
-    ingredients: ['Té negro', 'Limón', 'Azúcar de caña'],
+        ingredients: ['Té negro', 'Limón', 'Azúcar de caña'],
     isAvailable: true,
     isFeatured: true,
+    locationInspiration: {
+      placeName: 'Lago Verity',
+      description: 'Un lago pequeño y sereno, célebre por sus aguas cristalinas y su silencio al amanecer.',
+    },
   },
   {
     id: 5,
@@ -89,9 +97,13 @@ export const products: Product[] = [
     priceCents: 480,
     categorySlug: 'bocadillos',
     imageUrl: null,
-    ingredients: ['Pan', 'Jamón', 'Queso', 'Rúcula'],
+        ingredients: ['Pan', 'Jamón', 'Queso', 'Rúcula'],
     isAvailable: true,
     isFeatured: false,
+    locationInspiration: {
+      placeName: 'Ciudad Jubileo',
+      description: 'Una ciudad bulliciosa y luminosa, cruce de caminos donde se encuentran viajeros de toda la región.',
+    },
   },
   {
     id: 7,
@@ -101,9 +113,13 @@ export const products: Product[] = [
     priceCents: 420,
     categorySlug: 'bocadillos',
     imageUrl: null,
-    ingredients: ['Pan de masa madre', 'Aguacate', 'Tomate seco', 'Semillas'],
+        ingredients: ['Pan de masa madre', 'Aguacate', 'Tomate seco', 'Semillas'],
     isAvailable: false,
     isFeatured: false,
+    locationInspiration: {
+      placeName: 'Ruta 212',
+      description: 'Un camino largo entre huertos y jardines, popular por sus vistas y su ambiente relajado.',
+    },
   },
   {
     id: 8,
@@ -113,9 +129,13 @@ export const products: Product[] = [
     priceCents: 380,
     categorySlug: 'pasteles',
     imageUrl: null,
-    ingredients: ['Queso crema', 'Galleta', 'Limón', 'Huevo'],
+        ingredients: ['Queso crema', 'Galleta', 'Limón', 'Huevo'],
     isAvailable: true,
     isFeatured: true,
+    locationInspiration: {
+      placeName: 'Lago Valor',
+      description: 'Un lago más agreste y profundo, rodeado de roca y corrientes frías, asociado a la fuerza y la determinación.',
+    },
   },
   {
     id: 9,
@@ -142,9 +162,14 @@ export const products: Product[] = [
     priceCents: 180,
     categorySlug: 'dulces',
     imageUrl: null,
-    ingredients: ['Harina', 'Mantequilla', 'Azúcar'],
+        ingredients: ['Harina', 'Mantequilla', 'Azúcar'],
     isAvailable: true,
     isFeatured: false,
+    inspiration: {
+      pokemonName: 'Bidoof',
+      pokedexText: 'Un Pokémon sencillo y constante, de dientes fuertes que roe madera sin descanso y rara vez se altera por nada.',
+      story: 'Estas galletas, sencillas y reconfortantes, comparten el carácter tranquilo y sin complicaciones de Bidoof.',
+    },
   },
   {
     id: 11,
@@ -171,8 +196,12 @@ export const products: Product[] = [
     priceCents: 890,
     categorySlug: 'packs',
     imageUrl: null,
-    ingredients: ['Varía según elección'],
+        ingredients: ['Varía según elección'],
     isAvailable: true,
     isFeatured: true,
+    locationInspiration: {
+      placeName: 'Región de Sinnoh',
+      description: 'Un recorrido pensado para explorar de punta a punta: montañas, lagos y ciudades en un mismo pack.',
+    },
   },
 ]

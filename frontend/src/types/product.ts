@@ -11,6 +11,15 @@ export interface Inspiration {
   story: string
 }
 
+// Para productos inspirados en un lugar de Sinnoh (no en un Pokémon).
+// Se muestra directamente en la página, sin panel ni aviso legal:
+// un topónimo ficticio no tiene el mismo riesgo de propiedad
+// intelectual que un personaje.
+export interface LocationInspiration {
+  placeName: string
+  description: string
+}
+
 export interface Product {
   id: number
   slug: string
@@ -25,4 +34,5 @@ export interface Product {
   isAvailable: boolean
   isFeatured: boolean
   inspiration?: Inspiration
+  locationInspiration?: LocationInspiration
 }
