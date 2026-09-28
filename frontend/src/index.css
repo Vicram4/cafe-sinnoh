@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+/* Modo oscuro activado por la clase .dark en <html>, no solo por el
+   sistema operativo. El JS del selector de tema añade o quita esa clase. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens de color: nombres con significado (background, foreground...)
+   en vez de colores fijos (amber-50, sky-700...). Así un componente no
+   sabe si está en claro u oscuro, solo usa "bg-background". */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: oklch(98% 0.01 80);      /* crema muy claro */
+  --color-foreground: oklch(20% 0.02 260);     /* gris oscuro, no negro puro */
+  --color-surface: oklch(100% 0 0);            /* blanco: cards, header */
+  --color-border: oklch(88% 0.01 80);
+
+  --color-primary: oklch(55% 0.12 235);        /* azul claro (marca) */
+  --color-primary-foreground: oklch(98% 0 0);
+  --color-accent: oklch(75% 0.13 55);          /* naranja claro (acento) */
+  --color-accent-foreground: oklch(20% 0.02 260);
+
+  --color-muted: oklch(94% 0.01 80);
+  --color-muted-foreground: oklch(45% 0.02 260);
+}
+
+/* Mismos nombres de token, valores distintos: el resto del código
+   nunca necesita un "dark:" repetido en cada componente. */
+.dark {
+  --color-background: oklch(18% 0.015 260);
+  --color-foreground: oklch(95% 0.01 80);
+  --color-surface: oklch(23% 0.015 260);
+  --color-border: oklch(32% 0.015 260);
+
+  --color-primary: oklch(70% 0.11 235);
+  --color-primary-foreground: oklch(15% 0 0);
+  --color-accent: oklch(70% 0.13 55);
+  --color-accent-foreground: oklch(15% 0.02 260);
+
+  --color-muted: oklch(26% 0.015 260);
+  --color-muted-foreground: oklch(70% 0.02 260);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}

@@ -4,7 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <title>frontend</title>
+        <script>
+      // Se ejecuta antes de pintar React, para evitar un parpadeo
+      // (flash) del tema equivocado al cargar la página.
+      (function () {
+        var stored = localStorage.getItem('theme')
+        var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        var isDark = stored === 'dark' || (!stored && systemDark)
+        document.documentElement.classList.toggle('dark', isDark)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
