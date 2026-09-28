@@ -1,0 +1,33 @@
+# Entorno de desarrollo: por ahora solo PostgreSQL.
+# El backend y el frontend se ejecutan en local para iterar rápido;
+# los containerizaremos completos en la fase de Docker.
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: cafe-sinnoh-db
+    restart: unless-stopped
+    environment:
+      # Docker Compose lee estos valores del archivo .env de esta carpeta.
+      # La sintaxis ":?" aborta con un mensaje claro si falta la variable,
+      # en lugar de arrancar con una contraseña vacía.
+      POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER en .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Falta POSTGRES_DB en .env}
+    ports:
+      # "127.0.0.1:" limita el acceso a tu propio equipo; sin esto,
+      # la base de datos quedaría expuesta a tu red local.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Volumen con nombre: los datos sobreviven a reinicios y a
+      # "docker compose down". Solo se borran con "down -v".
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Docker marca el servicio como "healthy" cuando PostgreSQL ya
+      # acepta conexiones. Útil para que el backend espere a la BD.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:
