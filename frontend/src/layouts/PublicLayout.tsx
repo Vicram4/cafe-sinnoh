@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { ThemeToggle } from '../components/ThemeToggle'
-import { ButtonLink } from '../components/Button'
+import { Button, ButtonLink } from '../components/Button'
+import { useAuth } from '../hooks/useAuth'
 import { Footer } from '../components/Footer'
 
 const links = [
@@ -16,6 +17,7 @@ export function PublicLayout() {
   // Controla si el menú móvil (el desplegable con hamburguesa) está abierto.
   // En escritorio no se usa: ahí los enlaces siempre son visibles.
   const [menuOpen, setMenuOpen] = useState(false)
+  const { user, logout } = useAuth()
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -47,10 +49,19 @@ export function PublicLayout() {
 
           <div className="hidden items-center gap-4 md:flex">
             <ThemeToggle />
-            <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
+                        <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
               Carrito
             </NavLink>
-                        <ButtonLink to="/login">Entrar</ButtonLink>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">Hola, {user.full_name.split(' ')[0]}</span>
+                <Button variant="ghost" onClick={logout}>
+                  Salir
+                </Button>
+              </div>
+            ) : (
+              <ButtonLink to="/login">Entrar</ButtonLink>
+            )}
           </div>
 
           {/* Botón hamburguesa: solo visible por debajo de "md" */}
@@ -89,12 +100,24 @@ export function PublicLayout() {
                   {link.label}
                 </NavLink>
               ))}
-              <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="text-muted-foreground">
+                            <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="text-muted-foreground">
                 Carrito
               </NavLink>
-                            <ButtonLink to="/login" onClick={() => setMenuOpen(false)} className="text-center">
-                Entrar
-              </ButtonLink>
+              {user ? (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    logout()
+                    setMenuOpen(false)
+                  }}
+                >
+                  Salir ({user.full_name.split(' ')[0]})
+                </Button>
+              ) : (
+                <ButtonLink to="/login" onClick={() => setMenuOpen(false)} className="text-center">
+                  Entrar
+                </ButtonLink>
+              )}
               <div className="pt-2">
                 <ThemeToggle />
               </div>

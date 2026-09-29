@@ -4,6 +4,8 @@ import { PlaceholderPage } from './pages/PlaceholderPage'
 import { MenuPage } from './pages/MenuPage'
 import { ProductDetailPage } from './pages/ProductDetailPage'
 import { HomePage } from './pages/HomePage'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -19,8 +21,8 @@ export const router = createBrowserRouter([
             { path: 'menu/:slug', element: <ProductDetailPage /> },
       { path: 'cart', element: <PlaceholderPage title="Carrito" /> },
       { path: 'checkout', element: <PlaceholderPage title="Finalizar pedido" /> },
-      { path: 'login', element: <PlaceholderPage title="Iniciar sesión" /> },
-      { path: 'register', element: <PlaceholderPage title="Crear cuenta" /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
       { path: 'account', element: <PlaceholderPage title="Mi cuenta" /> },
       { path: 'account/orders', element: <PlaceholderPage title="Mis pedidos" /> },
       { path: 'account/points', element: <PlaceholderPage title="Mis puntos" /> },
