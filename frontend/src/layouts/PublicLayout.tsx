@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { Button, ButtonLink } from '../components/Button'
 import { useAuth } from '../hooks/useAuth'
+import { useCart } from '../hooks/useCart'
 import { Footer } from '../components/Footer'
 
 const links = [
@@ -17,7 +18,8 @@ export function PublicLayout() {
   // Controla si el menú móvil (el desplegable con hamburguesa) está abierto.
   // En escritorio no se usa: ahí los enlaces siempre son visibles.
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user, logout } = useAuth()
+    const { user, logout } = useAuth()
+  const { totalItems } = useCart()
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -49,8 +51,8 @@ export function PublicLayout() {
 
           <div className="hidden items-center gap-4 md:flex">
             <ThemeToggle />
-                        <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
-              Carrito
+                                    <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
+              Carrito{totalItems > 0 && ` (${totalItems})`}
             </NavLink>
             {user ? (
               <div className="flex items-center gap-3">
@@ -100,8 +102,8 @@ export function PublicLayout() {
                   {link.label}
                 </NavLink>
               ))}
-                            <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="text-muted-foreground">
-                Carrito
+                                          <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="text-muted-foreground">
+                Carrito{totalItems > 0 && ` (${totalItems})`}
               </NavLink>
               {user ? (
                 <Button

@@ -7,10 +7,13 @@ import { Button } from '../components/Button'
 import { Badge } from '../components/Badge'
 import { InspirationPanel } from '../components/InspirationPanel'
 import { PlaceholderPage } from './PlaceholderPage'
+import { useCart } from '../hooks/useCart'
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const [inspirationOpen, setInspirationOpen] = useState(false)
+  const [justAdded, setJustAdded] = useState(false)
+  const { addItem } = useCart()
 
   const product = products.find((item) => item.slug === slug)
 
@@ -67,11 +70,25 @@ export function ProductDetailPage() {
             </p>
           )}
 
-          {/* El carrito real llega en la FASE 8; de momento el botón
-              existe visualmente pero no hace nada todavía. */}
-          <Button className="mt-6" disabled={!product.isAvailable}>
+                    <Button
+            className="mt-6"
+            disabled={!product.isAvailable}
+            onClick={() => {
+              addItem(product.id)
+              setJustAdded(true)
+              // El aviso se retira solo tras un momento: confirmación
+              // breve, sin necesitar un sistema de notificaciones
+              // completo para un solo mensaje puntual.
+              setTimeout(() => setJustAdded(false), 2000)
+            }}
+          >
             {product.isAvailable ? 'Añadir al carrito' : 'No disponible'}
           </Button>
+          {justAdded && (
+            <p role="status" className="mt-2 text-sm text-primary">
+              Añadido al carrito.
+            </p>
+          )}
 
           {product.inspiration && (
             <div className="mt-6">
