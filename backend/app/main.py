@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.db.session import get_db
 
 settings = get_settings()
 
@@ -26,3 +29,12 @@ def health_check():
     entorno tiene cargado (útil para distinguir development/production
     de un vistazo)."""
     return {"status": "ok", "environment": settings.environment}
+
+
+@app.get("/health/db")
+def health_check_db(db: Session = Depends(get_db)):
+    """Ruta temporal: confirma que el backend puede conectar de verdad
+    con PostgreSQL. Se retirará cuando existan rutas reales que ya
+    ejerciten la base de datos (a partir de la FASE 6)."""
+    db.execute(text("SELECT 1"))
+    return {"status": "ok", "database": "connected"}
