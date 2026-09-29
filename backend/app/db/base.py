@@ -1,0 +1,7 @@
+# Importa aquí cada modelo nuevo que crees. Este archivo no se usa
+# directamente en el código de la aplicación: su único propósito es que
+# Alembic (a través de env.py) "vea" todos los modelos en un solo sitio
+# al generar migraciones. Sin este import, Base.metadata no sabría que
+# la tabla "users" existe, aunque el modelo esté definido en otro lugar.
+from app.db.base_class import Base  # noqa: F401
+from app.models.user import User  # noqa: F401
