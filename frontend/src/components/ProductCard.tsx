@@ -16,9 +16,9 @@ export function ProductCard({ product }: ProductCardProps) {
       <Card className="flex h-full flex-col">
         {/* Marcador neutro: se sustituirá por product.imageUrl cuando
             generes las ilustraciones finales. */}
-        <div className="mb-3 flex aspect-square items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                <div className="mb-3 flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
           {product.imageUrl ? (
-            <img src={product.imageUrl} alt="" className="h-full w-full rounded-xl object-cover" />
+            <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
           ) : (
             <span className="text-sm">Sin imagen</span>
           )}

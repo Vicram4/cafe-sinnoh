@@ -1,44 +1,50 @@
 @import "tailwindcss";
 
-/* Modo oscuro activado por la clase .dark en <html>, no solo por el
-   sistema operativo. El JS del selector de tema añade o quita esa clase. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tokens de color: nombres con significado (background, foreground...)
-   en vez de colores fijos (amber-50, sky-700...). Así un componente no
-   sabe si está en claro u oscuro, solo usa "bg-background". */
+/* Paleta propia de Café Sinnoh: crema/papel, marrones de café y madera,
+   verde bosque (Sinnoh) como color de marca, azul pizarra como acento
+   de clima frío, y un tono cálido puntual ("ember") para pequeños
+   guiños, nunca para bloques grandes. Nada de terracota + serif de
+   alto contraste: esa combinación es el patrón por defecto de
+   cualquier generador, y queríamos evitarlo deliberadamente. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: oklch(98% 0.01 80);      /* crema muy claro */
-  --color-foreground: oklch(20% 0.02 260);     /* gris oscuro, no negro puro */
-  --color-surface: oklch(100% 0 0);            /* blanco: cards, header */
-  --color-border: oklch(88% 0.01 80);
+  --color-background: #f1e9da;
+  --color-surface: #faf6ed;
+  --color-foreground: #33261c;
+  --color-border: #ddd0ba;
 
-  --color-primary: oklch(55% 0.12 235);        /* azul claro (marca) */
-  --color-primary-foreground: oklch(98% 0 0);
-  --color-accent: oklch(75% 0.13 55);          /* naranja claro (acento) */
-  --color-accent-foreground: oklch(20% 0.02 260);
+  --color-primary: #2e4235;
+  --color-primary-foreground: #f5f1e6;
+  --color-accent: #54687a;
+  --color-accent-foreground: #f5f1e6;
 
-  --color-muted: oklch(94% 0.01 80);
-  --color-muted-foreground: oklch(45% 0.02 260);
+  --color-muted: #e8dfcc;
+  --color-muted-foreground: #7a6a56;
+
+  --color-bark: #6e4b34;
+  --color-ember: #a8522e;
 }
 
-/* Mismos nombres de token, valores distintos: el resto del código
-   nunca necesita un "dark:" repetido en cada componente. */
 .dark {
-  --color-background: oklch(18% 0.015 260);
-  --color-foreground: oklch(95% 0.01 80);
-  --color-surface: oklch(23% 0.015 260);
-  --color-border: oklch(32% 0.015 260);
+  --color-background: #211812;
+  --color-surface: #2b2019;
+  --color-foreground: #f1e9da;
+  --color-border: #4a3b2e;
 
-  --color-primary: oklch(70% 0.11 235);
-  --color-primary-foreground: oklch(15% 0 0);
-  --color-accent: oklch(70% 0.13 55);
-  --color-accent-foreground: oklch(15% 0.02 260);
+  --color-primary: #7fa189;
+  --color-primary-foreground: #17231b;
+  --color-accent: #8ca3b4;
+  --color-accent-foreground: #16202a;
 
-  --color-muted: oklch(26% 0.015 260);
-  --color-muted-foreground: oklch(70% 0.02 260);
+  --color-muted: #362a21;
+  --color-muted-foreground: #c9baa4;
+
+  --color-bark: #b49a7c;
+  --color-ember: #d97b52;
 }
 
 @layer base {
@@ -46,10 +52,15 @@
     @apply bg-background text-foreground font-sans;
   }
 
-  /* Regla global de accesibilidad: si el usuario ha pedido reducir el
-     movimiento en su sistema operativo, casi anulamos duraciones y
-     desplazamientos de scroll suave en TODA la aplicación. Así no hace
-     falta acordarse de añadir esta condición en cada animación futura. */
+  /* Los títulos usan la serif de marca en todo el sitio por defecto,
+     sin tener que añadir la clase manualmente en cada componente. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

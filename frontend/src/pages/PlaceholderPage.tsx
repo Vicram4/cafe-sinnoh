@@ -1,6 +1,7 @@
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Badge } from '../components/Badge'
+import { MountainLine } from '../components/MountainLine'
 
 interface PlaceholderPageProps {
   title: string
@@ -26,10 +27,12 @@ export function PlaceholderPage({ title }: PlaceholderPageProps) {
         <Badge tone="danger">Agotado</Badge>
       </div>
 
-      <Card className="mt-4 max-w-sm">
+            <Card className="mt-4 max-w-sm">
         <p className="font-semibold">Espresso Monte Corona</p>
         <p className="text-sm text-muted-foreground">Pasa el ratón por encima de esta tarjeta.</p>
       </Card>
+
+      <MountainLine className="mt-8 h-8 w-full text-bark" />
     </section>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { ButtonLink } from '../components/Button'
 import { Footer } from '../components/Footer'
 
 const links = [
@@ -20,7 +21,11 @@ export function PublicLayout() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between p-4">
-          <NavLink to="/" className="text-lg font-bold text-primary" onClick={() => setMenuOpen(false)}>
+                    <NavLink
+            to="/"
+            className="font-serif text-xl font-semibold text-primary"
+            onClick={() => setMenuOpen(false)}
+          >
             Café Sinnoh
           </NavLink>
 
@@ -45,12 +50,7 @@ export function PublicLayout() {
             <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
               Carrito
             </NavLink>
-            <NavLink
-              to="/login"
-              className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-            >
-              Entrar
-            </NavLink>
+                        <ButtonLink to="/login">Entrar</ButtonLink>
           </div>
 
           {/* Botón hamburguesa: solo visible por debajo de "md" */}
@@ -92,13 +92,9 @@ export function PublicLayout() {
               <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="text-muted-foreground">
                 Carrito
               </NavLink>
-              <NavLink
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-full bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground"
-              >
+                            <ButtonLink to="/login" onClick={() => setMenuOpen(false)} className="text-center">
                 Entrar
-              </NavLink>
+              </ButtonLink>
               <div className="pt-2">
                 <ThemeToggle />
               </div>

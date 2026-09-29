@@ -6,19 +6,20 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: Tone
 }
 
-// Tonos con significado: los usaremos para "Agotado" (danger), "Destacado"
-// (accent), estados de pedido (success), etc. en fases posteriores.
+// Insignias tipo "sello": borde de color + texto del mismo color, sin
+// relleno sólido ni esquinas redondeadas. "danger" usa el tono cálido
+// de marca (ember) en vez de un rojo genérico de sistema.
 const tones: Record<Tone, string> = {
-  neutral: 'bg-muted text-muted-foreground',
-  accent: 'bg-accent text-accent-foreground',
-  success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
-  danger: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  neutral: 'border-border text-muted-foreground',
+  accent: 'border-accent text-accent',
+  success: 'border-primary text-primary',
+  danger: 'border-ember text-ember',
 }
 
 export function Badge({ tone = 'neutral', className = '', ...props }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tones[tone]} ${className}`}
+      className={`inline-flex items-center border bg-surface px-2.5 py-0.5 text-xs font-medium ${tones[tone]} ${className}`}
       {...props}
     />
   )

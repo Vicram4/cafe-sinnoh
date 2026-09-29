@@ -5,117 +5,168 @@ import { exampleReviews } from '../data/reviews'
 import { shopInfo } from '../data/shop'
 import { ProductCard } from '../components/ProductCard'
 import { ButtonLink } from '../components/Button'
-import { Card } from '../components/Card'
+import { MountainScene } from '../components/MountainScene'
 
 export function HomePage() {
   const featuredProducts = products.filter((product) => product.isFeatured)
+  const [firstReview, ...restReviews] = exampleReviews
 
   return (
-    <div className="flex flex-col gap-16">
-      {/* Hero */}
-      <section className="rounded-3xl bg-surface p-8 text-center sm:p-16">
-        <h1 className="text-3xl font-bold sm:text-4xl">Café Sinnoh</h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-          Café de especialidad, dulces caseros y un local pensado para quedarse. Cada rincón de
-          nuestra carta esconde una pequeña historia por descubrir.
-        </p>
-                <ButtonLink to="/menu" className="mt-6">Ver la carta</ButtonLink>
-      </section>
+    <div className="flex flex-col">
+      {/* Hero: composición asimétrica, nada centrado. La ilustración ocupa
+          toda la altura de la columna derecha; es el único momento de
+          protagonismo visual de la página. */}
+      <section className="grid grid-cols-1 items-stretch gap-8 border-b border-border pb-12 md:grid-cols-2 md:gap-0">
+        <div className="flex flex-col justify-center py-8 md:pr-10">
+          <h1 className="text-4xl font-semibold sm:text-5xl">Café Sinnoh</h1>
+          <p className="mt-4 max-w-md text-foreground">
+            Café de especialidad y algo de cuaderno de viaje. Cada rincón de la carta esconde
+            una pequeña historia; solo hay que fijarse un poco.
+          </p>
+          <div className="mt-6">
+            <ButtonLink to="/menu">Ver la carta</ButtonLink>
+          </div>
+          <p className="mt-8 text-sm text-muted-foreground">
+            {shopInfo.address} · {shopInfo.hours[0].time}
+          </p>
+        </div>
 
-      {/* Presentación breve */}
-      <section className="mx-auto max-w-2xl text-center">
-        <h2 className="text-2xl font-bold">Un café con algo más</h2>
-        <p className="mt-3 text-muted-foreground">
-          Café Sinnoh nació como un pequeño homenaje a los viajes: a los que se hacen explorando
-          nuevas rutas y a los que se hacen con una taza en la mano. Detrás de algunos nombres de
-          nuestra carta hay una historia curiosa. Solo hay que fijarse un poco.
-        </p>
-      </section>
-
-      {/* Categorías */}
-      <section>
-        <h2 className="text-2xl font-bold">Categorías</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              to="/menu"
-              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              {category.name}
-            </Link>
-          ))}
+        <div className="min-h-64 md:min-h-0">
+          <MountainScene className="h-full w-full text-primary" />
         </div>
       </section>
 
-      {/* Productos destacados */}
-      <section>
+      {/* Presentación: columna estrecha alineada a la izquierda, como un
+          párrafo de cuaderno de campo, no un bloque centrado. */}
+      <section className="border-b border-border py-12">
+        <div className="max-w-lg">
+          <h2 className="text-2xl font-semibold">Un café con algo más</h2>
+          <p className="mt-4 text-foreground">
+            Café Sinnoh nació como un pequeño homenaje a los viajes: a los que se hacen
+            explorando nuevas rutas y a los que se hacen con una taza en la mano. Detrás de
+            algunos nombres de la carta hay una historia curiosa, pensada para quien se pare a
+            leerla.
+          </p>
+        </div>
+      </section>
+
+      {/* Categorías como paradas de una ruta: la numeración tiene sentido
+          temático (son paradas reales de un recorrido), no es decoración
+          01/02/03 puesta porque sí. */}
+      <section className="border-b border-border py-12">
+        <h2 className="text-2xl font-semibold">La ruta de la carta</h2>
+        <ul className="mt-6 divide-y divide-border border-t border-border">
+          {categories.map((category, index) => (
+            <li key={category.slug}>
+              <Link
+                to="/menu"
+                className="flex items-baseline justify-between py-3 text-foreground hover:text-primary"
+              >
+                <span>
+                  <span className="mr-3 font-serif text-sm text-muted-foreground">
+                    Ruta {String(index + 1).padStart(2, '0')}
+                  </span>
+                  {category.name}
+                </span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Destacados: retícula editorial. El primer producto ocupa más
+          espacio que el resto (grid-flow-dense reordena el hueco sin
+          dejar huecos vacíos), en vez de una cuadrícula uniforme. */}
+      <section className="border-b border-border py-12">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-2xl font-bold">Destacados</h2>
-          <Link to="/menu" className="text-sm text-muted-foreground hover:text-foreground">
+          <h2 className="text-2xl font-semibold">Destacados</h2>
+          <Link to="/menu" className="text-sm text-muted-foreground hover:text-primary">
             Ver toda la carta →
           </Link>
         </div>
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-flow-dense lg:grid-cols-3">
+          {featuredProducts.map((product, index) => (
+            <div key={product.id} className={index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}>
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       </section>
 
       {/* Historia */}
-      <section className="rounded-3xl bg-muted p-8">
-        <h2 className="text-2xl font-bold">Nuestra historia</h2>
-        <p className="mt-3 max-w-3xl text-muted-foreground">
-          Todo empezó con la idea de unir dos pasiones: el café y la exploración. Nuestro local
-          está lleno de guiños a rutas, lagos y rincones que solo los más curiosos llegan a
-          reconocer del todo. No hace falta conocerlos para disfrutar de la carta, pero quien se
-          fija, encuentra algo más.
-        </p>
-      </section>
-
-      {/* Puntos */}
-      <section className="text-center">
-        <h2 className="text-2xl font-bold">Programa de puntos</h2>
-        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Acumula puntos con cada pedido y canjéalos por recompensas. Solo tienes que crear una
-          cuenta gratuita.
-        </p>
-                <ButtonLink to="/register" variant="secondary" className="mt-4">Crear cuenta</ButtonLink>
-      </section>
-
-      {/* Reseñas */}
-      <section>
-        <h2 className="text-2xl font-bold">Lo que dicen de nosotros</h2>
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {exampleReviews.map((review) => (
-            <Card key={review.id}>
-              <p aria-hidden="true" className="text-accent">
-                {'★'.repeat(review.rating)}
-                {'☆'.repeat(5 - review.rating)}
-              </p>
-              <p className="sr-only">{review.rating} de 5 estrellas</p>
-              <p className="mt-2 text-sm text-muted-foreground">"{review.comment}"</p>
-              <p className="mt-3 text-sm font-semibold">{review.author}</p>
-            </Card>
-          ))}
+      <section className="border-b border-border py-12">
+        <div className="max-w-lg">
+          <h2 className="text-2xl font-semibold">Nuestra historia</h2>
+          <p className="mt-4 text-foreground">
+            Todo empezó con la idea de unir dos pasiones: el café y la exploración. El local
+            está lleno de guiños a rutas, lagos y rincones que solo los más curiosos llegan a
+            reconocer del todo. No hace falta conocerlos para disfrutar de la carta, pero quien
+            se fija, encuentra algo más.
+          </p>
         </div>
       </section>
 
-      {/* Información del local */}
-      <section className="rounded-3xl bg-surface p-8">
-        <h2 className="text-2xl font-bold">Visítanos</h2>
-        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div>
-            <p className="font-semibold">Dirección</p>
-            <p className="text-muted-foreground">{shopInfo.address}</p>
-            <p className="mt-3 font-semibold">Contacto</p>
-            <p className="text-muted-foreground">{shopInfo.phone}</p>
-            <p className="text-muted-foreground">{shopInfo.email}</p>
+      {/* Programa de puntos */}
+      <section className="border-b border-border py-12">
+        <div className="max-w-lg">
+          <h2 className="text-2xl font-semibold">Programa de puntos</h2>
+          <p className="mt-4 text-foreground">
+            Acumula puntos con cada pedido y canjéalos por recompensas. Solo hace falta una
+            cuenta gratuita.
+          </p>
+          <div className="mt-6">
+            <ButtonLink to="/register" variant="secondary">
+              Crear cuenta
+            </ButtonLink>
           </div>
+        </div>
+      </section>
+
+      {/* Reseñas: una cita grande destacada y el resto en una lista más
+          discreta, en vez de tres tarjetas idénticas en fila. */}
+      <section className="border-b border-border py-12">
+        <h2 className="text-2xl font-semibold">Lo que dicen de nosotros</h2>
+
+        {firstReview && (
+          <blockquote className="mt-6 max-w-xl border-l-2 border-primary pl-6">
+            <p className="font-serif text-xl italic text-foreground">"{firstReview.comment}"</p>
+            <footer className="mt-3 text-sm text-muted-foreground">
+              {firstReview.author} · {firstReview.rating}/5
+            </footer>
+          </blockquote>
+        )}
+
+        {restReviews.length > 0 && (
+          <ul className="mt-8 max-w-xl divide-y divide-border border-t border-border">
+            {restReviews.map((review) => (
+              <li key={review.id} className="py-3">
+                <p className="text-sm text-foreground">"{review.comment}"</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {review.author} · {review.rating}/5
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Información del local + CTA final unidos en un solo bloque, en
+          vez de repetir un CTA centrado y aislado al final. */}
+      <section className="py-12">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div>
+            <h2 className="text-2xl font-semibold">Visítanos</h2>
+            <p className="mt-3 text-foreground">{shopInfo.address}</p>
+            <p className="mt-1 text-foreground">{shopInfo.phone}</p>
+            <p className="text-foreground">{shopInfo.email}</p>
+            <div className="mt-6">
+              <ButtonLink to="/menu">Pide para recoger</ButtonLink>
+            </div>
+          </div>
+          <div className="sm:border-l sm:border-border sm:pl-8">
             <p className="font-semibold">Horario</p>
-            <ul className="text-muted-foreground">
+            <ul className="mt-2 text-foreground">
               {shopInfo.hours.map((entry) => (
                 <li key={entry.days}>
                   {entry.days}: {entry.time}
@@ -124,11 +175,6 @@ export function HomePage() {
             </ul>
           </div>
         </div>
-      </section>
-
-      {/* CTA final */}
-      <section className="text-center">
-                <ButtonLink to="/menu">Pide para recoger</ButtonLink>
       </section>
     </div>
   )

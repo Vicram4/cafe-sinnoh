@@ -7,10 +7,10 @@ const currentYear = new Date().getFullYear()
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border bg-surface">
+        <footer className="mt-16 border-t border-border">
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 p-6 sm:grid-cols-3">
         <div>
-          <p className="font-bold text-primary">{shopInfo.name}</p>
+          <p className="font-serif text-lg font-semibold text-primary">{shopInfo.name}</p>
           <p className="mt-2 text-sm text-muted-foreground">{shopInfo.address}</p>
           <p className="mt-1 text-sm text-muted-foreground">{shopInfo.phone}</p>
           <p className="mt-1 text-sm text-muted-foreground">{shopInfo.email}</p>
@@ -31,17 +31,17 @@ export function Footer() {
           <p className="font-semibold">Enlaces</p>
           <ul className="mt-2 space-y-1 text-sm">
             <li>
-              <Link to="/menu" className="text-muted-foreground hover:text-foreground">
+                            <Link to="/menu" className="text-muted-foreground hover:text-primary">
                 Carta
               </Link>
             </li>
             <li>
-              <Link to="/careers" className="text-muted-foreground hover:text-foreground">
+                            <Link to="/careers" className="text-muted-foreground hover:text-primary">
                 Trabaja con nosotros
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="text-muted-foreground hover:text-foreground">
+                            <Link to="/contact" className="text-muted-foreground hover:text-primary">
                 Contacto
               </Link>
             </li>

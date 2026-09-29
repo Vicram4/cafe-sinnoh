@@ -64,7 +64,7 @@ export function MenuPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Espresso, tarta, pack..."
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                        className="w-full border border-border bg-surface px-3 py-2 text-sm"
           />
         </div>
 
@@ -76,7 +76,7 @@ export function MenuPage() {
             id="sort"
             value={sort}
             onChange={(event) => setSort(event.target.value as SortOption)}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm md:w-56"
+                        className="w-full border border-border bg-surface px-3 py-2 text-sm"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -90,20 +90,20 @@ export function MenuPage() {
       {/* Filtro de categorías: chips horizontales con scroll propio, para
           que en móvil no rompan el layout ni obliguen a hacer scroll
           vertical de toda la página. */}
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+            <div className="mt-4 flex gap-6 overflow-x-auto border-b border-border">
         <button
           type="button"
           onClick={() => setCategorySlug(null)}
           aria-pressed={categorySlug === null}
           className={
             categorySlug === null
-              ? 'shrink-0 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground'
-              : 'shrink-0 rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground'
+              ? 'shrink-0 border-b-2 border-primary pb-2 text-sm font-semibold text-primary'
+              : 'shrink-0 border-b-2 border-transparent pb-2 text-sm text-muted-foreground hover:text-foreground'
           }
         >
           Todas
         </button>
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <button
             key={category.slug}
             type="button"
@@ -111,10 +111,13 @@ export function MenuPage() {
             aria-pressed={categorySlug === category.slug}
             className={
               categorySlug === category.slug
-                ? 'shrink-0 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground'
-                : 'shrink-0 rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground'
+                ? 'shrink-0 border-b-2 border-primary pb-2 text-sm font-semibold text-primary'
+                : 'shrink-0 border-b-2 border-transparent pb-2 text-sm text-muted-foreground hover:text-foreground'
             }
           >
+            <span className="mr-1 font-serif text-xs text-muted-foreground">
+              {String(index + 1).padStart(2, '0')}
+            </span>
             {category.name}
           </button>
         ))}
