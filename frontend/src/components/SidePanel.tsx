@@ -41,11 +41,11 @@ export function SidePanel({ open, onClose, title, children }: SidePanelProps) {
           es puramente visual, no debe anunciarse a un lector de pantalla. */}
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" onClick={onClose} />
 
-      <div
+            <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative flex h-full w-full max-w-sm flex-col bg-surface p-6 shadow-lg"
+        className="panel-in relative flex h-full w-full max-w-sm flex-col border-l border-border bg-surface p-6"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold">{title}</h2>
@@ -54,7 +54,7 @@ export function SidePanel({ open, onClose, title, children }: SidePanelProps) {
             type="button"
             onClick={onClose}
             aria-label="Cerrar panel"
-            className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        className="p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" strokeWidth="2" strokeLinecap="round" />

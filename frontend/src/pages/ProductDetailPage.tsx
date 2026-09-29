@@ -30,9 +30,9 @@ export function ProductDetailPage() {
       </Link>
 
       <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="flex aspect-square items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+                <div className="flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
           {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="h-full w-full rounded-2xl object-cover" />
+            <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
           ) : (
             <span>Sin imagen</span>
           )}
@@ -43,8 +43,10 @@ export function ProductDetailPage() {
             <h1 className="text-2xl font-bold">{product.name}</h1>
             {!product.isAvailable && <Badge tone="danger">Agotado</Badge>}
           </div>
+                    {category && (
+            <p className="mt-1 font-serif text-sm italic text-muted-foreground">{category.name}</p>
+          )}
 
-          {category && <p className="mt-1 text-sm text-muted-foreground">{category.name}</p>}
 
           <p className="mt-4 text-2xl font-semibold text-primary">
             {formatPriceCents(product.priceCents)}

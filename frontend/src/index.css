@@ -61,7 +61,7 @@
     @apply font-serif;
   }
 
-  @media (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
@@ -69,6 +69,53 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Único momento animado protagonista de todo el sitio: el sendero del
+     Hero se dibuja al cargar la página, y el punto de destino aparece
+     justo después. pathLength="1" en el <path> (en MountainScene)
+     normaliza su longitud a 1, así el trazo funciona sin calcular a
+     mano la longitud real de la curva. La regla de arriba
+     (prefers-reduced-motion) ya reduce esta animación a algo casi
+     instantáneo cuando el usuario ha pedido menos movimiento. */
+  .trail-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-trail 1.6s ease-out 0.3s forwards;
+  }
+
+  .trail-point {
+    opacity: 0;
+    animation: fade-in 0.4s ease-out 1.8s forwards;
+  }
+
+  @keyframes draw-trail {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Entrada del panel lateral: único movimiento que responde a una
+     acción del usuario (abrir el panel), no un efecto decorativo. */
+  .panel-in {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
 }

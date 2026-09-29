@@ -10,9 +10,7 @@ interface InspirationPanelProps {
 export function InspirationPanel({ open, onClose, inspiration }: InspirationPanelProps) {
   return (
     <SidePanel open={open} onClose={onClose} title="Descubrir inspiración">
-      <p className="text-sm font-semibold uppercase tracking-wide text-accent">
-        {inspiration.pokemonName}
-      </p>
+            <p className="font-serif text-lg italic text-accent">{inspiration.pokemonName}</p>
 
       <p className="mt-3 text-sm text-muted-foreground">{inspiration.pokedexText}</p>
 

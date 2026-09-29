@@ -3,11 +3,9 @@ interface MountainSceneProps {
 }
 
 // Ilustración protagonista del Hero: tres capas de montaña (Monte Corona
-// en primer plano) y un sendero punteado hacia la cima. Referencia sutil
-// a Sinnoh: quien no conoce Pokémon ve solo un paisaje de senderismo;
-// quien lo conoce, reconoce la silueta y el "camino hacia la cima".
-// Usa var(--color-...) directamente: hereda el modo oscuro sin lógica
-// adicional, porque esas variables cambian de valor dentro de .dark.
+// en primer plano, sin animar) y un sendero que se dibuja al cargar la
+// página (clase "trail-path", definida en index.css). Es el único
+// momento animado no disparado por el usuario en todo el sitio.
 export function MountainScene({ className = '' }: MountainSceneProps) {
   return (
     <svg
@@ -29,14 +27,15 @@ export function MountainScene({ className = '' }: MountainSceneProps) {
         fill="var(--color-primary)"
       />
       <path
+        className="trail-path"
         d="M40 600 C 90 480, 140 420, 200 250"
+        pathLength={1}
         stroke="var(--color-ember)"
         strokeWidth="2"
         fill="none"
-        strokeDasharray="1 8"
         strokeLinecap="round"
       />
-      <circle cx="200" cy="250" r="4" fill="var(--color-ember)" />
+      <circle className="trail-point" cx="200" cy="250" r="4" fill="var(--color-ember)" />
     </svg>
   )
 }
