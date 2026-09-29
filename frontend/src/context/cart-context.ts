@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-import type { CartItem } from '../types/cart'
 import type { Product } from '../types/product'
 
 // Un CartLine combina el CartItem guardado (solo id + cantidad) con el
