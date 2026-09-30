@@ -3,9 +3,20 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.models.order import Order, OrderItem
+from app.models.order import Order, OrderItem, OrderStatus
+from app.models.point_transaction import PointTransaction, PointTransactionType
 from app.models.product import Product
 from app.schemas.order import OrderCreate
+
+# Máquina de estados: qué transiciones son válidas desde cada estado.
+# COMPLETED y CANCELLED no aparecen como claves: son estados finales,
+# sin salida posible.
+ALLOWED_TRANSITIONS: dict[OrderStatus, set[OrderStatus]] = {
+    OrderStatus.PENDING: {OrderStatus.CONFIRMED, OrderStatus.CANCELLED},
+    OrderStatus.CONFIRMED: {OrderStatus.PREPARING, OrderStatus.CANCELLED},
+    OrderStatus.PREPARING: {OrderStatus.READY},
+    OrderStatus.READY: {OrderStatus.COMPLETED},
+}
 
 
 class OrderValidationError(Exception):
@@ -83,6 +94,41 @@ def create_order(db: Session, user_id: int, payload: OrderCreate) -> Order:
         items=order_items,
     )
     db.add(order)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def transition_order_status(db: Session, order: Order, new_status: OrderStatus) -> Order:
+    """Aplica una transición de estado si es válida según la máquina de
+    estados, y otorga puntos automáticamente al llegar a COMPLETED. El
+    otorgamiento comprueba order.points_awarded para ser idempotente:
+    una misma orden nunca otorga puntos dos veces, aunque se llamara
+    por error dos veces a este mismo endpoint."""
+    allowed = ALLOWED_TRANSITIONS.get(order.status, set())
+    if new_status not in allowed:
+        raise OrderValidationError(
+            f"No se puede pasar de {order.status.value} a {new_status.value}."
+        )
+
+    order.status = new_status
+
+    if new_status == OrderStatus.COMPLETED and not order.points_awarded:
+        # 1 punto por cada euro gastado (total_cents está en céntimos,
+        # de ahí la división entre 100), redondeando hacia abajo.
+        points_earned = order.total_cents // 100
+        if points_earned > 0:
+            db.add(
+                PointTransaction(
+                    user_id=order.user_id,
+                    points=points_earned,
+                    type=PointTransactionType.EARN,
+                    order_id=order.id,
+                    description=f"Pedido #{order.id} completado",
+                )
+            )
+        order.points_awarded = True
+
     db.commit()
     db.refresh(order)
     return order

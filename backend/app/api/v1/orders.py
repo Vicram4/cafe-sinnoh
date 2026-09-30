@@ -3,12 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import get_current_user, require_admin
 from app.db.session import get_db
 from app.models.order import Order
 from app.models.user import User
-from app.schemas.order import OrderCreate, OrderRead
-from app.services.orders import OrderValidationError, create_order
+from app.schemas.order import OrderCreate, OrderRead, OrderStatusUpdate
+from app.services.orders import OrderValidationError, create_order, transition_order_status
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -42,21 +42,24 @@ def list_my_orders(
     )
 
 
-@router.get("/{order_id}", response_model=OrderRead)
-def get_my_order(
+@router.patch("/{order_id}/status", response_model=OrderRead)
+def update_order_status(
     order_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
+    payload: OrderStatusUpdate,
+    current_user: Annotated[User, Depends(require_admin)],
     db: Session = Depends(get_db),
 ) -> Order:
-    order = (
-        db.query(Order)
-        .options(joinedload(Order.items))
-        .filter(Order.id == order_id, Order.user_id == current_user.id)
-        .first()
-    )
+    """Mecanismo mínimo para avanzar el estado de un pedido, necesario
+    para que el programa de puntos pueda funcionar (FASE 9). El panel
+    de administración completo (FASE 12) reutilizará este mismo
+    endpoint; aquí solo se expone sin interfaz propia todavía."""
+    # A diferencia de list_my_orders, no filtramos por user_id: un
+    # admin gestiona pedidos de cualquier cliente.
+    order = db.query(Order).options(joinedload(Order.items)).filter(Order.id == order_id).first()
     if order is None:
-        # Mismo mensaje tanto si el pedido no existe como si es de otro
-        # usuario: no confirmamos a nadie que un id de pedido concreto
-        # existe si no le pertenece.
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado.")
-    return order
+
+    try:
+        return transition_order_status(db, order, payload.status)
+    except OrderValidationError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.message) from error

@@ -19,6 +19,10 @@ class OrderCreate(BaseModel):
     notes: str | None = None
 
 
+class OrderStatusUpdate(BaseModel):
+    status: OrderStatus
+
+
 class OrderItemRead(BaseModel):
     id: int
     product_id: int
