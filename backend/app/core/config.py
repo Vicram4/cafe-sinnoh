@@ -16,6 +16,16 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     cors_origins: str = "http://localhost:5173"
 
+    # Horario del local (hora local, formato 24h) y minutos mínimos de
+    # margen entre el momento del pedido y la hora de recogida elegida,
+    # para dar tiempo a prepararlo. Simplificado a un único horario
+    # diario, sin distinguir fin de semana todavía (el briefing definía
+    # horarios distintos para sábado y domingo; lo añadiremos si hace
+    # falta más adelante, sin romper nada de lo ya construido).
+    shop_opening_hour: int = 8
+    shop_closing_hour: int = 20
+    min_pickup_lead_minutes: int = 15
+
     # env_file le dice a pydantic-settings dónde buscar el .env;
     # case_sensitive=False permite que DATABASE_URL (mayúsculas, como
     # es habitual en variables de entorno) coincida con database_url.
