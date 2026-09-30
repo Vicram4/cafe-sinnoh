@@ -4,4 +4,6 @@
 # al generar migraciones. Sin este import, Base.metadata no sabría que
 # la tabla "users" existe, aunque el modelo esté definido en otro lugar.
 from app.db.base_class import Base  # noqa: F401
+from app.models.category import Category  # noqa: F401
+from app.models.product import Product  # noqa: F401
 from app.models.user import User  # noqa: F401

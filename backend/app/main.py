@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.admin import router as admin_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.products import router as products_router
 from app.core.config import get_settings
 from app.db.session import get_db
 
@@ -26,6 +27,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
+app.include_router(products_router, prefix="/api/v1")
 
 
 @app.get("/health")
