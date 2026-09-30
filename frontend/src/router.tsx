@@ -7,6 +7,7 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
+import { CheckoutPage } from './pages/CheckoutPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -21,7 +22,7 @@ export const router = createBrowserRouter([
       // ":slug" es un parámetro: /menu/espresso-monte-corona
             { path: 'menu/:slug', element: <ProductDetailPage /> },
             { path: 'cart', element: <CartPage /> },
-      { path: 'checkout', element: <PlaceholderPage title="Finalizar pedido" /> },
+      { path: 'checkout', element: <CheckoutPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'account', element: <PlaceholderPage title="Mi cuenta" /> },
