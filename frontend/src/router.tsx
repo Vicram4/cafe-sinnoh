@@ -8,6 +8,10 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
 import { CheckoutPage } from './pages/CheckoutPage'
+import { AccountLayout } from './layouts/AccountLayout'
+import { AccountPage } from './pages/AccountPage'
+import { AccountOrdersPage } from './pages/AccountOrdersPage'
+import { AccountPointsPage } from './pages/AccountPointsPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -25,9 +29,15 @@ export const router = createBrowserRouter([
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
-      { path: 'account', element: <PlaceholderPage title="Mi cuenta" /> },
-      { path: 'account/orders', element: <PlaceholderPage title="Mis pedidos" /> },
-      { path: 'account/points', element: <PlaceholderPage title="Mis puntos" /> },
+      {
+        path: 'account',
+        element: <AccountLayout />,
+        children: [
+          { index: true, element: <AccountPage /> },
+          { path: 'orders', element: <AccountOrdersPage /> },
+          { path: 'points', element: <AccountPointsPage /> },
+        ],
+      },
       { path: 'about', element: <PlaceholderPage title="Nosotros" /> },
       { path: 'careers', element: <PlaceholderPage title="Trabaja con nosotros" /> },
       { path: 'contact', element: <PlaceholderPage title="Contacto" /> },

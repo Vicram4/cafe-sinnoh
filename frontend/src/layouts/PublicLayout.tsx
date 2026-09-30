@@ -56,7 +56,9 @@ export function PublicLayout() {
             </NavLink>
             {user ? (
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">Hola, {user.full_name.split(' ')[0]}</span>
+                <NavLink to="/account" className="text-sm text-muted-foreground hover:text-foreground">
+                  Hola, {user.full_name.split(' ')[0]}
+                </NavLink>
                 <Button variant="ghost" onClick={logout}>
                   Salir
                 </Button>
