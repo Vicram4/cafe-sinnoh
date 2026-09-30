@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router'
-import { products } from '../data/products'
-import { categories } from '../data/categories'
+import { useProduct } from '../hooks/useProducts'
 import { formatPriceCents } from '../utils/format'
 import { Button } from '../components/Button'
 import { Badge } from '../components/Badge'
@@ -15,16 +14,18 @@ export function ProductDetailPage() {
   const [justAdded, setJustAdded] = useState(false)
   const { addItem } = useCart()
 
-  const product = products.find((item) => item.slug === slug)
+  const { data: product, isLoading, isError } = useProduct(slug)
 
-  // Si alguien llega a una URL con un slug que no existe (enlace roto,
-  // producto retirado del catálogo), mostramos un estado claro en vez
-  // de una página en blanco o un error de JavaScript.
-  if (!product) {
+  if (isLoading) {
+    return <p className="text-center text-muted-foreground">Cargando producto…</p>
+  }
+
+  if (isError || !product) {
     return <PlaceholderPage title="Producto no encontrado" />
   }
 
-  const category = categories.find((item) => item.slug === product.categorySlug)
+  const hasPokemonInspiration = product.inspiration_pokemon_name !== null
+  const hasLocationInspiration = product.location_name !== null
 
   return (
     <section>
@@ -33,9 +34,9 @@ export function ProductDetailPage() {
       </Link>
 
       <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
-                <div className="flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+        <div className="flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
+          {product.image_url ? (
+            <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
           ) : (
             <span>Sin imagen</span>
           )}
@@ -44,45 +45,36 @@ export function ProductDetailPage() {
         <div>
           <div className="flex items-start justify-between gap-2">
             <h1 className="text-2xl font-bold">{product.name}</h1>
-            {!product.isAvailable && <Badge tone="danger">Agotado</Badge>}
+            {!product.is_available && <Badge tone="danger">Agotado</Badge>}
           </div>
-                    {category && (
-            <p className="mt-1 font-serif text-sm italic text-muted-foreground">{category.name}</p>
-          )}
 
+          <p className="mt-1 font-serif text-sm italic text-muted-foreground">{product.category.name}</p>
 
-          <p className="mt-4 text-2xl font-semibold text-primary">
-            {formatPriceCents(product.priceCents)}
-          </p>
+          <p className="mt-4 text-2xl font-semibold text-primary">{formatPriceCents(product.price_cents)}</p>
 
           <p className="mt-4 text-foreground">{product.description}</p>
 
-                    <div className="mt-4">
+          <div className="mt-4">
             <p className="text-sm font-semibold">Ingredientes</p>
             <p className="mt-1 text-sm text-muted-foreground">{product.ingredients.join(', ')}</p>
           </div>
 
-          {/* Inspiración de lugar: se muestra directamente, sin panel ni
-              aviso legal, porque no es contenido de Pokémon. */}
-          {product.locationInspiration && (
+          {hasLocationInspiration && (
             <p className="mt-3 text-sm italic text-muted-foreground">
-              Inspirado en {product.locationInspiration.placeName}: {product.locationInspiration.description}
+              Inspirado en {product.location_name}: {product.location_description}
             </p>
           )}
 
-                    <Button
+          <Button
             className="mt-6"
-            disabled={!product.isAvailable}
+            disabled={!product.is_available}
             onClick={() => {
               addItem(product.id)
               setJustAdded(true)
-              // El aviso se retira solo tras un momento: confirmación
-              // breve, sin necesitar un sistema de notificaciones
-              // completo para un solo mensaje puntual.
               setTimeout(() => setJustAdded(false), 2000)
             }}
           >
-            {product.isAvailable ? 'Añadir al carrito' : 'No disponible'}
+            {product.is_available ? 'Añadir al carrito' : 'No disponible'}
           </Button>
           {justAdded && (
             <p role="status" className="mt-2 text-sm text-primary">
@@ -90,7 +82,7 @@ export function ProductDetailPage() {
             </p>
           )}
 
-          {product.inspiration && (
+          {hasPokemonInspiration && (
             <div className="mt-6">
               <Button variant="secondary" onClick={() => setInspirationOpen(true)}>
                 Descubrir inspiración
@@ -100,11 +92,15 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {product.inspiration && (
+      {hasPokemonInspiration && (
         <InspirationPanel
           open={inspirationOpen}
           onClose={() => setInspirationOpen(false)}
-          inspiration={product.inspiration}
+          inspiration={{
+            pokemonName: product.inspiration_pokemon_name!,
+            pokedexText: product.inspiration_pokedex_text!,
+            story: product.inspiration_story!,
+          }}
         />
       )}
     </section>

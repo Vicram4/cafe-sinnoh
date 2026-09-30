@@ -1,23 +1,11 @@
+// Coincide exactamente con los esquemas del backend (ProductRead,
+// CategoryRead), snake_case incluido: así no hay ninguna capa de
+// "traducción" oculta entre lo que la API envía y lo que usamos aquí.
 export interface Category {
+  id: number
   slug: string
   name: string
-}
-
-// La inspiración es opcional: no todos los productos tienen por qué
-// tener un guiño a Sinnoh (briefing: debe complementar, no dominar).
-export interface Inspiration {
-  pokemonName: string
-  pokedexText: string
-  story: string
-}
-
-// Para productos inspirados en un lugar de Sinnoh (no en un Pokémon).
-// Se muestra directamente en la página, sin panel ni aviso legal:
-// un topónimo ficticio no tiene el mismo riesgo de propiedad
-// intelectual que un personaje.
-export interface LocationInspiration {
-  placeName: string
-  description: string
+  sort_order: number
 }
 
 export interface Product {
@@ -25,14 +13,15 @@ export interface Product {
   slug: string
   name: string
   description: string
-  // Precio en céntimos (entero), nunca en coma flotante. Cuando exista
-  // backend, esta será también la unidad que use la base de datos.
-  priceCents: number
-  categorySlug: string
-  imageUrl: string | null
+  price_cents: number
+  image_url: string | null
   ingredients: string[]
-  isAvailable: boolean
-  isFeatured: boolean
-  inspiration?: Inspiration
-  locationInspiration?: LocationInspiration
+  is_available: boolean
+  is_featured: boolean
+  inspiration_pokemon_name: string | null
+  inspiration_pokedex_text: string | null
+  inspiration_story: string | null
+  location_name: string | null
+  location_description: string | null
+  category: Category
 }

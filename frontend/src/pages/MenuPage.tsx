@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { products } from '../data/products'
-import { categories } from '../data/categories'
+import { useCategories, useProducts } from '../hooks/useProducts'
 import { ProductCard } from '../components/ProductCard'
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name-asc'
@@ -17,37 +16,36 @@ export function MenuPage() {
   const [categorySlug, setCategorySlug] = useState<string | null>(null)
   const [sort, setSort] = useState<SortOption>('featured')
 
-  // useMemo evita recalcular el listado filtrado en cada render que no
-  // dependa de estos valores (por ejemplo, si más adelante el layout
-  // añade un estado propio que no afecta al listado).
+  const { data: products, isLoading: productsLoading, isError: productsError } = useProducts()
+  const { data: categories, isLoading: categoriesLoading } = useCategories()
+
   const visibleProducts = useMemo(() => {
+    if (!products) return []
     const term = search.trim().toLowerCase()
 
     const filtered = products.filter((product) => {
       const matchesSearch = term.length === 0 || product.name.toLowerCase().includes(term)
-      const matchesCategory = categorySlug === null || product.categorySlug === categorySlug
+      const matchesCategory = categorySlug === null || product.category.slug === categorySlug
       return matchesSearch && matchesCategory
     })
 
     const sorted = [...filtered]
     switch (sort) {
       case 'price-asc':
-        sorted.sort((a, b) => a.priceCents - b.priceCents)
+        sorted.sort((a, b) => a.price_cents - b.price_cents)
         break
       case 'price-desc':
-        sorted.sort((a, b) => b.priceCents - a.priceCents)
+        sorted.sort((a, b) => b.price_cents - a.price_cents)
         break
       case 'name-asc':
         sorted.sort((a, b) => a.name.localeCompare(b.name, 'es'))
         break
       case 'featured':
       default:
-        // Los destacados primero; dentro de cada grupo, se respeta el
-        // orden del catálogo.
-        sorted.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured))
+        sorted.sort((a, b) => Number(b.is_featured) - Number(a.is_featured))
     }
     return sorted
-  }, [search, categorySlug, sort])
+  }, [products, search, categorySlug, sort])
 
   return (
     <section>
@@ -64,7 +62,7 @@ export function MenuPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Espresso, tarta, pack..."
-                        className="w-full border border-border bg-surface px-3 py-2 text-sm"
+            className="w-full border border-border bg-surface px-3 py-2 text-sm"
           />
         </div>
 
@@ -76,7 +74,7 @@ export function MenuPage() {
             id="sort"
             value={sort}
             onChange={(event) => setSort(event.target.value as SortOption)}
-                        className="w-full border border-border bg-surface px-3 py-2 text-sm"
+            className="w-full border border-border bg-surface px-3 py-2 text-sm md:w-56"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -87,10 +85,7 @@ export function MenuPage() {
         </div>
       </div>
 
-      {/* Filtro de categorías: chips horizontales con scroll propio, para
-          que en móvil no rompan el layout ni obliguen a hacer scroll
-          vertical de toda la página. */}
-            <div className="mt-4 flex gap-6 overflow-x-auto border-b border-border">
+      <div className="mt-4 flex gap-6 overflow-x-auto border-b border-border">
         <button
           type="button"
           onClick={() => setCategorySlug(null)}
@@ -103,31 +98,42 @@ export function MenuPage() {
         >
           Todas
         </button>
-        {categories.map((category, index) => (
-          <button
-            key={category.slug}
-            type="button"
-            onClick={() => setCategorySlug(category.slug)}
-            aria-pressed={categorySlug === category.slug}
-            className={
-              categorySlug === category.slug
-                ? 'shrink-0 border-b-2 border-primary pb-2 text-sm font-semibold text-primary'
-                : 'shrink-0 border-b-2 border-transparent pb-2 text-sm text-muted-foreground hover:text-foreground'
-            }
-          >
-            <span className="mr-1 font-serif text-xs text-muted-foreground">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            {category.name}
-          </button>
-        ))}
+        {!categoriesLoading &&
+          categories?.map((category, index) => (
+            <button
+              key={category.slug}
+              type="button"
+              onClick={() => setCategorySlug(category.slug)}
+              aria-pressed={categorySlug === category.slug}
+              className={
+                categorySlug === category.slug
+                  ? 'shrink-0 border-b-2 border-primary pb-2 text-sm font-semibold text-primary'
+                  : 'shrink-0 border-b-2 border-transparent pb-2 text-sm text-muted-foreground hover:text-foreground'
+              }
+            >
+              <span className="mr-1 font-serif text-xs text-muted-foreground">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              {category.name}
+            </button>
+          ))}
       </div>
 
-      {visibleProducts.length === 0 ? (
+      {productsLoading && <p className="mt-8 text-center text-muted-foreground">Cargando carta…</p>}
+
+      {productsError && (
+        <p className="mt-8 text-center text-ember">
+          No se ha podido cargar la carta. Comprueba tu conexión e inténtalo de nuevo.
+        </p>
+      )}
+
+      {!productsLoading && !productsError && visibleProducts.length === 0 && (
         <p className="mt-8 text-center text-muted-foreground">
           No hay productos que coincidan con tu búsqueda.
         </p>
-      ) : (
+      )}
+
+      {!productsLoading && !productsError && visibleProducts.length > 0 && (
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleProducts.map((product) => (
             <ProductCard key={product.id} product={product} />

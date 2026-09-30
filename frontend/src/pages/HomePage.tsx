@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
-import { products } from '../data/products'
-import { categories } from '../data/categories'
+import { useCategories, useProducts } from '../hooks/useProducts'
 import { exampleReviews } from '../data/reviews'
 import { shopInfo } from '../data/shop'
 import { ProductCard } from '../components/ProductCard'
@@ -8,7 +7,9 @@ import { ButtonLink } from '../components/Button'
 import { MountainScene } from '../components/MountainScene'
 
 export function HomePage() {
-  const featuredProducts = products.filter((product) => product.isFeatured)
+  const { data: products } = useProducts()
+  const { data: categories } = useCategories()
+  const featuredProducts = products?.filter((product) => product.is_featured) ?? []
   const [firstReview, ...restReviews] = exampleReviews
 
   return (
@@ -56,7 +57,7 @@ export function HomePage() {
       <section className="border-b border-border py-12">
         <h2 className="text-2xl font-semibold">La ruta de la carta</h2>
         <ul className="mt-6 divide-y divide-border border-t border-border">
-          {categories.map((category, index) => (
+          {(categories ?? []).map((category, index) => (
             <li key={category.slug}>
               <Link
                 to="/menu"

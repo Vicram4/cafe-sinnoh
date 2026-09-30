@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { CartContext, type CartLine } from './cart-context'
 import type { CartItem } from '../types/cart'
-import { products } from '../data/products'
+import { useProducts } from '../hooks/useProducts'
 
 const STORAGE_KEY = 'cafe-sinnoh:cart'
 
@@ -24,6 +24,11 @@ function loadCart(): CartItem[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(loadCart)
+  // El carrito ya no depende de un array estático: usa la misma caché
+  // de React Query que el resto de la app, así que si el catálogo
+  // cambia (o aún está cargando), el carrito se mantiene coherente
+  // con lo que ve el resto del sitio.
+  const { data: products = [] } = useProducts()
 
   useEffect(() => {
     try {
@@ -73,7 +78,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0)
   const subtotalCents = lines.reduce(
-    (sum, line) => sum + (line.product ? line.product.priceCents * line.quantity : 0),
+    (sum, line) => sum + (line.product ? line.product.price_cents * line.quantity : 0),
     0,
   )
 

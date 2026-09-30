@@ -48,21 +48,21 @@ export function CartPage() {
               <>
                 <Link to={`/menu/${line.product.slug}`} className="flex flex-1 items-center gap-4">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center border border-border bg-muted text-xs text-muted-foreground">
-                    {line.product.imageUrl ? (
-                      <img src={line.product.imageUrl} alt="" className="h-full w-full object-cover" />
+                    {line.product.image_url ? (
+                      <img src={line.product.image_url} alt="" className="h-full w-full object-cover" />
                     ) : (
                       'Sin imagen'
                     )}
                   </div>
                   <div>
                     <p className="font-medium">{line.product.name}</p>
-                    {!line.product.isAvailable && (
+                    {!line.product.is_available && (
                       <Badge tone="danger" className="mt-1">
                         Agotado
                       </Badge>
                     )}
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {formatPriceCents(line.product.priceCents)}
+                      {formatPriceCents(line.product.price_cents)}
                     </p>
                   </div>
                 </Link>
@@ -93,7 +93,7 @@ export function CartPage() {
                   </div>
 
                   <p className="w-20 text-right text-sm font-medium">
-                    {formatPriceCents(line.product.priceCents * line.quantity)}
+                    {formatPriceCents(line.product.price_cents * line.quantity)}
                   </p>
 
                   <button

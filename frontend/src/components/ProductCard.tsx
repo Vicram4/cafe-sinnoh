@@ -17,8 +17,8 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Marcador neutro: se sustituirá por product.imageUrl cuando
             generes las ilustraciones finales. */}
                 <div className="mb-3 flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
+          {product.image_url ? (
+            <img src={product.image_url} alt="" className="h-full w-full object-cover" />
           ) : (
             <span className="text-sm">Sin imagen</span>
           )}
@@ -26,12 +26,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold">{product.name}</h3>
-          {!product.isAvailable && <Badge tone="danger">Agotado</Badge>}
+          {!product.is_available && <Badge tone="danger">Agotado</Badge>}
         </div>
 
         <p className="mt-1 line-clamp-2 flex-1 text-sm text-muted-foreground">{product.description}</p>
 
-        <p className="mt-3 font-semibold text-primary">{formatPriceCents(product.priceCents)}</p>
+        <p className="mt-3 font-semibold text-primary">{formatPriceCents(product.price_cents)}</p>
       </Card>
     </Link>
   )

@@ -1,12 +1,20 @@
-import type { Inspiration } from '../types/product'
 import { SidePanel } from './SidePanel'
+
+// Forma "aplanada" que construye ProductDetailPage a partir de los
+// campos inspiration_* del producto (no viene directamente del tipo
+// Product: ese ya no anida un objeto "inspiration", sino que tiene los
+// campos sueltos, porque así los envía la API).
+interface Inspiration {
+  pokemonName: string
+  pokedexText: string
+  story: string
+}
 
 interface InspirationPanelProps {
   open: boolean
   onClose: () => void
   inspiration: Inspiration
 }
-
 export function InspirationPanel({ open, onClose, inspiration }: InspirationPanelProps) {
   return (
     <SidePanel open={open} onClose={onClose} title="Descubrir inspiración">
