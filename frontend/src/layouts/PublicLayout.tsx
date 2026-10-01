@@ -56,6 +56,11 @@ export function PublicLayout() {
             </NavLink>
             {user ? (
               <div className="flex items-center gap-3">
+                {user.role === 'ADMIN' && (
+                  <NavLink to="/admin" className="text-sm text-muted-foreground hover:text-foreground">
+                    Admin
+                  </NavLink>
+                )}
                 <NavLink to="/account" className="text-sm text-muted-foreground hover:text-foreground">
                   Hola, {user.full_name.split(' ')[0]}
                 </NavLink>
