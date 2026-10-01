@@ -63,3 +63,19 @@ def update_order_status(
         return transition_order_status(db, order, payload.status)
     except OrderValidationError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.message) from error
+
+    
+
+@router.get("/admin/all", response_model=list[OrderRead])
+def list_all_orders(
+    current_user: Annotated[User, Depends(require_admin)],
+    db: Session = Depends(get_db),
+) -> list[Order]:
+    """Todos los pedidos de todos los usuarios, para el panel de admin.
+    Distinto de list_my_orders (que filtra por el propio usuario)."""
+    return (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .order_by(Order.created_at.desc())
+        .all()
+    )
