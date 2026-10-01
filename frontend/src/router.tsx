@@ -12,6 +12,8 @@ import { AccountLayout } from './layouts/AccountLayout'
 import { AccountPage } from './pages/AccountPage'
 import { AccountOrdersPage } from './pages/AccountOrdersPage'
 import { AccountPointsPage } from './pages/AccountPointsPage'
+import { CareersPage } from './pages/CareersPage'
+import { ContactPage } from './pages/ContactPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -39,8 +41,8 @@ export const router = createBrowserRouter([
         ],
       },
       { path: 'about', element: <PlaceholderPage title="Nosotros" /> },
-      { path: 'careers', element: <PlaceholderPage title="Trabaja con nosotros" /> },
-      { path: 'contact', element: <PlaceholderPage title="Contacto" /> },
+      { path: 'careers', element: <CareersPage /> },
+      { path: 'contact', element: <ContactPage /> },
       { path: 'admin', element: <PlaceholderPage title="Administración" /> },
       // "*" recoge cualquier URL que no coincida con las anteriores (error 404).
       { path: '*', element: <PlaceholderPage title="Página no encontrada" /> },
