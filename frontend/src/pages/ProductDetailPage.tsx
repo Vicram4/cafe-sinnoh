@@ -7,6 +7,7 @@ import { Badge } from '../components/Badge'
 import { InspirationPanel } from '../components/InspirationPanel'
 import { PlaceholderPage } from './PlaceholderPage'
 import { useCart } from '../hooks/useCart'
+import { ProductReviews } from '../components/ProductReviews'
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -103,6 +104,8 @@ export function ProductDetailPage() {
           }}
         />
       )}
+
+      <ProductReviews productId={product.id} />
     </section>
   )
 }

@@ -1,5 +1,11 @@
 import { Link } from 'react-router'
 import { useCategories, useProducts } from '../hooks/useProducts'
+// Reseñas de ejemplo: la API real de reseñas es por producto
+// (GET /products/{id}/reviews), no existe todavía un endpoint que
+// liste "las mejores reseñas de cualquier producto" para la Home.
+// Las reseñas reales ya funcionan en el detalle de cada producto
+// (ProductReviews). Si se quiere mostrar reseñas reales aquí, haría
+// falta un endpoint agregado nuevo en el backend.
 import { exampleReviews } from '../data/reviews'
 import { shopInfo } from '../data/shop'
 import { ProductCard } from '../components/ProductCard'
