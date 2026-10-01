@@ -4,7 +4,10 @@ import { useAuth } from '../hooks/useAuth'
 // Lista deliberadamente corta por ahora: cada bloque siguiente de la
 // FASE 12 añade aquí su propio enlace, a medida que la página
 // correspondiente exista. Mejor eso que enlaces a páginas inexistentes.
-const links = [{ to: '/admin', label: 'Dashboard' }]
+const links = [
+  { to: '/admin', label: 'Dashboard' },
+  { to: '/admin/orders', label: 'Pedidos' },
+]
 
 export function AdminLayout() {
   const { isAuthenticated, user } = useAuth()
