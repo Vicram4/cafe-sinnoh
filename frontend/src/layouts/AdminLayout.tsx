@@ -11,6 +11,7 @@ const links = [
   { to: '/admin/reviews', label: 'Reseñas' },
   { to: '/admin/applications', label: 'Candidaturas' },
   { to: '/admin/messages', label: 'Mensajes' },
+  { to: '/admin/users', label: 'Usuarios' }
 ]
 
 export function AdminLayout() {
