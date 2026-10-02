@@ -14,6 +14,10 @@ class JobApplicationCreate(BaseModel):
     cover_letter: str | None = Field(default=None, max_length=2000)
 
 
+class JobApplicationStatusUpdate(BaseModel):
+    status: ApplicationStatus
+
+
 class JobApplicationRead(BaseModel):
     """Solo para el admin (FASE 12): incluye campos que el candidato no
     necesita ver de vuelta."""

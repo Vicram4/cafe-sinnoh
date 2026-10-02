@@ -9,6 +9,10 @@ class ContactMessageCreate(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
 
 
+class ContactMessageReadUpdate(BaseModel):
+    is_read: bool
+
+
 class ContactMessageRead(BaseModel):
     id: int
     name: str
