@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth'
 const links = [
   { to: '/admin', label: 'Dashboard' },
   { to: '/admin/orders', label: 'Pedidos' },
+  { to: '/admin/products', label: 'Productos' },
 ]
 
 export function AdminLayout() {

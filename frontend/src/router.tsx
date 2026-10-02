@@ -17,6 +17,8 @@ import { ContactPage } from './pages/ContactPage'
 import { AdminLayout } from './layouts/AdminLayout'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
 import { AdminOrdersPage } from './pages/AdminOrdersPage'
+import { AdminProductsPage } from './pages/AdminProductsPage'
+import { AdminProductFormPage } from './pages/AdminProductFormPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -52,6 +54,9 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <AdminDashboardPage /> },
           { path: 'orders', element: <AdminOrdersPage /> },
+          { path: 'products', element: <AdminProductsPage /> },
+          { path: 'products/new', element: <AdminProductFormPage /> },
+          { path: 'products/:id/edit', element: <AdminProductFormPage /> },
         ],
       },
       // "*" recoge cualquier URL que no coincida con las anteriores (error 404).

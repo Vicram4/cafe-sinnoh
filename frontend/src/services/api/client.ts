@@ -43,4 +43,8 @@ export const api = {
     request<T>(path, { ...options, method: 'POST', body: body ? JSON.stringify(body) : undefined }),
   patch: <T>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
+  // DELETE no lleva cuerpo; el backend responde 204 y `request` ya lo
+  // convierte en undefined.
+  delete: <T = void>(path: string, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'DELETE' }),
 }

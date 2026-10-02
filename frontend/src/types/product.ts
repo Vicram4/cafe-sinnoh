@@ -25,3 +25,26 @@ export interface Product {
   location_description: string | null
   category: Category
 }
+
+// Cuerpo de POST /products. Mismos nombres que ProductCreate del backend.
+export interface ProductCreateInput {
+  category_id: number
+  slug: string
+  name: string
+  description: string
+  price_cents: number
+  image_url: string | null
+  ingredients: string[]
+  is_available: boolean
+  is_featured: boolean
+  inspiration_pokemon_name: string | null
+  inspiration_pokedex_text: string | null
+  inspiration_story: string | null
+  location_name: string | null
+  location_description: string | null
+}
+
+// Cuerpo de PATCH /products/{id}: todo opcional. Solo se envían los
+// campos que cambian; un null explícito vacía el campo (p. ej. para
+// pasar de inspiración Pokémon a lugar).
+export type ProductUpdateInput = Partial<ProductCreateInput>
