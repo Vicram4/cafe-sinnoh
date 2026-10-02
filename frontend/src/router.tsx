@@ -19,6 +19,7 @@ import { AdminDashboardPage } from './pages/AdminDashboardPage'
 import { AdminOrdersPage } from './pages/AdminOrdersPage'
 import { AdminProductsPage } from './pages/AdminProductsPage'
 import { AdminProductFormPage } from './pages/AdminProductFormPage'
+import { AdminReviewsPage } from './pages/AdminReviewsPage'
 
 // Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
 // aporta la cabecera común. Más adelante /account y /admin tendrán su propio
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
           { path: 'products', element: <AdminProductsPage /> },
           { path: 'products/new', element: <AdminProductFormPage /> },
           { path: 'products/:id/edit', element: <AdminProductFormPage /> },
+          { path: 'reviews', element: <AdminReviewsPage /> },
         ],
       },
       // "*" recoge cualquier URL que no coincida con las anteriores (error 404).
