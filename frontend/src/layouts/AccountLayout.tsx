@@ -2,10 +2,9 @@ import { NavLink, Navigate, Outlet } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
 
 const links = [
-  { to: '/admin', label: 'Dashboard' },
-  { to: '/admin/orders', label: 'Pedidos' },
-  { to: '/admin/products', label: 'Productos' },
-  { to: '/admin/reviews', label: 'Reseñas' },
+  { to: '/account', label: 'Mis datos' },
+  { to: '/account/orders', label: 'Mis pedidos' },
+  { to: '/account/points', label: 'Mis puntos' },
 ]
 
 export function AccountLayout() {
