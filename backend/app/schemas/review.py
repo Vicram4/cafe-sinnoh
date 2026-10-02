@@ -25,3 +25,11 @@ class ReviewRead(BaseModel):
     # No viene directamente del modelo Review (que no guarda el
     # nombre): se construye a mano en el router, cruzando con User.
     author_name: str
+
+
+class ReviewAdminRead(ReviewRead):
+    # Solo para el panel de administración: el moderador necesita saber
+    # sobre qué producto trata cada reseña. Se mantiene separado de
+    # ReviewRead para no engordar las respuestas públicas.
+    product_name: str
+    product_slug: str

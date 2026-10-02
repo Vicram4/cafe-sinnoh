@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.deps import get_current_user, require_admin
 from app.db.session import get_db
+from app.models.product import Product
 from app.models.review import Review, ReviewStatus
 from app.models.user import User
-from app.schemas.review import ReviewCreate, ReviewModerate, ReviewRead
+from app.schemas.review import ReviewAdminRead, ReviewCreate, ReviewModerate, ReviewRead
 from app.services.orders import OrderValidationError
 from app.services.reviews import create_review
 
@@ -86,6 +87,37 @@ def list_my_reviews(
             author_name=current_user.full_name,
         )
         for r in reviews
+    ]
+
+
+@router.get("/reviews/admin/all", response_model=list[ReviewAdminRead])
+def list_all_reviews(
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Session = Depends(get_db),
+) -> list[ReviewAdminRead]:
+    """Solo admin: todas las reseñas en cualquier estado, con autor y
+    producto, para poder moderarlas desde el panel. El filtro por estado
+    se hace en el frontend, igual que con los pedidos."""
+    rows = (
+        db.query(Review, User.full_name, Product.name, Product.slug)
+        .join(User, User.id == Review.user_id)
+        .join(Product, Product.id == Review.product_id)
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+    return [
+        ReviewAdminRead(
+            id=review.id,
+            product_id=review.product_id,
+            rating=review.rating,
+            comment=review.comment,
+            status=review.status,
+            created_at=review.created_at,
+            author_name=full_name,
+            product_name=product_name,
+            product_slug=product_slug,
+        )
+        for review, full_name, product_name, product_slug in rows
     ]
 
 
