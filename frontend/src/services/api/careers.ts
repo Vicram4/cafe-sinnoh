@@ -1,4 +1,5 @@
 import { api } from './client'
+import type { ApplicationStatus, JobApplication } from '../../types/inbox'
 
 export interface JobApplicationPayload {
   full_name: string
@@ -11,4 +12,16 @@ export interface JobApplicationPayload {
 
 export function submitJobApplication(payload: JobApplicationPayload) {
   return api.post('/careers/applications', payload)
+}
+
+export function fetchApplications(token: string): Promise<JobApplication[]> {
+  return api.get<JobApplication[]>('/careers/applications', { token })
+}
+
+export function updateApplicationStatus(
+  id: number,
+  status: ApplicationStatus,
+  token: string,
+): Promise<JobApplication> {
+  return api.patch<JobApplication>(`/careers/applications/${id}/status`, { status }, { token })
 }

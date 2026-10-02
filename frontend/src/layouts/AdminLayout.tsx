@@ -9,6 +9,8 @@ const links = [
   { to: '/admin/orders', label: 'Pedidos' },
   { to: '/admin/products', label: 'Productos' },
   { to: '/admin/reviews', label: 'Reseñas' },
+  { to: '/admin/applications', label: 'Candidaturas' },
+  { to: '/admin/messages', label: 'Mensajes' },
 ]
 
 export function AdminLayout() {
