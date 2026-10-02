@@ -1,4 +1,6 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
 
 from app.models.user import UserRole
 
@@ -30,3 +32,23 @@ class UserRead(BaseModel):
     # un objeto SQLAlchemy (user.email, user.full_name...) en vez de
     # exigir un diccionario.
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserAdminRead(UserRead):
+    # Solo para el panel de administración: la fecha de alta no hace
+    # falta en las respuestas normales de usuario.
+    created_at: datetime
+
+
+class AdminUserUpdate(BaseModel):
+    """PATCH parcial: solo rol y estado. Nada más es editable por el
+    admin (ni email ni contraseña)."""
+
+    role: UserRole | None = None
+    is_active: bool | None = None
+
+    @model_validator(mode="after")
+    def require_some_change(self) -> "AdminUserUpdate":
+        if self.role is None and self.is_active is None:
+            raise ValueError("Indica al menos 'role' o 'is_active'.")
+        return self
