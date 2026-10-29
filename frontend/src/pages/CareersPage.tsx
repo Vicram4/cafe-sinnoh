@@ -9,6 +9,7 @@ import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
 import { FormPrivacyNote } from '../components/FormPrivacyNote'
+import { isDemoMode } from '../data/demo'
 
 const CV_MAX_BYTES = 5 * 1024 * 1024
 
@@ -193,7 +194,9 @@ export function CareersPage() {
               {...register('cv')}
             />
             <p id="cv-help" className="mt-1 text-sm text-muted-foreground">
-              Recomendado: adjunta tu CV en PDF, máx. 5 MB.
+              {isDemoMode
+                ? 'Es una demo: no adjuntes tu CV real. Puedes probar con cualquier PDF (máx. 5 MB).'
+                : 'Recomendado: adjunta tu CV en PDF, máx. 5 MB.'}
             </p>
             {errors.cv && <p className="mt-1 text-sm text-ember">{errors.cv.message}</p>}
           </div>

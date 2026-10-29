@@ -5,6 +5,8 @@ import { Button, ButtonLink } from '../components/Button'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
 import { Footer } from '../components/Footer'
+import { DemoBanner } from '../components/DemoBanner'
+import { isDemoMode } from '../data/demo'
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -26,6 +28,7 @@ export function PublicLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {isDemoMode && <DemoBanner />}
       <header className="sticky top-0 z-10 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 p-4">
                     <NavLink

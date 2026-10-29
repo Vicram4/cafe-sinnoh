@@ -64,7 +64,10 @@ services:
 
   frontend:
     profiles: ["app"]
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_DEMO_MODE: ${VITE_DEMO_MODE:-false}
     image: cafe-sinnoh-frontend
     container_name: cafe-sinnoh-frontend
     restart: unless-stopped

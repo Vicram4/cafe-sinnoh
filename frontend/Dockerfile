@@ -10,6 +10,9 @@ COPY . .
 # La API se sirve en el mismo origen, detrás de nginx (/api): ruta relativa.
 ARG VITE_API_URL=/api/v1
 ENV VITE_API_URL=$VITE_API_URL
+# "true" en la demo publicada: aviso de demo y cuentas de prueba en el login.
+ARG VITE_DEMO_MODE=false
+ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
 RUN npm run build
 
 # Fase 2: solo nginx con los archivos compilados.

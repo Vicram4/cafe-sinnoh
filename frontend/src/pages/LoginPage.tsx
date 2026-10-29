@@ -6,6 +6,8 @@ import { z } from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
+import { DemoLogin } from '../components/DemoLogin'
+import { isDemoMode } from '../data/demo'
 
 const loginSchema = z.object({
   email: z.string().email('Introduce un email válido.'),
@@ -88,6 +90,8 @@ export function LoginPage() {
           Crea una
         </Link>
       </p>
+
+      {isDemoMode && <DemoLogin />}
     </section>
   )
 }
