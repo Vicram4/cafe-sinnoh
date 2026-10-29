@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
 
@@ -41,9 +42,10 @@ def validate_pickup_time(pickup_at: datetime) -> None:
             f"La hora de recogida debe ser al menos {settings.min_pickup_lead_minutes} minutos después de ahora."
         )
 
-    # Comparamos en hora local del servidor (simplificación válida
-    # mientras el local tenga una única zona horaria real, España).
-    local_hour = pickup_at.astimezone().hour
+    # En la hora del LOCAL, no en la del servidor: en Docker o en la nube el
+    # servidor suele estar en UTC y una recogida a las 8:30 de España (7:30
+    # UTC) se rechazaba. ZoneInfo tiene en cuenta el horario de verano.
+    local_hour = pickup_at.astimezone(ZoneInfo(settings.shop_timezone)).hour
     if not (settings.shop_opening_hour <= local_hour < settings.shop_closing_hour):
         raise OrderValidationError(
             f"La hora de recogida debe estar entre las {settings.shop_opening_hour}:00 "

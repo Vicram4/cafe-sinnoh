@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import pytest
 from fastapi.testclient import TestClient
@@ -154,3 +155,17 @@ def test_invalid_status_transitions_are_rejected(
     )
 
     assert response.status_code == 400
+
+
+@pytest.mark.parametrize(("hour", "minute", "accepted"), [(8, 30, True), (19, 45, True), (7, 59, False), (20, 30, False)])
+def test_opening_hours_use_the_shop_timezone_not_the_server_one(
+    client: TestClient, user_headers: dict, product: Product, hour: int, minute: int, accepted: bool
+) -> None:
+    """El horario es el de España aunque el servidor esté en UTC (como en
+    Docker o en la CI): antes, las 8:30 de Madrid se rechazaban."""
+    madrid = ZoneInfo("Europe/Madrid")
+    pickup = (datetime.now(madrid) + timedelta(days=1)).replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+    response = client.post(f"{API}/orders", json=_order_payload(product.id, pickup.isoformat()), headers=user_headers)
+
+    assert (response.status_code == 201) is accepted, response.text

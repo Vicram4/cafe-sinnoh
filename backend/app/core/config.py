@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     # diario, sin distinguir fin de semana todavía (el briefing definía
     # horarios distintos para sábado y domingo; lo añadiremos si hace
     # falta más adelante, sin romper nada de lo ya construido).
+    # Zona horaria del local: el horario se comprueba siempre en ella, no en
+    # la del servidor (en Docker y en la nube suele ser UTC).
+    shop_timezone: str = "Europe/Madrid"
     shop_opening_hour: int = 8
     shop_closing_hour: int = 20
     min_pickup_lead_minutes: int = 15
