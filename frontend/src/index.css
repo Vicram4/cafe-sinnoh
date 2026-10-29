@@ -9,8 +9,8 @@
    alto contraste: esa combinación es el patrón por defecto de
    cualquier generador, y queríamos evitarlo deliberadamente. */
 @theme {
-  --font-serif: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", ui-serif, Georgia, serif;
+  --font-sans: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: #f1e9da;
   --color-surface: #faf6ed;

@@ -7,6 +7,11 @@ import { shouldRetryQuery } from './services/api/client'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+// Fuentes servidas desde la propia web (no desde Google Fonts): el navegador
+// del visitante no envía su IP a Google y la futura CSP no necesita excepciones.
+// Fraunces con los ejes de peso y tamaño óptico, como se pedía a Google.
+import '@fontsource-variable/fraunces/opsz.css'
+import '@fontsource-variable/work-sans'
 import './index.css'
 
 // Una única instancia para toda la app: React Query la usa para
