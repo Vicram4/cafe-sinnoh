@@ -1,0 +1,108 @@
+# Café Sinnoh: estado del proyecto
+
+Documento de situación a fecha de 29 de octubre de 2026. Resume lo construido hasta el cierre de la FASE 12 y de la subida de CV, y lo que queda por hacer. Sustituye al checkpoint inicial en lo que respecta al estado del código.
+
+## 1. Qué es
+
+Aplicación web Full-Stack para una cafetería artesanal ficticia, construida como proyecto de portfolio. La marca se inspira sutilmente en la región de Sinnoh (Pokémon) como lugar: montañas, Monte Corona, bosques, frío. Nunca como fan page, y sin assets oficiales.
+
+## 2. Stack
+
+- **Frontend:** React + TypeScript + Vite, Tailwind CSS v4, React Router v8, TanStack React Query, react-hook-form + zod, Oxlint.
+- **Backend:** Python 3.14, FastAPI + Uvicorn, SQLAlchemy síncrono + psycopg3, Alembic, pwdlib (argon2), PyJWT, pydantic-settings.
+- **Base de datos:** PostgreSQL 17 en Docker Compose (solo el servicio db).
+- **Testing:** sin instalar todavía.
+
+## 3. Lo construido
+
+**Público:** Home con ilustración propia, carta con búsqueda/filtro/orden, detalle de producto (inspiración Pokémon o lugar), carrito, checkout con validación de horario, login y registro, zona de cuenta (datos, pedidos, puntos y recompensas), reseñas, careers, contact.
+
+**Backend:** autenticación JWT con roles USER/ADMIN, catálogo, pedidos con máquina de estados, ledger de puntos y recompensas, reseñas con elegibilidad por compra, candidaturas y mensajes de contacto.
+
+**Panel de administración (FASE 12, completa), 7 apartados:**
+
+| Apartado | Funciones |
+|---|---|
+| Dashboard | Estadísticas generales |
+| Pedidos | Listar, filtrar por estado, avanzar o cancelar |
+| Productos | Crear, editar, activar/desactivar, eliminar |
+| Reseñas | Moderar (aprobar o rechazar), abre en pendientes |
+| Candidaturas | Cambiar estado (nueva, revisada, contactada, rechazada), descargar CV |
+| Mensajes | Marcar como leído o sin leer |
+| Usuarios | Cambiar rol, desactivar y reactivar |
+
+## 4. Historial de commits de la FASE 12
+
+| Bloque | Backend | Frontend |
+|---|---|---|
+| 1. Layout y dashboard | `89bc6cc` | `f8bdfff` |
+| 2. Pedidos | `4336298` | `505b7d3` |
+| 3. Productos | `4aa7ced` | `99d1634` |
+| 4. Reseñas | `f9c9337` | `09c63dd`, corrección `556722b` |
+| 5. Candidaturas y mensajes | `0200bf9` | `8fc99da` |
+| 6. Usuarios | `4c05fe0` | `0466ac2` |
+| Documentación | | `1ccf139` |
+
+## 5. Endpoints añadidos en la FASE 12
+
+- `POST /products`, `PATCH /products/{id}`, `DELETE /products/{id}`
+- `GET /reviews/admin/all`
+- `PATCH /careers/applications/{id}/status`
+- `PATCH /contact/{id}`
+- `GET /admin/users`, `PATCH /admin/users/{id}`
+- `GET /orders/admin/all`
+
+## 5 bis. Subida de CV (completa)
+
+Commits: `29dc50d` (backend) y `be504c2` (frontend).
+
+- `POST /careers/applications` pasa a `multipart/form-data` con un archivo `cv` opcional.
+- Solo PDF (extensión, content-type y firma `%PDF-`), máximo 5 MB. Errores 415, 413 y 400.
+- Archivos en `backend/uploads/cvs/` con nombre aleatorio, a través de `app/services/storage.py`.
+- `GET /careers/applications/{id}/cv`, solo admin. El panel lo descarga con fetch y token.
+- El formulario público recomienda adjuntar el CV sin obligar a hacerlo.
+
+## 6. Decisiones vigentes
+
+- Monorepo con frontend y backend separados.
+- SQLAlchemy síncrono.
+- JWT solo access token y solo en memoria. Se pierde la sesión al recargar y no es un bug. Decisión definitiva aplazada al deployment.
+- `get_current_user` consulta siempre la base de datos y rechaza cuentas desactivadas en cada petición.
+- snake_case idéntico en frontend y backend.
+- Dinero siempre en céntimos.
+- Un producto con pedidos no se borra: se desactiva (`is_available = false`). El borrado devuelve 409.
+- Un admin no puede cambiar su propio rol ni desactivarse. No hay borrado de usuarios.
+- Regla Pokémon o lugar: cada producto tiene uno de los dos grupos, nunca ambos. Lo valida `services/products.py`, no la base de datos.
+- Candidaturas y mensajes: cambio de estado manual, sin máquina de estados.
+- CRM y marketing: fase futura separada. No se prepara nada por adelantado.
+
+## 7. Siguiente trabajo
+
+1. Testing (pytest y Vitest). Decidir si usar una base de datos de test separada.
+2. Seguridad y optimización.
+3. Docker completo.
+4. GitHub (README, capturas, CI).
+5. Deployment.
+6. Revisión final del portfolio.
+
+## 8. Deudas conocidas
+
+- El carrito vive en localStorage sin vincularse al usuario.
+- El bundle del frontend pesa unos 549 KB (falta code splitting).
+- `backend/requirements.txt` está en UTF-16: pasarlo a UTF-8 antes de Docker/CI.
+- `SECRET_KEY` de desarrollo demasiado corta: cambiarla antes de producción.
+- `/about` sigue siendo `PlaceholderPage`.
+- Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
+
+## 9. Lecciones del trabajo hasta ahora
+
+- La mayoría de los tropiezos fueron de carpeta o archivo equivocado (terminal en la carpeta incorrecta, enlaces de admin pegados en `AccountLayout.tsx` en vez de `AdminLayout.tsx`). Un `git status` antes de cada commit lo detecta.
+- Generar y aplicar las migraciones de Alembic en el mismo paso.
+- Un commit sin `npm run build` y `npm run lint` previos deja errores sin detectar.
+- No hay que fiarse de salidas pegadas fuera de orden: comprobar antes de asumir un fallo.
+- En Windows, `localhost` en `DATABASE_URL` hacía que cada conexión nueva tardase más de 8 s. Se usa `127.0.0.1`.
+- La documentación web de una librería puede ir por delante de la versión instalada (pasó con FastAPI y los modelos `Form()`): si algo no cuadra, comprobar el código de la versión instalada.
+
+## 10. Estado de la herramienta de trabajo
+
+El desarrollo ha pasado de claude.ai (el usuario ejecutaba los comandos) a Claude Code (que trabaja sobre los archivos). El contexto se traspasa mediante `CLAUDE.md` en la raíz del repositorio. Claude Code no lee el historial de los chats anteriores.

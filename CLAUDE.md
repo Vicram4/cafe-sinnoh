@@ -64,34 +64,30 @@ Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E
 
 ## Estado actual
 
-FASE 12 (panel de administración) COMPLETA. Último commit conocido: 1ccf139. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
+FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
+
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Para el último commit, consultar `git log`.
 
 Endpoints añadidos en la FASE 12: POST/PATCH /products, DELETE /products/{id}; GET /reviews/admin/all; PATCH /careers/applications/{id}/status; PATCH /contact/{id}; GET /admin/users; PATCH /admin/users/{id}; GET /orders/admin/all.
+
+Subida de CV: POST /careers/applications es multipart/form-data (CV opcional; 415 si no es PDF, 413 si supera 5 MB, 400 si está vacío); GET /careers/applications/{id}/cv solo admin. Almacenamiento en `backend/uploads/cvs/` (ignorado) vía `app/services/storage.py`. JobApplicationRead expone `has_cv` y `cv_original_name`, nunca `cv_storage_key`. client.ts admite FormData y tiene `api.getBlob`. En FastAPI 0.141 un modelo Form() no se reparte en campos si hay también un archivo: por eso los campos se leen uno a uno en `_application_form` (la documentación web describe una versión más nueva).
 
 Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (USER); 12 productos y 3 recompensas sembrados. No guardar contraseñas en este archivo.
 
 ## Siguiente trabajo (en este orden)
 
-1. **Subida de CV en candidaturas** (decisiones cerradas):
-   - Solo PDF, validado por extensión, content-type Y firma `%PDF-` del contenido.
-   - Máximo 5 MB.
-   - Opcional pero recomendado: la candidatura se crea sin CV; el formulario muestra ayuda ("Recomendado: adjunta tu CV en PDF, máx. 5 MB") sin bloquear.
-   - Almacenamiento en disco local, aislado en `backend/app/services/storage.py` para poder cambiarlo por S3 en el deployment.
-   - El archivo se guarda con nombre generado; el original solo se conserva en `cv_original_name`. La carpeta de almacenamiento debe estar en .gitignore.
-   - Sin migración: `cv_storage_key` y `cv_original_name` ya existen en JobApplication.
-   - POST /careers/applications pasa a multipart/form-data. Descarga solo para admin; en el frontend se pide con fetch + token y se genera un enlace temporal (el token vive en memoria). Botón "Descargar CV" solo si hay archivo.
-   - client.ts fuerza Content-Type JSON: debe admitir FormData sin romper el resto.
-2. Testing: pytest (backend) y Vitest (frontend); cubrir auth, pedidos, puntos y permisos de admin. Decidir BD de test separada (verificar versiones compatibles con Python 3.14, SQLAlchemy 2.x y Vite antes de instalar).
-3. Seguridad y optimización: carrito por usuario, code splitting, SECRET_KEY fuerte.
-4. Docker completo (front + back).
-5. GitHub: README profesional, capturas, CI.
-6. Deployment (decidir sesión JWT definitiva).
-7. Revisión final del portfolio.
+1. Testing: pytest (backend) y Vitest (frontend); cubrir auth, pedidos, puntos, permisos de admin y subida/descarga de CV. Decidir BD de test separada (verificar versiones compatibles con Python 3.14, SQLAlchemy 2.x y Vite antes de instalar).
+2. Seguridad y optimización: carrito por usuario, code splitting, SECRET_KEY fuerte.
+3. Docker completo (front + back). Antes, pasar `backend/requirements.txt` a UTF-8 (ahora está en UTF-16).
+4. GitHub: README profesional, capturas, CI.
+5. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py).
+6. Revisión final del portfolio.
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 
 - Carrito en localStorage sin vincular a usuario (compartido entre cuentas en el mismo navegador).
-- Bundle de producción >500 KB (~547 KB): falta code splitting por rutas.
+- Bundle de producción >500 KB (~549 KB): falta code splitting por rutas.
+- `backend/requirements.txt` en UTF-16 (salida de `pip freeze >` en PowerShell 5.1).
 - SECRET_KEY de desarrollo ("dev-secret-change-me") demasiado corta para HS256: cambiar antes de producción.
 - La ruta /about sigue siendo PlaceholderPage.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. get_db cierra bien la sesión. Si vuelve, ANTES de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
@@ -106,3 +102,4 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 - oxlint "Fast Refresh only works when file only exports components": usar el patrón de 3 archivos.
 - `<a>` dentro de `<button>`: usar ButtonLink.
 - Formulario "colgado": backend o Docker parados.
+- Conexiones a la BD lentas (>8 s): `DATABASE_URL` con `localhost` en Windows. Ya se usa `127.0.0.1` en `.env` y `.env.example`; tras cambiar `.env` hay que reiniciar uvicorn.

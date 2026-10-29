@@ -48,8 +48,41 @@ Git, Node.js 20.19+, Python 3.11+, Docker Desktop.
   `select state, count(*) from pg_stat_activity where datname = current_database() group by state;`
   y guardar el resultado.
 
+## Subida de CV en candidaturas
+
+- `POST /careers/applications` es `multipart/form-data`: campos de texto más
+  un archivo `cv` opcional. Solo PDF, validado por extensión, content-type y
+  firma `%PDF-` del contenido. Máximo 5 MB (`CV_MAX_BYTES` en config).
+  Errores: 415 (no es PDF), 413 (demasiado grande), 400 (vacío).
+- Si el CV no es válido no se crea la candidatura. Si falla el guardado en
+  BD, se borra el archivo ya escrito.
+- El archivo se guarda en `backend/uploads/cvs/` (ignorado por Git) con un
+  nombre aleatorio. El nombre original solo se guarda en `cv_original_name`.
+  Todo el acceso a disco pasa por `app/services/storage.py`: para usar S3 en
+  el deployment, solo cambia ese módulo.
+- `GET /careers/applications/{id}/cv`, solo admin. El frontend lo pide con
+  fetch + token y lo descarga desde un enlace temporal (`URL.createObjectURL`),
+  porque el token vive en memoria y un enlace directo no lo llevaría.
+- `client.ts` acepta `FormData` (no fuerza `Content-Type` JSON) y tiene
+  `api.getBlob` para descargas.
+- FastAPI 0.141 no reparte un modelo `Form()` en campos si el endpoint
+  también recibe un archivo (la documentación web describe una versión más
+  nueva). Por eso los campos se leen uno a uno en `_application_form` y se
+  validan con `JobApplicationCreate`.
+
+## Entorno local en Windows
+
+- `DATABASE_URL` usa `127.0.0.1`, no `localhost`. Con `localhost`, cada
+  conexión nueva tardaba más de 8 s: se cree que Windows prueba primero
+  IPv6 (`::1`) y el contenedor solo escucha en IPv4 (no confirmado). Podría
+  estar relacionado con el "formulario colgado" y con la incidencia del
+  QueuePool (no confirmado). Tras cambiar `.env` hay que reiniciar uvicorn.
+- `backend/requirements.txt` está guardado en UTF-16 (salida de `pip freeze >`
+  en PowerShell 5.1). No está confirmado que pip lo lea bien en todos los
+  entornos: pasarlo a UTF-8 antes de Docker/CI.
+
 ## Pendientes añadidos
 
 - `SECRET_KEY` de desarrollo ("dev-secret-change-me") más corta de lo
   recomendado para HS256: cambiarla antes de producción.
-- El bundle del frontend ya está en unos 547 KB (code splitting pendiente).
+- El bundle del frontend ya está en unos 549 KB (code splitting pendiente).
