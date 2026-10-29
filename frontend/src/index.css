@@ -66,6 +66,9 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      /* Sin esto, lo que tiene retraso (el punto de la cumbre del hero)
+         seguía apareciendo de golpe segundos después. */
+      animation-delay: 0s !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
@@ -76,7 +79,7 @@
 @layer utilities {
   /* Único momento animado protagonista de todo el sitio: el sendero del
      Hero se dibuja al cargar la página, y el punto de destino aparece
-     justo después. pathLength="1" en el <path> (en MountainScene)
+     justo después. pathLength="1" en el <path> (en HeroScene)
      normaliza su longitud a 1, así el trazo funciona sin calcular a
      mano la longitud real de la curva. La regla de arriba
      (prefers-reduced-motion) ya reduce esta animación a algo casi

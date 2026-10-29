@@ -10,7 +10,7 @@ import { exampleReviews } from '../data/reviews'
 import { shopInfo } from '../data/shop'
 import { ProductCard } from '../components/ProductCard'
 import { ButtonLink } from '../components/Button'
-import { MountainScene } from '../components/MountainScene'
+import { HeroScene } from '../components/HeroScene'
 import { usePageTitle } from '../hooks/usePageTitle'
 
 export function HomePage() {
@@ -40,8 +40,11 @@ export function HomePage() {
           </p>
         </div>
 
-        <div className="min-h-64 md:min-h-0">
-          <MountainScene className="h-full w-full text-primary" />
+        {/* Cuadrado en móvil: con un hueco apaisado se recortaría la cumbre.
+            Borde fino como el de las tarjetas: la ilustración se lee como una
+            página de cuaderno colocada a propósito, en modo claro y oscuro. */}
+        <div className="aspect-square overflow-hidden border border-border md:aspect-auto">
+          <HeroScene className="h-full w-full" />
         </div>
       </section>
 
