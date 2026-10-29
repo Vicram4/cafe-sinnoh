@@ -1,0 +1,6 @@
+# Dependencias solo de desarrollo y tests: no van en la imagen de producción.
+# Instalar además de requirements.txt:
+#   pip install -r requirements-dev.txt
+pytest==9.2.0
+# El TestClient de Starlette 1.7 busca primero httpx2 (y si no, httpx).
+httpx2==2.16.0

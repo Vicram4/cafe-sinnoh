@@ -12,6 +12,9 @@ class Settings(BaseSettings):
 
     environment: str = "development"
     database_url: str
+    # Solo la usan los tests (tests/conftest.py), que sustituyen con ella
+    # DATABASE_URL antes de arrancar la app.
+    test_database_url: str | None = None
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
