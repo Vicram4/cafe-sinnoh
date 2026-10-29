@@ -58,7 +58,7 @@ Commits: `29dc50d` (backend) y `be504c2` (frontend).
 
 - `POST /careers/applications` pasa a `multipart/form-data` con un archivo `cv` opcional.
 - Solo PDF (extensión, content-type y firma `%PDF-`), máximo 5 MB. Errores 415, 413 y 400.
-- Archivos en `backend/uploads/cvs/` con nombre aleatorio, a través de `app/services/storage.py`.
+- Contenido en la tabla `stored_files` con clave aleatoria, a través de `app/services/storage.py` (al principio iban en `backend/uploads/cvs/`; se pasaron a la BD para el deployment gratuito).
 - `GET /careers/applications/{id}/cv`, solo admin. El panel lo descarga con fetch y token.
 - El formulario público recomienda adjuntar el CV sin obligar a hacerlo.
 
@@ -145,7 +145,7 @@ Commit: `00138ab`.
 - Cada página tiene su título en la pestaña ("Carta · Café Sinnoh").
 - Vista previa preparada para compartir el enlace en LinkedIn o WhatsApp, con su propia imagen. La dirección de la imagen se completa al publicar.
 - Icono propio en la pestaña (antes era el logo de Vite).
-- **Tests:** 129 de backend y 44 de frontend.
+- **Tests:** 125 de backend y 44 de frontend.
 
 ## 5 undecies. Ilustraciones de producto
 

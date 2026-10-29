@@ -40,8 +40,7 @@ La marca se inspira en un lugar, la región de Sinnoh: montañas, bosques y frí
 flowchart LR
     U[Navegador] -->|"localhost:8080"| N["nginx<br/>web React compilada"]
     N -->|"/api"| B["FastAPI<br/>(uvicorn)"]
-    B --> D[("PostgreSQL 17")]
-    B --> F[/"CVs en disco<br/>(services/storage.py)"/]
+    B --> D[("PostgreSQL 17<br/>(datos y CVs)")]
 ```
 
 - **Backend por capas:** `api` (rutas HTTP), `services` (lógica de negocio, sin HTTP), `models` (SQLAlchemy), `schemas` (Pydantic; nunca exponen datos internos como el hash de la contraseña).
@@ -106,7 +105,7 @@ La guía completa está en [docs/development.md](docs/development.md): desarroll
 
 | | Comando | Qué cubre |
 |---|---|---|
-| Backend | `pytest` (en `backend/`) | 129 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
+| Backend | `pytest` (en `backend/`) | 125 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
 | Frontend | `npm test` (en `frontend/`) | 44 tests: títulos de página, acceso de demo, sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
 La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Dependabot propone cada semana las actualizaciones de dependencias.
@@ -134,7 +133,7 @@ docs/            Guía de desarrollo y estado del proyecto
 ## Próximos pasos
 
 - Capturas de pantalla.
-- Deployment: sesión definitiva, almacenamiento de CVs en la nube y Content-Security-Policy.
+- Deployment: HTTPS, copias de seguridad y Content-Security-Policy.
 
 ## Autor
 

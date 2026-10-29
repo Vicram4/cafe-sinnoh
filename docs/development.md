@@ -53,11 +53,8 @@ Arquitectura y decisiones:
 - Cabeceras: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`.
   La CSP queda para el deployment: hay que permitir Google Fonts y el
   script en línea del modo oscuro de `index.html`.
-- La versión Docker comparte con el desarrollo local la base de datos y la
-  carpeta `backend/uploads` (CVs), montada en el contenedor. En Linux, el
-  contenedor escribe como el usuario 1000: si la carpeta pertenece a otro
-  usuario, la subida de CVs fallaría por permisos (en Windows y macOS no
-  pasa).
+- La versión Docker comparte con el desarrollo local la base de datos (y,
+  con ella, los CVs).
 - El backend usa `backend/.env` (SECRET_KEY, etc.); Compose sustituye
   `DATABASE_URL` para apuntar al servicio `db`.
 - Ni `.env`, ni `.venv`, ni `node_modules`, ni los tests ni los CVs entran en
@@ -97,7 +94,6 @@ pytest
 - `tests/conftest.py` sustituye `DATABASE_URL` por la de test antes de
   importar la app y se niega a arrancar si el nombre no termina en `_test`:
   la BD de desarrollo nunca se toca. Las tablas se vacían tras cada test.
-- Los CVs subidos en los tests van a una carpeta temporal.
 - Auditoría de dependencias: `pip-audit -r requirements.txt -r requirements-dev.txt`
   (backend) y `npm audit` (frontend).
 
@@ -260,12 +256,15 @@ npm test
   un archivo `cv` opcional. Solo PDF, validado por extensión, content-type y
   firma `%PDF-` del contenido. Máximo 5 MB (`CV_MAX_BYTES` en config).
   Errores: 415 (no es PDF), 413 (demasiado grande), 400 (vacío).
-- Si el CV no es válido no se crea la candidatura. Si falla el guardado en
-  BD, se borra el archivo ya escrito.
-- El archivo se guarda en `backend/uploads/cvs/` (ignorado por Git) con un
-  nombre aleatorio. El nombre original solo se guarda en `cv_original_name`.
-  Todo el acceso a disco pasa por `app/services/storage.py`: para usar S3 en
-  el deployment, solo cambia ese módulo.
+- Si el CV no es válido no se crea la candidatura.
+- El contenido se guarda en la tabla `stored_files` (migración 2dadead7db77)
+  con una clave aleatoria, en la misma transacción que la candidatura. El
+  nombre original solo se guarda en `cv_original_name`. Antes iban en
+  `backend/uploads/cvs/`; se pasaron a la BD porque los alojamientos
+  gratuitos no conservan los archivos al reiniciar. La migración copió los
+  que había en disco; esa carpeta ya no se usa y se puede borrar. Todo el
+  acceso pasa por `app/services/storage.py`: para usar S3, solo cambia ese
+  módulo.
 - `GET /careers/applications/{id}/cv`, solo admin. El frontend lo pide con
   fetch + token y lo descarga desde un enlace temporal (`URL.createObjectURL`),
   porque el token vive en memoria y un enlace directo no lo llevaría.

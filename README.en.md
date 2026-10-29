@@ -42,8 +42,7 @@ The user interface is in Spanish; code, database and API are in English.
 flowchart LR
     U[Browser] -->|"localhost:8080"| N["nginx<br/>built React app"]
     N -->|"/api"| B["FastAPI<br/>(uvicorn)"]
-    B --> D[("PostgreSQL 17")]
-    B --> F[/"CVs on disk<br/>(services/storage.py)"/]
+    B --> D[("PostgreSQL 17<br/>(data and CVs)")]
 ```
 
 - **Layered backend:** `api` (HTTP routes), `services` (business logic, no HTTP), `models` (SQLAlchemy), `schemas` (Pydantic; internal data such as password hashes is never exposed).
@@ -108,7 +107,7 @@ The full guide (in Spanish) is in [docs/development.md](docs/development.md): lo
 
 | | Command | Coverage |
 |---|---|---|
-| Backend | `pytest` (in `backend/`) | 129 tests: auth, demo mode, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
+| Backend | `pytest` (in `backend/`) | 125 tests: auth, demo mode, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
 | Frontend | `npm test` (in `frontend/`) | 44 tests: page titles, demo login, session and token refresh, API client, per-user cart, careers form, theme and formatting |
 
 GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Dependabot proposes dependency updates weekly.
@@ -136,7 +135,7 @@ docs/            Development guide and project status (in Spanish)
 ## Next steps
 
 - Screenshots.
-- Deployment: final session strategy, cloud storage for CVs and a Content-Security-Policy.
+- Deployment: HTTPS, backups and a Content-Security-Policy.
 
 ## Author
 
