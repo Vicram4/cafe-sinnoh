@@ -1,0 +1,10 @@
+# node_modules se instala dentro de la imagen (npm ci); el .env local
+# apunta a 127.0.0.1:8000 y no debe colarse en el build.
+node_modules/
+dist/
+coverage/
+.vitest/
+.env
+.env.*
+Dockerfile
+.dockerignore
