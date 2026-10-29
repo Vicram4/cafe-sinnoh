@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
-import { fetchApplications, updateApplicationStatus } from '../services/api/careers'
+import { downloadApplicationCv, fetchApplications, updateApplicationStatus } from '../services/api/careers'
 import { fetchContactMessages, setMessageRead } from '../services/api/contact'
 import type { ApplicationStatus } from '../types/inbox'
 
@@ -23,6 +23,15 @@ export function useUpdateApplicationStatus() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'applications'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] })
     },
+  })
+}
+
+// Mutación y no query: es una acción puntual del admin y el PDF no debe
+// quedarse en la caché de React Query.
+export function useDownloadApplicationCv() {
+  const { token } = useAuth()
+  return useMutation({
+    mutationFn: (id: number) => downloadApplicationCv(id, token!),
   })
 }
 

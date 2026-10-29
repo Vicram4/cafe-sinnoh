@@ -10,12 +10,22 @@ export interface JobApplicationPayload {
   cover_letter?: string | null
 }
 
-export function submitJobApplication(payload: JobApplicationPayload) {
-  return api.post('/careers/applications', payload)
+// multipart/form-data (no JSON) para poder adjuntar el CV en la misma petición.
+export function submitJobApplication(payload: JobApplicationPayload, cv?: File) {
+  const form = new FormData()
+  for (const [key, value] of Object.entries(payload)) {
+    if (value) form.append(key, value)
+  }
+  if (cv) form.append('cv', cv)
+  return api.post('/careers/applications', form)
 }
 
 export function fetchApplications(token: string): Promise<JobApplication[]> {
   return api.get<JobApplication[]>('/careers/applications', { token })
+}
+
+export function downloadApplicationCv(id: number, token: string): Promise<Blob> {
+  return api.getBlob(`/careers/applications/${id}/cv`, { token })
 }
 
 export function updateApplicationStatus(

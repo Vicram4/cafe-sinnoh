@@ -12,6 +12,8 @@ export interface JobApplication {
   cover_letter: string | null
   status: ApplicationStatus
   created_at: string
+  cv_original_name: string | null
+  has_cv: boolean
 }
 
 // Coincide con ContactMessageRead del backend.

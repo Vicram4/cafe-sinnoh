@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApplications, useUpdateApplicationStatus } from '../hooks/useAdminInbox'
+import { useApplications, useDownloadApplicationCv, useUpdateApplicationStatus } from '../hooks/useAdminInbox'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
@@ -29,9 +29,24 @@ const positionLabel: Record<JobPosition, string> = {
   MARKETING: 'Marketing',
 }
 
+// El token vive solo en memoria, así que un <a href> directo a la API no
+// serviría (no lleva la cabecera Authorization). Se pide el PDF con fetch
+// y se descarga desde un enlace temporal que se libera enseguida.
+function saveBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.append(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url))
+}
+
 export function AdminApplicationsPage() {
   const { data: applications, isLoading, isError } = useApplications()
   const update = useUpdateApplicationStatus()
+  const downloadCv = useDownloadApplicationCv()
   // Se abre en "Nuevas": son las que requieren acción.
   const [filter, setFilter] = useState<ApplicationStatus | 'ALL'>('NEW')
   const [error, setError] = useState<string | null>(null)
@@ -47,6 +62,14 @@ export function AdminApplicationsPage() {
       { id, status },
       { onError: (err) => setError(err instanceof ApiError ? err.message : 'No se pudo actualizar.') },
     )
+  }
+
+  function handleDownload(id: number, filename: string) {
+    setError(null)
+    downloadCv.mutate(id, {
+      onSuccess: (blob) => saveBlob(blob, filename),
+      onError: (err) => setError(err instanceof ApiError ? err.message : 'No se pudo descargar el CV.'),
+    })
   }
 
   return (
@@ -105,6 +128,19 @@ export function AdminApplicationsPage() {
                 <p className="mt-3 text-sm font-medium">Carta de presentación</p>
                 <p className="whitespace-pre-wrap text-sm">{application.cover_letter}</p>
               </>
+            )}
+
+            {application.has_cv && (
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <Button
+                  variant="secondary"
+                  disabled={downloadCv.isPending && downloadCv.variables === application.id}
+                  onClick={() => handleDownload(application.id, application.cv_original_name ?? 'cv.pdf')}
+                >
+                  {downloadCv.isPending && downloadCv.variables === application.id ? 'Descargando…' : 'Descargar CV'}
+                </Button>
+                <span className="text-sm text-muted-foreground">{application.cv_original_name}</span>
+              </div>
             )}
 
             <div className="mt-3 flex flex-wrap gap-2">

@@ -8,6 +8,8 @@ import { submitJobApplication } from '../services/api/careers'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 
+const CV_MAX_BYTES = 5 * 1024 * 1024
+
 const applicationSchema = z.object({
   fullName: z.string().min(2, 'Introduce tu nombre completo.'),
   email: z.string().email('Introduce un email válido.'),
@@ -17,6 +19,13 @@ const applicationSchema = z.object({
   }),
   experience: z.string().min(1, 'Cuéntanos tu experiencia.').max(2000),
   coverLetter: z.string().max(2000).optional(),
+  // Solo para avisar antes de enviar: quien decide es el backend, que
+  // además comprueba el contenido real del archivo.
+  cv: z
+    .custom<FileList>()
+    .optional()
+    .refine((files) => !files?.[0] || files[0].name.toLowerCase().endsWith('.pdf'), 'El CV debe ser un archivo PDF.')
+    .refine((files) => !files?.[0] || files[0].size <= CV_MAX_BYTES, 'El CV no puede superar los 5 MB.'),
 })
 
 type ApplicationForm = z.infer<typeof applicationSchema>
@@ -34,14 +43,17 @@ export function CareersPage() {
 
   const mutation = useMutation({
     mutationFn: (data: ApplicationForm) =>
-      submitJobApplication({
-        full_name: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        position: data.position,
-        experience: data.experience,
-        cover_letter: data.coverLetter || null,
-      }),
+      submitJobApplication(
+        {
+          full_name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          position: data.position,
+          experience: data.experience,
+          cover_letter: data.coverLetter || null,
+        },
+        data.cv?.[0],
+      ),
     onSuccess: () => {
       setSuccess(true)
       setServerError(null)
@@ -161,6 +173,24 @@ export function CareersPage() {
               className="w-full border border-border bg-surface px-3 py-2 text-sm"
               {...register('coverLetter')}
             />
+          </div>
+
+          <div>
+            <label htmlFor="cv" className="mb-1 block text-sm font-medium">
+              CV
+            </label>
+            <input
+              id="cv"
+              type="file"
+              accept=".pdf,application/pdf"
+              aria-describedby="cv-help"
+              className="w-full border border-border bg-surface px-3 py-2 text-sm file:mr-3 file:border file:border-border file:bg-transparent file:px-3 file:py-1 file:text-sm file:text-foreground"
+              {...register('cv')}
+            />
+            <p id="cv-help" className="mt-1 text-sm text-muted-foreground">
+              Recomendado: adjunta tu CV en PDF, máx. 5 MB.
+            </p>
+            {errors.cv && <p className="mt-1 text-sm text-ember">{errors.cv.message}</p>}
           </div>
 
           {serverError && (
