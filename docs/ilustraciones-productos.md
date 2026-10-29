@@ -41,7 +41,8 @@ natural light, matte finish, no glossy 3D render look. A single product,
 centered, seen in three-quarter view from slightly above, with generous empty
 space around it on a plain cream background. Square format 1:1.
 No text, no letters, no logos, no people, no hands, no animals, no
-characters, no faces, no mascots.
+characters, no faces, no mascots. No signature, no initials, no scribbles
+that look like letters.
 ```
 
 ## Descripción de cada producto (pegar después del bloque de estilo)
@@ -64,6 +65,9 @@ characters, no faces, no mascots.
 ## Revisa cada imagen antes de quedártela
 
 - [ ] No hay texto, letras ni logotipos, ni siquiera garabatos que lo parezcan.
+- [ ] No hay "firma" inventada: las IA suelen añadir un garabato que imita la
+      firma de un ilustrador (en la primera imagen salió encima del asa).
+      Se pide quitarla en la misma conversación.
 - [ ] No hay ningún animal, cara ni personaje, aunque sea escondido (en la
       espuma, en el humo, en las sombras).
 - [ ] No hay ningún objeto que recuerde a una Poké Ball (esfera roja y blanca
