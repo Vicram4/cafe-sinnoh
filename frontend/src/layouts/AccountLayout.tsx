@@ -8,7 +8,11 @@ const links = [
 ]
 
 export function AccountLayout() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isInitializing } = useAuth()
+
+  if (isInitializing) {
+    return <p className="text-muted-foreground">Cargando…</p>
+  }
 
   // Igual que en el checkout: toda la zona de cuenta exige sesión.
   // Está aquí, en el layout, en vez de repetirlo en cada página hija.

@@ -1,4 +1,6 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api/v1'
+// Ruta relativa: la API se sirve en el mismo origen que la web (proxy de
+// Vite en desarrollo, nginx en Docker y producción).
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1'
 
 // Error propio: permite distinguir "no autorizado" (401), "conflicto"
 // (409) etc. en las páginas que llaman a la API, sin tener que

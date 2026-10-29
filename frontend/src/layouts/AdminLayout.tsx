@@ -15,8 +15,11 @@ const links = [
 ]
 
 export function AdminLayout() {
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, isInitializing, user } = useAuth()
 
+  if (isInitializing) {
+    return <p className="text-muted-foreground">Cargando…</p>
+  }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }

@@ -18,7 +18,7 @@ export function PublicLayout() {
   // Controla si el menú móvil (el desplegable con hamburguesa) está abierto.
   // En escritorio no se usa: ahí los enlaces siempre son visibles.
   const [menuOpen, setMenuOpen] = useState(false)
-    const { user, logout } = useAuth()
+  const { user, logout, isInitializing } = useAuth()
   const { totalItems } = useCart()
   // Mientras se descarga el código de la página siguiente, el router
   // mantiene la actual en pantalla; esta señal indica que algo está pasando.
@@ -76,7 +76,9 @@ export function PublicLayout() {
                 </Button>
               </div>
             ) : (
-              <ButtonLink to="/login">Entrar</ButtonLink>
+              // Mientras se recupera la sesión no se muestra nada, para no
+              // enseñar "Entrar" un instante a quien ya tiene sesión.
+              !isInitializing && <ButtonLink to="/login">Entrar</ButtonLink>
             )}
           </div>
 
@@ -130,9 +132,11 @@ export function PublicLayout() {
                   Salir ({user.full_name.split(' ')[0]})
                 </Button>
               ) : (
-                <ButtonLink to="/login" onClick={() => setMenuOpen(false)} className="text-center">
-                  Entrar
-                </ButtonLink>
+                !isInitializing && (
+                  <ButtonLink to="/login" onClick={() => setMenuOpen(false)} className="text-center">
+                    Entrar
+                  </ButtonLink>
+                )
               )}
               <div className="flex items-center gap-3 pt-2">
                 <ThemeToggle />

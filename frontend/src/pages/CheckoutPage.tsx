@@ -26,7 +26,7 @@ function getDefaultPickupTime(): string {
 }
 
 export function CheckoutPage() {
-  const { token, isAuthenticated } = useAuth()
+  const { token, isAuthenticated, isInitializing } = useAuth()
   const { lines, subtotalCents, clearCart } = useCart()
   const navigate = useNavigate()
 
@@ -62,6 +62,9 @@ export function CheckoutPage() {
     },
   })
 
+  if (isInitializing) {
+    return <p className="text-muted-foreground">Cargando…</p>
+  }
   // Debe ir antes que el resto de comprobaciones: sin sesión, ni
   // siquiera tiene sentido mostrar el formulario.
   if (!isAuthenticated) {

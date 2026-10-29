@@ -35,6 +35,36 @@ export async function loginRequest(email: string, password: string): Promise<Log
   return response.json()
 }
 
+// La cookie de renovación es HttpOnly: JavaScript no la ve, el navegador la
+// envía solo (mismo origen). Cada renovación la rota, así que dos
+// renovaciones simultáneas con la misma cookie parecerían un robo y el
+// backend cerraría la sesión. Se evita en dos niveles: una sola petición a
+// la vez en esta pestaña y un candado del navegador (Web Locks) entre
+// pestañas; la que espera ya envía la cookie nueva.
+let refreshInFlight: Promise<LoginResponse> | null = null
+
+export function refreshAccessToken(): Promise<LoginResponse> {
+  refreshInFlight ??= withRefreshLock(async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, { method: 'POST' })
+    if (!response.ok) throw new ApiError('La sesión ha caducado.', response.status)
+    return (await response.json()) as LoginResponse
+  }).finally(() => {
+    refreshInFlight = null
+  })
+  return refreshInFlight
+}
+
+function withRefreshLock<T>(task: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks) {
+    return navigator.locks.request('cafe-sinnoh-refresh', task)
+  }
+  return task()
+}
+
+export async function logoutRequest(): Promise<void> {
+  await fetch(`${API_BASE_URL}/auth/logout`, { method: 'POST' })
+}
+
 export function registerRequest(payload: RegisterPayload): Promise<User> {
   return api.post<User>('/auth/register', payload)
 }
