@@ -212,6 +212,14 @@ npm test
     el `.env` de la raíz para Docker) muestra el aviso de demo, los botones de
     cuentas de prueba en el login y el aviso de no subir CVs reales.
 
+- **SEO (mínimo, a propósito):** la web NO se indexa en Google (etiqueta
+  `robots` en `index.html` y cabecera `X-Robots-Tag` en nginx). No bloquear
+  además en `robots.txt`: Google no podría leer el `noindex`. Cada página
+  pone su título con `usePageTitle`. Las etiquetas Open Graph (vista previa
+  al compartir) están en `index.html`; `og:image` y `og:url` se añaden al
+  publicar, porque necesitan la URL absoluta del dominio
+  (`public/og-image.png`, 1200×630).
+
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar

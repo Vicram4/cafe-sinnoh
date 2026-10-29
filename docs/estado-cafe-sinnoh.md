@@ -137,6 +137,16 @@ Commits: `e9db6fc`, `23951d1`, `01522f0`, `6692e37` y `601a9e7`.
 - Corregidos dos fallos de los scripts de datos que solo aparecían al ejecutarlos como comandos o dos veces seguidas.
 - **Tests:** 122 de backend y 41 de frontend.
 
+## 5 decies. SEO mínimo
+
+Commit: `00138ab`.
+
+- La web no aparece en Google (decisión del autor, para mantener un perfil bajo por el tema Pokémon). Se llega por enlace directo.
+- Cada página tiene su título en la pestaña ("Carta · Café Sinnoh").
+- Vista previa preparada para compartir el enlace en LinkedIn o WhatsApp, con su propia imagen. La dirección de la imagen se completa al publicar.
+- Icono propio en la pestaña (antes era el logo de Vite).
+- **Tests:** 122 de backend y 44 de frontend.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -154,10 +164,9 @@ Commits: `e9db6fc`, `23951d1`, `01522f0`, `6692e37` y `601a9e7`.
 
 ## 7. Siguiente trabajo
 
-1. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
-2. Deployment (incluye HTTPS y la Content-Security-Policy).
-3. Opcional: login con Google.
-4. Capturas, hacer público el repositorio y revisión final del portfolio.
+1. Deployment (incluye HTTPS y la Content-Security-Policy).
+2. Opcional: login con Google.
+3. Capturas, hacer público el repositorio y revisión final del portfolio.
 
 ## 8. Deudas conocidas
 
