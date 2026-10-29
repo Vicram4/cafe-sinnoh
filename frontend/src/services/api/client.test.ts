@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api, ApiError } from './client'
+import { api, ApiError, shouldRetryQuery } from './client'
 import { submitJobApplication } from './careers'
 
 const fetchMock = vi.fn()
@@ -121,5 +121,19 @@ describe('submitJobApplication', () => {
     })
 
     expect((lastRequest().init.body as FormData).has('cv')).toBe(false)
+  })
+})
+
+describe('shouldRetryQuery', () => {
+  it('no reintenta los errores del cliente (4xx): no cambian por repetir la petición', () => {
+    for (const status of [400, 401, 403, 404, 422]) {
+      expect(shouldRetryQuery(0, new ApiError('error', status))).toBe(false)
+    }
+  })
+
+  it('reintenta como mucho 2 veces los fallos de red o del servidor', () => {
+    expect(shouldRetryQuery(0, new ApiError('error', 500))).toBe(true)
+    expect(shouldRetryQuery(1, new TypeError('Failed to fetch'))).toBe(true)
+    expect(shouldRetryQuery(2, new ApiError('error', 503))).toBe(false)
   })
 })

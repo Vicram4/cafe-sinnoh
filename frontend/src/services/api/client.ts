@@ -41,6 +41,16 @@ async function send(path: string, { token, headers, body, ...options }: RequestO
   return response
 }
 
+// Política de reintentos de React Query. Un 4xx (404 no existe, 401/403 sin
+// permiso, 422 datos inválidos) no cambia por repetir la petición: se
+// muestra al momento. Por defecto React Query reintentaba 3 veces con
+// esperas, y un producto inexistente tardaba ~7 s en decir "no encontrado".
+// Los fallos de red o del servidor (5xx) sí se reintentan, como mucho 2 veces.
+export function shouldRetryQuery(failureCount: number, error: unknown): boolean {
+  if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false
+  return failureCount < 2
+}
+
 function errorMessage(detail: unknown): string | null {
   if (typeof detail === 'string') return detail
   // Los 422 de FastAPI traen una lista de errores de validación: se muestra

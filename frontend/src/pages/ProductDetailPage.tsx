@@ -5,7 +5,7 @@ import { formatPriceCents } from '../utils/format'
 import { Button } from '../components/Button'
 import { Badge } from '../components/Badge'
 import { InspirationPanel } from '../components/InspirationPanel'
-import { PlaceholderPage } from './PlaceholderPage'
+import { NotFoundPage } from './NotFoundPage'
 import { useCart } from '../hooks/useCart'
 import { ProductReviews } from '../components/ProductReviews'
 
@@ -22,7 +22,12 @@ export function ProductDetailPage() {
   }
 
   if (isError || !product) {
-    return <PlaceholderPage title="Producto no encontrado" />
+    return (
+      <NotFoundPage
+        title="Producto no encontrado"
+        message="Este producto no está en la carta. Puede que ya no esté disponible."
+      />
+    )
   }
 
   const hasPokemonInspiration = product.inspiration_pokemon_name !== null

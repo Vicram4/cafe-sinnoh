@@ -1,6 +1,5 @@
 import { createBrowserRouter } from 'react-router'
 import { PublicLayout } from './layouts/PublicLayout'
-import { PlaceholderPage } from './pages/PlaceholderPage'
 import { HomePage } from './pages/HomePage'
 import { RouteErrorPage } from './pages/RouteErrorPage'
 
@@ -45,7 +44,7 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          { path: 'about', element: <PlaceholderPage title="Nosotros" /> },
+          { path: 'about', lazy: () => import('./pages/AboutPage').then((m) => ({ Component: m.AboutPage })) },
           { path: 'careers', lazy: () => import('./pages/CareersPage').then((m) => ({ Component: m.CareersPage })) },
           { path: 'contact', lazy: () => import('./pages/ContactPage').then((m) => ({ Component: m.ContactPage })) },
           {
@@ -92,7 +91,7 @@ export const router = createBrowserRouter([
             ],
           },
           // "*" recoge cualquier URL que no coincida con las anteriores (error 404).
-          { path: '*', element: <PlaceholderPage title="Página no encontrada" /> },
+          { path: '*', lazy: () => import('./pages/NotFoundPage').then((m) => ({ Component: m.NotFoundPage })) },
         ],
       },
     ],
