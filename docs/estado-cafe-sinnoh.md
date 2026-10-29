@@ -98,6 +98,14 @@ Commits: `ca4e3fa` (backend), `ab351f8` (frontend y nginx), `248b2cd` (Compose).
 - Comprobado: subida de CVs de más de 1 MB a través de nginx, recarga en rutas internas, caché correcta y cabeceras de seguridad.
 - También se corrigió `index.html`: título "Café Sinnoh" e idioma español.
 
+## 5 sexies. Cabecera, tema y GitHub
+
+- **Cabecera:** con sesión iniciada, los textos se partían y se pegaban ("ContactoClaro"). Ahora va en una sola fila desde 1024 px y, por debajo, se usa el menú desplegable. Comprobado en un navegador real en el peor caso (admin, nombre largo y "Carrito (12)").
+- **Tema:** el selector de tres opciones se sustituyó por un interruptor claro/oscuro con la estética de la marca (rectangular, sin sombras). La primera vez sigue el modo del sistema operativo.
+- **README** en español (principal) y en inglés. Se comprobó siguiéndolo paso a paso sobre un clon limpio del repositorio.
+- **CI con GitHub Actions:** tests, lint, build, auditorías de dependencias e imágenes Docker en cada push. Se simuló antes en contenedores Linux limpios.
+- **Tests:** 93 de backend y 27 de frontend.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -114,9 +122,10 @@ Commits: `ca4e3fa` (backend), `ab351f8` (frontend y nginx), `248b2cd` (Compose).
 
 ## 7. Siguiente trabajo
 
-1. GitHub (README, capturas, CI que ejecute los tests, las auditorías y el build de las imágenes Docker).
-2. Deployment (incluye la Content-Security-Policy).
-3. Revisión final del portfolio.
+1. Deployment (incluye la Content-Security-Policy).
+2. Capturas para el README, cuando estén las ilustraciones de los productos.
+3. Hacer público el repositorio (decisión del autor).
+4. Revisión final del portfolio (completar `docs/architecture.md` y decidir la licencia).
 
 ## 8. Deudas conocidas
 

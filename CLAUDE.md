@@ -60,13 +60,15 @@ Frontend: `src/context` + `src/hooks` (Contexts en patrón fijo de 3 archivos: x
 
 ## Diseño (vigente)
 
-Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E4B34, pine #2E4235 (primario), slate #54687A, ember #A8522E (muy poco uso); modo oscuro marrón casi negro #211812. Fraunces (títulos) + Work Sans (UI). Sin píldoras ni sombras: bordes finos, esquinas rectas. Un solo elemento de atrevimiento por pantalla (hero con MountainScene SVG). Respetar prefers-reduced-motion. Evitar el look genérico de web generada por IA.
+Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E4B34, pine #2E4235 (primario), slate #54687A, ember #A8522E (muy poco uso); modo oscuro marrón casi negro #211812. Fraunces (títulos) + Work Sans (UI). Sin píldoras ni sombras: bordes finos, esquinas rectas. Un solo elemento de atrevimiento por pantalla (hero con MountainScene SVG). Respetar prefers-reduced-motion. Evitar el look genérico de web generada por IA. Tema: interruptor claro/oscuro rectangular (ThemeToggle, role="switch") en la cabecera; "system" solo es el valor inicial hasta que el usuario elige. La cabecera de escritorio aparece desde `lg` (1024 px); por debajo, menú desplegable. Comprobado en Edge sin interfaz que, con sesión de admin, nombre largo y "Carrito (12)", cabe en una fila a 1024 px: al añadir elementos a la cabecera, volver a comprobarlo.
 
 ## Estado actual
 
 FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
 
-Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Límite de intentos de login COMPLETO. Docker completo HECHO (ca4e3fa, ab351f8, 248b2cd; pendiente de la prueba del usuario en el navegador en :8080). Para el último commit, consultar `git log`.
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Límite de intentos de login COMPLETO. Docker completo COMPLETO (ca4e3fa, ab351f8, 248b2cd; probado por el usuario en :8080). GitHub: README (español principal en README.md, inglés en README.en.md) y CI COMPLETOS; las capturas se harán cuando estén las ilustraciones de los productos. El README se comprobó siguiéndolo al pie de la letra sobre un clon limpio. Para el último commit, consultar `git log`.
+
+CI (.github/workflows/ci.yml, en cada push a main y en PRs): backend (PostgreSQL 17 de servicio, pytest, pip-audit; SECRET_KEY aleatoria por ejecución), frontend (npm ci, lint, test, build, `npm audit --audit-level=high`) y docker (build de las dos imágenes, `nginx -t` e importación de la app). Acciones en v7 (checkout, setup-python, setup-node). Si la CI falla en GitHub, arreglarlo antes de seguir. El repositorio es privado: las ejecuciones consumen minutos del plan gratuito de GitHub.
 
 Docker (detalle en docs/development.md): perfil `app` en docker-compose.yml (sin perfil solo arranca `db`, como antes). Backend: python:3.14-slim, usuario sin root, aplica `alembic upgrade head` al arrancar, uvicorn con `--proxy-headers --forwarded-allow-ips='*'` (seguro SOLO porque el backend no publica puertos), usa `backend/.env` con DATABASE_URL sustituida por el servicio `db`, monta `./backend/uploads`. Frontend: build con node:24-alpine y nginx:1.30-alpine; nginx en :8080 sirve la SPA (fallback a index.html) y reenvía `/api` al backend con `resolver 127.0.0.11` (resolución por petición), `client_max_body_size 6m` (CVs), caché larga solo en `/assets` y cabeceras de seguridad básicas. En nginx, un `add_header` dentro de un `location` anula los del `server`: por eso la caché se pone con `expires`. CSP pendiente para el deployment (Google Fonts + script en línea del tema en index.html).
 
@@ -90,9 +92,10 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. GitHub: README profesional, capturas, CI (pytest con PostgreSQL de servicio, Vitest, build, lint, pip-audit, npm audit y build de las imágenes Docker). En CI hay que definir SECRET_KEY (≥32 bytes) y TEST_DATABASE_URL.
-2. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción; CSP; revisar si las migraciones se siguen aplicando al arrancar el contenedor o en un paso aparte).
-3. Revisión final del portfolio.
+1. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción; CSP; revisar si las migraciones se siguen aplicando al arrancar el contenedor o en un paso aparte).
+2. Capturas para el README, cuando el usuario tenga las ilustraciones de los productos.
+3. Hacer público el repositorio: lo decide y lo hace el usuario.
+4. Revisión final del portfolio (incluye completar docs/architecture.md, que sigue "en construcción", y decidir la licencia: ahora no hay ninguna).
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 

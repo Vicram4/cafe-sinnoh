@@ -154,6 +154,14 @@ npm test
 
 - GitHub, privado: `https://github.com/Vicram4/cafe-sinnoh` (remoto `origin`).
 - Se sube con `git push` al final de cada bloque de trabajo.
+- CI con GitHub Actions (`.github/workflows/ci.yml`), en cada push a `main`
+  y en cada pull request. Tres trabajos en paralelo:
+  - backend: pytest contra un PostgreSQL 17 de servicio y pip-audit;
+  - frontend: lint, tests, build y `npm audit --audit-level=high`;
+  - docker: build de las dos imágenes, `nginx -t` y que la app se importe.
+  Ver el resultado en la pestaña **Actions** del repositorio.
+- README en español (`README.md`) y en inglés (`README.en.md`): al cambiar
+  algo que aparezca en uno, actualizar los dos.
 
 ## Notas del panel de administración (FASE 12)
 
