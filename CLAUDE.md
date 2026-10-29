@@ -29,7 +29,7 @@ BD: PostgreSQL 17 (postgres:17-alpine) en Docker Compose (solo servicio db, cont
 
 NO se usa: passlib, python-jose, psycopg2, SQLAlchemy async, librerías de animación, librerías de calendario, Radix ni otra librería de diálogos (SidePanel hecho a mano).
 
-Testing: NO instalado todavía (pytest y Vitest pendientes).
+Testing: backend con pytest 9.2 + httpx2 (lo pide el TestClient de Starlette 1.7) en `requirements-dev.txt`; frontend con Vitest 5 + jsdom + Testing Library (react, dom, jest-dom 7, user-event), `globals` desactivado (imports explícitos y cleanup en `src/test/setup.ts`).
 
 ## Entorno del usuario
 
@@ -66,7 +66,9 @@ Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E
 
 FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
 
-Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Para el último commit, consultar `git log`.
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Para el último commit, consultar `git log`.
+
+Tests: backend 81 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 18 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
 
 Endpoints añadidos en la FASE 12: POST/PATCH /products, DELETE /products/{id}; GET /reviews/admin/all; PATCH /careers/applications/{id}/status; PATCH /contact/{id}; GET /admin/users; PATCH /admin/users/{id}; GET /orders/admin/all.
 
@@ -76,20 +78,18 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. Testing: pytest (backend) y Vitest (frontend); cubrir auth, pedidos, puntos, permisos de admin y subida/descarga de CV. Decidir BD de test separada (verificar versiones compatibles con Python 3.14, SQLAlchemy 2.x y Vite antes de instalar).
-2. Seguridad y optimización: carrito por usuario, code splitting, SECRET_KEY fuerte.
-3. Docker completo (front + back). Antes, pasar `backend/requirements.txt` a UTF-8 (ahora está en UTF-16).
-4. GitHub: README profesional, capturas, CI.
-5. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py).
-6. Revisión final del portfolio.
+1. Seguridad y optimización: carrito por usuario, code splitting, SECRET_KEY fuerte. Revisar `npm audit` y `pip` de nuevo al empezar.
+2. Docker completo (front + back). Antes, pasar `backend/requirements.txt` a UTF-8 (ahora está en UTF-16).
+3. GitHub: README profesional, capturas, CI (ejecutar pytest con PostgreSQL de servicio y Vitest).
+4. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py).
+5. Revisión final del portfolio.
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 
 - Carrito en localStorage sin vincular a usuario (compartido entre cuentas en el mismo navegador).
 - Bundle de producción >500 KB (~549 KB): falta code splitting por rutas.
 - `backend/requirements.txt` en UTF-16 (salida de `pip freeze >` en PowerShell 5.1).
-- SECRET_KEY de desarrollo ("dev-secret-change-me") demasiado corta para HS256: cambiar antes de producción.
-- La ruta /about sigue siendo PlaceholderPage.
+- SECRET_KEY de desarrollo ("dev-secret-change-me") demasiado corta para HS256: cambiar antes de producción. Por eso pytest muestra avisos InsecureKeyLengthWarning (se dejan visibles a propósito).- La ruta /about sigue siendo PlaceholderPage.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. get_db cierra bien la sesión. Si vuelve, ANTES de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 - docs/development.md recoge estos pendientes; mantenerlo actualizado.
 

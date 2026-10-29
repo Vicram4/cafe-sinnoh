@@ -2,7 +2,7 @@
 
 ## Requisitos
 
-Git, Node.js 20.19+, Python 3.11+, Docker Desktop.
+Git, Node.js 22.22+ o 24.15+ (lo exigen Vitest 5 y jsdom 30), Python 3.14, Docker Desktop.
 
 ## Base de datos local
 
@@ -15,6 +15,40 @@ Git, Node.js 20.19+, Python 3.11+, Docker Desktop.
 ## Convenciones de commits
 
 `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`.
+
+## Tests
+
+### Backend (pytest)
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt   # solo la primera vez
+pytest
+```
+
+- Solo necesita Docker (PostgreSQL) en marcha; no hace falta uvicorn.
+- Usa la BD `cafe_sinnoh_test`, definida en `TEST_DATABASE_URL` (`.env`).
+  La primera ejecución la crea y le aplica las migraciones de Alembic.
+- `tests/conftest.py` sustituye `DATABASE_URL` por la de test antes de
+  importar la app y se niega a arrancar si el nombre no termina en `_test`:
+  la BD de desarrollo nunca se toca. Las tablas se vacían tras cada test.
+- Los CVs subidos en los tests van a una carpeta temporal.
+- Los avisos `InsecureKeyLengthWarning` son la `SECRET_KEY` corta de
+  desarrollo (pendiente conocido).
+
+### Frontend (Vitest)
+
+```powershell
+cd frontend
+npm test
+```
+
+- Vitest 5 + jsdom + Testing Library. Configuración en el bloque `test`
+  de `vite.config.ts`; setup en `src/test/setup.ts`.
+- `globals` desactivado: cada test importa `describe/it/expect` de
+  `vitest`, y el desmontaje de componentes (`cleanup`) se hace en el setup.
+- Los tests viven junto al código que prueban (`*.test.ts(x)`).
 
 
 ## Pendientes para la revisión final (FASE 19)
@@ -84,5 +118,4 @@ Git, Node.js 20.19+, Python 3.11+, Docker Desktop.
 ## Pendientes añadidos
 
 - `SECRET_KEY` de desarrollo ("dev-secret-change-me") más corta de lo
-  recomendado para HS256: cambiarla antes de producción.
-- El bundle del frontend ya está en unos 549 KB (code splitting pendiente).
+  recomendado para HS256: cambiarla antes de producción.- El bundle del frontend ya está en unos 549 KB (code splitting pendiente).

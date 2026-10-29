@@ -1,6 +1,6 @@
 # Café Sinnoh: estado del proyecto
 
-Documento de situación a fecha de 29 de octubre de 2026. Resume lo construido hasta el cierre de la FASE 12 y de la subida de CV, y lo que queda por hacer. Sustituye al checkpoint inicial en lo que respecta al estado del código.
+Documento de situación a fecha de 29 de octubre de 2026. Resume lo construido hasta el cierre de la FASE 12, la subida de CV y el testing, y lo que queda por hacer. Sustituye al checkpoint inicial en lo que respecta al estado del código.
 
 ## 1. Qué es
 
@@ -11,7 +11,7 @@ Aplicación web Full-Stack para una cafetería artesanal ficticia, construida co
 - **Frontend:** React + TypeScript + Vite, Tailwind CSS v4, React Router v8, TanStack React Query, react-hook-form + zod, Oxlint.
 - **Backend:** Python 3.14, FastAPI + Uvicorn, SQLAlchemy síncrono + psycopg3, Alembic, pwdlib (argon2), PyJWT, pydantic-settings.
 - **Base de datos:** PostgreSQL 17 en Docker Compose (solo el servicio db).
-- **Testing:** sin instalar todavía.
+- **Testing:** pytest + httpx2 (backend); Vitest + jsdom + Testing Library (frontend).
 
 ## 3. Lo construido
 
@@ -62,6 +62,18 @@ Commits: `29dc50d` (backend) y `be504c2` (frontend).
 - `GET /careers/applications/{id}/cv`, solo admin. El panel lo descarga con fetch y token.
 - El formulario público recomienda adjuntar el CV sin obligar a hacerlo.
 
+## 5 ter. Testing (completo)
+
+Commits: `a8eb922` + `a676b0f` (backend) y `cd0f143` + `b89f34a` (frontend).
+
+| Parte | Tests | Qué cubren |
+|---|---|---|
+| Backend (`pytest`) | 81 | Autenticación, pedidos y máquina de estados, puntos y canjes, los 15 endpoints de admin (403/401), autoprotección del admin, subida y descarga de CV |
+| Frontend (`npm test`) | 18 | Formato de precios, cliente de la API (JSON, FormData, token, errores, descargas), formulario de candidaturas |
+
+- Los tests de backend usan una base de datos aparte, `cafe_sinnoh_test`, con las migraciones reales. No arrancan si el nombre no termina en `_test`.
+- Se comprobó que los tests fallan de verdad: se metieron errores a propósito en el código y los detectaron.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -78,20 +90,18 @@ Commits: `29dc50d` (backend) y `be504c2` (frontend).
 
 ## 7. Siguiente trabajo
 
-1. Testing (pytest y Vitest). Decidir si usar una base de datos de test separada.
-2. Seguridad y optimización.
-3. Docker completo.
-4. GitHub (README, capturas, CI).
-5. Deployment.
-6. Revisión final del portfolio.
+1. Seguridad y optimización.
+2. Docker completo.
+3. GitHub (README, capturas, CI que ejecute los tests).
+4. Deployment.
+5. Revisión final del portfolio.
 
 ## 8. Deudas conocidas
 
 - El carrito vive en localStorage sin vincularse al usuario.
 - El bundle del frontend pesa unos 549 KB (falta code splitting).
 - `backend/requirements.txt` está en UTF-16: pasarlo a UTF-8 antes de Docker/CI.
-- `SECRET_KEY` de desarrollo demasiado corta: cambiarla antes de producción.
-- `/about` sigue siendo `PlaceholderPage`.
+- `SECRET_KEY` de desarrollo demasiado corta: cambiarla antes de producción.- `/about` sigue siendo `PlaceholderPage`.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 
 ## 9. Lecciones del trabajo hasta ahora
@@ -102,6 +112,7 @@ Commits: `29dc50d` (backend) y `be504c2` (frontend).
 - No hay que fiarse de salidas pegadas fuera de orden: comprobar antes de asumir un fallo.
 - En Windows, `localhost` en `DATABASE_URL` hacía que cada conexión nueva tardase más de 8 s. Se usa `127.0.0.1`.
 - La documentación web de una librería puede ir por delante de la versión instalada (pasó con FastAPI y los modelos `Form()`): si algo no cuadra, comprobar el código de la versión instalada.
+- Un test que nunca ha fallado no demuestra nada: romper el código a propósito una vez confirma que lo vigila.
 
 ## 10. Estado de la herramienta de trabajo
 
