@@ -54,6 +54,8 @@ flowchart LR
 - Los tokens de renovación rotan en cada uso: si reaparece uno ya usado (señal de copia), se revoca toda la sesión. En la base de datos solo se guarda su hash, y cerrar sesión la revoca también en el servidor.
 - Cada petición consulta el usuario en la BD: un cambio de rol o una desactivación surten efecto al instante, aunque el token siga siendo válido.
 - Límite de intentos de login por cuenta + IP y por IP, comprobado antes que la contraseña. Se guarda un HMAC del email, nunca el email en claro.
+- Contraseñas de 8 caracteres como mínimo, rechazando las más comunes y las que contienen el propio email (en lugar de reglas de mayúsculas y símbolos, según las recomendaciones del NIST).
+- Formularios públicos (registro, contacto y empleo) protegidos contra spam con un límite de envíos por IP y un campo trampa invisible, sin captcha.
 - La app no arranca con una `SECRET_KEY` de menos de 32 bytes, y los errores de configuración no muestran secretos.
 - CVs validados por extensión, tipo MIME y firma `%PDF-`; se guardan con un nombre aleatorio y solo los descarga un admin.
 
@@ -101,10 +103,10 @@ La guía completa está en [docs/development.md](docs/development.md): desarroll
 
 | | Comando | Qué cubre |
 |---|---|---|
-| Backend | `pytest` (en `backend/`) | 102 tests: autenticación, sesión persistente, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
-| Frontend | `npm test` (en `frontend/`) | 34 tests: sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
+| Backend | `pytest` (en `backend/`) | 117 tests: autenticación, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
+| Frontend | `npm test` (en `frontend/`) | 36 tests: sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
-La CI de GitHub Actions ejecuta en cada push los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker.
+La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Dependabot propone cada semana las actualizaciones de dependencias.
 
 ## Estructura
 

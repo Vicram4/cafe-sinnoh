@@ -116,6 +116,16 @@ Commits: `354f412` (backend) y `bd70fde` (frontend).
 - Comprobado en un navegador real, tanto en desarrollo como en Docker.
 - **Tests:** 102 de backend y 34 de frontend.
 
+## 5 octies. Seguridad básica y revisiones automáticas
+
+Commits: `dd1447d` (backend), `c55c3ea` (frontend) y `4342271` (Dependabot y CI semanal).
+
+- Contraseñas de 8 caracteres como mínimo, sin aceptar las más comunes ni las que contienen el email.
+- Registro, contacto y empleo con límite de envíos por IP y un campo trampa invisible contra bots.
+- Los campos del registro tienen límites de longitud (antes un nombre muy largo provocaba un error 500).
+- Dependabot propone cada semana las actualizaciones de dependencias, y la CI se ejecuta también cada lunes.
+- **Tests:** 117 de backend y 36 de frontend.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -133,12 +143,11 @@ Commits: `354f412` (backend) y `bd70fde` (frontend).
 
 ## 7. Siguiente trabajo
 
-1. Seguridad básica: contraseña mínima, protección anti-spam en formularios, Dependabot y revisión semanal automática.
-2. Modo demo (cuentas de prueba visibles y reinicio diario de los datos), página de aviso legal y privacidad, y fuentes propias en lugar de Google Fonts.
-3. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
-4. Deployment (incluye HTTPS y la Content-Security-Policy).
-5. Opcional: login con Google.
-6. Capturas, hacer público el repositorio y revisión final del portfolio.
+1. Modo demo (cuentas de prueba visibles y reinicio diario de los datos), página de aviso legal y privacidad, y fuentes propias en lugar de Google Fonts.
+2. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
+3. Deployment (incluye HTTPS y la Content-Security-Policy).
+4. Opcional: login con Google.
+5. Capturas, hacer público el repositorio y revisión final del portfolio.
 
 ## 8. Deudas conocidas
 

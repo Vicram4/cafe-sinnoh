@@ -56,6 +56,8 @@ flowchart LR
 - Refresh tokens rotate on every use: if an already-used token shows up again (a sign it was copied), the whole session is revoked. Only their hash is stored, and logging out also revokes the session on the server.
 - Every request loads the user from the database: role changes and deactivations take effect immediately, even if the token is still valid.
 - Login attempts are rate-limited per account + IP and per IP, checked before the password. Only an HMAC of the email is stored, never the email itself.
+- Passwords need at least 8 characters; common passwords and those containing the user's email are rejected (instead of uppercase/symbol rules, following NIST guidance).
+- Public forms (sign-up, contact and careers) are protected against spam with a per-IP submission limit and an invisible honeypot field, with no captcha.
 - The app refuses to start with a `SECRET_KEY` shorter than 32 bytes, and configuration errors never print secrets.
 - CVs are validated by extension, MIME type and the `%PDF-` signature, stored under a random name and downloadable by admins only.
 
@@ -103,10 +105,10 @@ The full guide (in Spanish) is in [docs/development.md](docs/development.md): lo
 
 | | Command | Coverage |
 |---|---|---|
-| Backend | `pytest` (in `backend/`) | 102 tests: auth, persistent sessions, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
-| Frontend | `npm test` (in `frontend/`) | 34 tests: session and token refresh, API client, per-user cart, careers form, theme and formatting |
+| Backend | `pytest` (in `backend/`) | 117 tests: auth, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
+| Frontend | `npm test` (in `frontend/`) | 36 tests: session and token refresh, API client, per-user cart, careers form, theme and formatting |
 
-GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push.
+GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Dependabot proposes dependency updates weekly.
 
 ## Project structure
 

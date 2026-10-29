@@ -180,6 +180,22 @@ npm test
 - README en español (`README.md`) y en inglés (`README.en.md`): al cambiar
   algo que aparezca en uno, actualizar los dos.
 
+- **Contraseñas:** de 8 a 128 caracteres. Se rechazan las más comunes, las
+  que repiten siempre los mismos caracteres y las que contienen la parte
+  local del email (`app/services/passwords.py`). No se exigen mayúsculas ni
+  símbolos (NIST SP 800-63B). Las cuentas ya existentes no se ven afectadas.
+- **Anti-spam en formularios públicos** (registro, contacto y empleo):
+  - 5 envíos por IP y formulario cada 60 minutos → 429 con `Retry-After`
+    (`form_rate_limit` en `deps.py`, tabla `rate_limit_events`).
+  - Campo trampa `website` (`HoneypotField.tsx`): fuera de la pantalla, sin
+    tabulador y oculto a los lectores de pantalla. Si llega relleno, el
+    backend responde 400 con un mensaje genérico.
+  - Para limpiar los límites en desarrollo:
+    `docker exec cafe-sinnoh-db psql -U sinnoh -d cafe_sinnoh -c "delete from rate_limit_events; delete from login_attempts;"`
+- **Dependabot** (`.github/dependabot.yml`): propuestas semanales de
+  actualización para pip, npm, GitHub Actions y las imágenes Docker. La CI
+  también se ejecuta cada lunes, aunque no haya cambios.
+
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar
