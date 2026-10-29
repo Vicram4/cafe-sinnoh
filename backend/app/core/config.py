@@ -1,7 +1,10 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+MIN_SECRET_KEY_BYTES = 32
 
 
 class Settings(BaseSettings):
@@ -39,7 +42,24 @@ class Settings(BaseSettings):
     # env_file le dice a pydantic-settings dónde buscar el .env;
     # case_sensitive=False permite que DATABASE_URL (mayúsculas, como
     # es habitual en variables de entorno) coincida con database_url.
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    # hide_input_in_errors: sin esto, un error de validación imprime el
+    # valor recibido, y acabarían en los logs la SECRET_KEY o la
+    # contraseña incluida en DATABASE_URL.
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, hide_input_in_errors=True)
+
+    @field_validator("secret_key")
+    @classmethod
+    def secret_key_must_be_strong(cls, value: str) -> str:
+        """Se exige en todos los entornos, no solo en producción: así es
+        imposible desplegar por descuido con una clave débil. 32 bytes es
+        el mínimo que recomiendan RFC 7518 y PyJWT para HS256; con menos,
+        la firma de los JWT se puede atacar por fuerza bruta."""
+        if len(value.encode()) < MIN_SECRET_KEY_BYTES:
+            raise ValueError(
+                f"SECRET_KEY debe tener al menos {MIN_SECRET_KEY_BYTES} bytes. Genera una con: "
+                'python -c "import secrets; print(secrets.token_urlsafe(64))"'
+            )
+        return value
 
     @property
     def cors_origins_list(self) -> list[str]:
