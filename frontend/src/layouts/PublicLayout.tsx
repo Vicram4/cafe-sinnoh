@@ -27,17 +27,18 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-5xl items-center justify-between p-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 p-4">
                     <NavLink
             to="/"
-            className="font-serif text-xl font-semibold text-primary"
+            className="shrink-0 whitespace-nowrap font-serif text-xl font-semibold text-primary"
             onClick={() => setMenuOpen(false)}
           >
             Café Sinnoh
           </NavLink>
 
-          {/* Enlaces de escritorio: ocultos por defecto, visibles desde "md" (≥768px) */}
-          <nav aria-label="Principal" className="hidden gap-6 md:flex">
+          {/* Enlaces de escritorio: ocultos por defecto, visibles desde "lg" (≥1024px).
+              Por debajo no caben junto a la cuenta y se usa el menú desplegable. */}
+          <nav aria-label="Principal" className="hidden gap-5 whitespace-nowrap lg:flex">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -52,8 +53,8 @@ export function PublicLayout() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-4 md:flex">
-            <ThemeToggle />
+          <div className="hidden items-center gap-4 whitespace-nowrap lg:flex">
+            <ThemeToggle compact />
                                     <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
               Carrito{totalItems > 0 && ` (${totalItems})`}
             </NavLink>
@@ -64,7 +65,10 @@ export function PublicLayout() {
                     Admin
                   </NavLink>
                 )}
-                <NavLink to="/account" className="text-sm text-muted-foreground hover:text-foreground">
+                <NavLink
+                  to="/account"
+                  className="max-w-40 truncate text-sm text-muted-foreground hover:text-foreground"
+                >
                   Hola, {user.full_name.split(' ')[0]}
                 </NavLink>
                 <Button variant="ghost" onClick={logout}>
@@ -76,10 +80,10 @@ export function PublicLayout() {
             )}
           </div>
 
-          {/* Botón hamburguesa: solo visible por debajo de "md" */}
+          {/* Botón hamburguesa: solo visible por debajo de "lg" */}
           <button
             type="button"
-            className="md:hidden"
+            className="lg:hidden"
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
@@ -95,9 +99,9 @@ export function PublicLayout() {
           </button>
         </div>
 
-        {/* Menú móvil: solo se pinta cuando está abierto, y solo por debajo de "md" */}
+        {/* Menú móvil: solo se pinta cuando está abierto, y solo por debajo de "lg" */}
         {menuOpen && (
-          <nav id="mobile-menu" aria-label="Principal (móvil)" className="border-t border-border p-4 md:hidden">
+          <nav id="mobile-menu" aria-label="Principal (móvil)" className="border-t border-border p-4 lg:hidden">
             <div className="flex flex-col gap-3">
               {links.map((link) => (
                 <NavLink
