@@ -1,5 +1,8 @@
-from fastapi import Depends, FastAPI
+import hmac
+
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -30,6 +33,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+@app.middleware("http")
+async def require_proxy_secret(request: Request, call_next):
+    # /health queda abierta para la comprobación de salud del alojamiento,
+    # que no pasa por Vercel. compare_digest evita deducir el secreto
+    # midiendo cuánto tarda la comparación.
+    secret = get_settings().proxy_secret
+    if secret and not request.url.path.startswith("/health"):
+        received = request.headers.get("x-proxy-secret", "")
+        if not hmac.compare_digest(received.encode(), secret.encode()):
+            return JSONResponse(status_code=403, content={"detail": "Acceso no permitido."})
+    return await call_next(request)
+
 
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")

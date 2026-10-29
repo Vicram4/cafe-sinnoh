@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     refresh_cookie_secure: bool = True
     cors_origins: str = "http://localhost:5173"
+    # En producción el backend tiene URL pública propia, pero solo debe
+    # recibir peticiones a través de Vercel, que añade esta cabecera secreta
+    # (main.py). Sin esto, cualquiera podría llamarlo directamente con una
+    # X-Forwarded-For inventada y saltarse los límites por IP. Vacía = sin
+    # comprobación (desarrollo y Docker local, detrás de nginx).
+    proxy_secret: str | None = None
 
     # Límite de intentos de login fallidos (services/login_attempts.py),
     # contados en una ventana deslizante de N minutos.
