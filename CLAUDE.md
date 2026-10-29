@@ -9,7 +9,7 @@ El dueño tiene formación DAW y Marketing, y lleva ~1 año sin desarrollar de f
 - Responder y explicar SIEMPRE en español.
 - Trabajo incremental: bloques sustanciales pero verificables (backend primero, probar en /docs, luego frontend, probar en navegador). Nunca generar el proyecto entero de golpe.
 - Commits pequeños, separados backend/frontend, con prefijos feat:/fix:/docs:/chore:/test:/refactor:.
-- ANTES de cada commit: mostrar `git status` y esperar confirmación del usuario. Antes de commitear frontend: `npm run build` y `npm run lint` limpios (desde la carpeta frontend). El único aviso aceptado es el de bundle >500 KB (pendiente conocido).
+- ANTES de cada commit: mostrar `git status` y esperar confirmación del usuario. Antes de commitear frontend: `npm run build`, `npm run lint` y `npm test` limpios (desde la carpeta frontend), sin avisos (el de bundle >500 KB ya está resuelto; no subir `chunkSizeWarningLimit` para esconderlo). Antes de commitear backend: `pytest`.
 - Comprobar siempre que `.venv`, `.env` y `node_modules` NUNCA se suban.
 - Comentarios de código solo cuando expliquen lógica, arquitectura o seguridad importantes. Nunca comentarios obvios.
 - Verificar la documentación actual de una librería antes de usarla; no fiarse de memoria desactualizada.
@@ -21,7 +21,7 @@ El dueño tiene formación DAW y Marketing, y lleva ~1 año sin desarrollar de f
 
 ## Stack real (no sustituir)
 
-Frontend (carpeta `frontend/`): React + TypeScript + Vite; Tailwind CSS v4 (CSS-first con @theme, sin tailwind.config.js; dark mode manual vía @custom-variant); React Router v8 (`react-router`, createBrowserRouter); TanStack React Query; react-hook-form + zod + @hookform/resolvers/zod; Oxlint (NO ESLint); fuentes Fraunces + Work Sans.
+Frontend (carpeta `frontend/`): React + TypeScript + Vite; Tailwind CSS v4 (CSS-first con @theme, sin tailwind.config.js; dark mode manual vía @custom-variant); React Router v8 (`react-router` 8.5.1+, createBrowserRouter, páginas con `lazy`); TanStack React Query; react-hook-form + zod + @hookform/resolvers/zod; Oxlint (NO ESLint); fuentes Fraunces + Work Sans.
 
 Backend (carpeta `backend/`, entorno `.venv` propio): Python 3.14; FastAPI + Uvicorn; pydantic-settings; SQLAlchemy 2.x SÍNCRONO (no async) + psycopg3 (`psycopg[binary]`, no psycopg2); Alembic; pwdlib[argon2] (NO passlib); PyJWT (NO python-jose); python-multipart; email-validator.
 
@@ -66,9 +66,15 @@ Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E
 
 FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
 
-Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Para el último commit, consultar `git log`.
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Para el último commit, consultar `git log`.
 
-Tests: backend 81 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 18 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
+Seguridad y optimización:
+- `SECRET_KEY`: config.py rechaza claves de <32 bytes en TODOS los entornos (la app no arranca); `.env.example` la deja vacía con el comando para generarla. `hide_input_in_errors=True` en Settings para que los errores de validación no impriman secretos.
+- Dependencias: `pip-audit` en requirements-dev.txt (`pip-audit -r requirements.txt -r requirements-dev.txt`), `npm audit` en 0. requirements.txt ya está en UTF-8.
+- Carrito por usuario (CartContext.tsx; claves en cart-context.ts): `cafe-sinnoh:cart:user:<id>` y `cafe-sinnoh:cart:guest`. Al iniciar sesión se incorpora el carrito sin sesión quedándose con la cantidad MAYOR por producto (no la suma, porque F5 cierra sesión y se suele volver a añadir lo mismo). Tras F5 el carrito aparece vacío hasta volver a entrar: es lo esperado.
+- Code splitting: router.tsx carga todas las páginas con `lazy` salvo Home y PublicLayout. Una ruta sin path intermedia aporta `hydrateFallbackElement` (sin él, React Router pinta la página en blanco en la primera carga) y `errorElement` (RouteErrorPage, dentro del layout). PublicLayout muestra una línea fija bajo la cabecera mientras carga una página. JS inicial: 265 KB (82 KB gzip).
+
+Tests: backend 85 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 24 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
 
 Endpoints añadidos en la FASE 12: POST/PATCH /products, DELETE /products/{id}; GET /reviews/admin/all; PATCH /careers/applications/{id}/status; PATCH /contact/{id}; GET /admin/users; PATCH /admin/users/{id}; GET /orders/admin/all.
 
@@ -78,18 +84,16 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. Seguridad y optimización: carrito por usuario, code splitting, SECRET_KEY fuerte. Revisar `npm audit` y `pip` de nuevo al empezar.
-2. Docker completo (front + back). Antes, pasar `backend/requirements.txt` a UTF-8 (ahora está en UTF-16).
-3. GitHub: README profesional, capturas, CI (ejecutar pytest con PostgreSQL de servicio y Vitest).
-4. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py).
-5. Revisión final del portfolio.
+1. Docker completo (front + back).
+2. GitHub: README profesional, capturas, CI (pytest con PostgreSQL de servicio, Vitest, build, lint, pip-audit y npm audit). En CI hay que definir SECRET_KEY (≥32 bytes) y TEST_DATABASE_URL.
+3. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción).
+4. Revisión final del portfolio.
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 
-- Carrito en localStorage sin vincular a usuario (compartido entre cuentas en el mismo navegador).
-- Bundle de producción >500 KB (~549 KB): falta code splitting por rutas.
-- `backend/requirements.txt` en UTF-16 (salida de `pip freeze >` en PowerShell 5.1).
-- SECRET_KEY de desarrollo ("dev-secret-change-me") demasiado corta para HS256: cambiar antes de producción. Por eso pytest muestra avisos InsecureKeyLengthWarning (se dejan visibles a propósito).- La ruta /about sigue siendo PlaceholderPage.
+- El login no limita los intentos (posible fuerza bruta de contraseñas). Señalado por Claude, pendiente de que el usuario decida si se añade.
+- El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos. Un carrito en servidor se descartó por coste/beneficio.
+- La ruta /about sigue siendo PlaceholderPage.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. get_db cierra bien la sesión. Si vuelve, ANTES de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 - docs/development.md recoge estos pendientes; mantenerlo actualizado.
 

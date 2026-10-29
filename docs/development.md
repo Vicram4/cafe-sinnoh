@@ -34,8 +34,8 @@ pytest
   importar la app y se niega a arrancar si el nombre no termina en `_test`:
   la BD de desarrollo nunca se toca. Las tablas se vacían tras cada test.
 - Los CVs subidos en los tests van a una carpeta temporal.
-- Los avisos `InsecureKeyLengthWarning` son la `SECRET_KEY` corta de
-  desarrollo (pendiente conocido).
+- Auditoría de dependencias: `pip-audit -r requirements.txt -r requirements-dev.txt`
+  (backend) y `npm audit` (frontend).
 
 ### Frontend (Vitest)
 
@@ -51,20 +51,26 @@ npm test
 - Los tests viven junto al código que prueban (`*.test.ts(x)`).
 
 
-## Pendientes para la revisión final (FASE 19)
+## Seguridad y optimización
 
-- El carrito vive en localStorage sin vincularse a ningún usuario.
-  Si dos personas distintas usan el mismo navegador, comparten el
-  mismo carrito, incluso cambiando de cuenta. Decisión: revisar si
-  vincular el carrito a cada usuario (clave de localStorage por
-  email) o mantenerlo como limitación conocida y documentada.
-- El build de producción del frontend supera los 500 KB en un único
-  archivo JS (aviso de Vite tras añadir React Query/RHF/Zod). No es un
-  error: es una optimización pendiente. Revisar code splitting por
-  rutas (React.lazy) en la FASE 15, cuando el árbol de páginas esté
-  completo y sepamos qué partes pesan más.
+- **`SECRET_KEY`:** obligatoria y de al menos 32 bytes en todos los
+  entornos; si no, la app no arranca. Generar una con
+  `python -c "import secrets; print(secrets.token_urlsafe(64))"`.
+  Los errores de configuración no muestran los valores recibidos
+  (`hide_input_in_errors`), para no filtrar secretos en los logs.
+- **Carrito por usuario:** una clave de localStorage por cuenta (por id, no
+  por email) y otra sin sesión. Al iniciar sesión se incorpora el carrito
+  sin sesión quedándose con la cantidad mayor de cada producto: como F5
+  cierra la sesión, es habitual volver a añadir lo mismo, y sumar lo
+  duplicaría. Tras F5 el carrito aparece vacío hasta volver a entrar.
+- **Code splitting:** todas las páginas salvo la Home se cargan con `lazy`
+  de React Router. Una ruta sin path intermedia aporta
+  `hydrateFallbackElement` (sin él, la primera carga de una página diferida
+  se queda en blanco) y `errorElement` (`RouteErrorPage`, con botón de
+  recargar). Se requiere react-router ≥ 8.5.1, que reintenta las descargas
+  fallidas de páginas diferidas en lugar de recordar el error.
+  JS inicial: 265 KB (82 KB gzip), antes 549 KB.
 
-  
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar
@@ -111,11 +117,14 @@ npm test
   IPv6 (`::1`) y el contenedor solo escucha en IPv4 (no confirmado). Podría
   estar relacionado con el "formulario colgado" y con la incidencia del
   QueuePool (no confirmado). Tras cambiar `.env` hay que reiniciar uvicorn.
-- `backend/requirements.txt` está guardado en UTF-16 (salida de `pip freeze >`
-  en PowerShell 5.1). No está confirmado que pip lo lea bien en todos los
-  entornos: pasarlo a UTF-8 antes de Docker/CI.
+- No generar `requirements.txt` con `pip freeze > requirements.txt` en
+  PowerShell 5.1: lo guarda en UTF-16. Usar
+  `pip freeze | Out-File -Encoding ascii requirements.txt` (`utf8` en
+  PowerShell 5.1 añade BOM) o editarlo a mano.
 
-## Pendientes añadidos
+## Pendientes
 
-- `SECRET_KEY` de desarrollo ("dev-secret-change-me") más corta de lo
-  recomendado para HS256: cambiarla antes de producción.- El bundle del frontend ya está en unos 549 KB (code splitting pendiente).
+- El login no limita los intentos (posible fuerza bruta de contraseñas).
+- El carrito sigue en localStorage (uno por cuenta), así que no se comparte
+  entre dispositivos.
+- `/about` sigue siendo `PlaceholderPage`.

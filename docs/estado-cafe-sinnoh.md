@@ -1,6 +1,6 @@
 # Café Sinnoh: estado del proyecto
 
-Documento de situación a fecha de 29 de octubre de 2026. Resume lo construido hasta el cierre de la FASE 12, la subida de CV y el testing, y lo que queda por hacer. Sustituye al checkpoint inicial en lo que respecta al estado del código.
+Documento de situación a fecha de 29 de octubre de 2026. Resume lo construido hasta el cierre de la FASE 12, la subida de CV, el testing y el bloque de seguridad y optimización, y lo que queda por hacer. Sustituye al checkpoint inicial en lo que respecta al estado del código.
 
 ## 1. Qué es
 
@@ -68,11 +68,22 @@ Commits: `a8eb922` + `a676b0f` (backend) y `cd0f143` + `b89f34a` (frontend).
 
 | Parte | Tests | Qué cubren |
 |---|---|---|
-| Backend (`pytest`) | 81 | Autenticación, pedidos y máquina de estados, puntos y canjes, los 15 endpoints de admin (403/401), autoprotección del admin, subida y descarga de CV |
-| Frontend (`npm test`) | 18 | Formato de precios, cliente de la API (JSON, FormData, token, errores, descargas), formulario de candidaturas |
+| Backend (`pytest`) | 81 (85 tras seguridad) | Autenticación, pedidos y máquina de estados, puntos y canjes, los 15 endpoints de admin (403/401), autoprotección del admin, subida y descarga de CV |
+| Frontend (`npm test`) | 18 (24 tras seguridad) | Formato de precios, cliente de la API (JSON, FormData, token, errores, descargas), formulario de candidaturas |
 
 - Los tests de backend usan una base de datos aparte, `cafe_sinnoh_test`, con las migraciones reales. No arrancan si el nombre no termina en `_test`.
 - Se comprobó que los tests fallan de verdad: se metieron errores a propósito en el código y los detectaron.
+
+## 5 quater. Seguridad y optimización (completo)
+
+Commits: `958cd82`, `8b41b4d` (backend), `d16e8dc`, `8fbfe5e` (frontend).
+
+| Cambio | Resultado |
+|---|---|
+| `SECRET_KEY` | La app no arranca con claves de menos de 32 bytes, en ningún entorno. Los errores de configuración ya no muestran secretos. |
+| Dependencias | `pip-audit` y `npm audit` sin vulnerabilidades (se actualizaron dnspython, vite, zod y source-map-js). `requirements.txt` en UTF-8. |
+| Carrito | Uno por cuenta y otro sin sesión. Al entrar, se incorpora el carrito sin sesión sin duplicar cantidades. |
+| Code splitting | JS inicial de 549 KB a 265 KB (82 KB comprimido). El panel de admin solo lo descarga quien entra en él. Página de error propia si una página no carga. |
 
 ## 6. Decisiones vigentes
 
@@ -90,18 +101,16 @@ Commits: `a8eb922` + `a676b0f` (backend) y `cd0f143` + `b89f34a` (frontend).
 
 ## 7. Siguiente trabajo
 
-1. Seguridad y optimización.
-2. Docker completo.
-3. GitHub (README, capturas, CI que ejecute los tests).
-4. Deployment.
-5. Revisión final del portfolio.
+1. Docker completo.
+2. GitHub (README, capturas, CI que ejecute los tests y las auditorías).
+3. Deployment.
+4. Revisión final del portfolio.
 
 ## 8. Deudas conocidas
 
-- El carrito vive en localStorage sin vincularse al usuario.
-- El bundle del frontend pesa unos 549 KB (falta code splitting).
-- `backend/requirements.txt` está en UTF-16: pasarlo a UTF-8 antes de Docker/CI.
-- `SECRET_KEY` de desarrollo demasiado corta: cambiarla antes de producción.- `/about` sigue siendo `PlaceholderPage`.
+- El login no limita los intentos (posible fuerza bruta de contraseñas).
+- El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos.
+- `/about` sigue siendo `PlaceholderPage`.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 
 ## 9. Lecciones del trabajo hasta ahora
