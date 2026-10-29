@@ -147,6 +147,14 @@ Commit: `00138ab`.
 - Icono propio en la pestaña (antes era el logo de Vite).
 - **Tests:** 122 de backend y 44 de frontend.
 
+## 5 undecies. Ilustraciones de producto
+
+Commits: `63a05c7` y `da8c8af`.
+
+- Las 12 ilustraciones, generadas con IA a partir de una guía de estilo común, muestran el producto inspirado y nunca un personaje.
+- Se retocaron tres "firmas" falsas que había añadido la IA, y se corrigieron el fondo y una sombra lateral para que encajen con la web.
+- Pesan unos 28 KB cada una y se cargan solo al acercarse a ellas en la carta.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.

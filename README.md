@@ -6,7 +6,7 @@
 
 Aplicación web full-stack para una cafetería artesanal ficticia: carta, pedidos online para recoger en el local, programa de puntos con recompensas, reseñas, empleo con subida de CV y un panel de administración completo.
 
-La marca se inspira en un lugar, la región de Sinnoh: montañas, bosques y frío. Algunos productos rinden homenaje a un Pokémon, siempre con un aviso legal.
+La marca se inspira en un lugar, la región de Sinnoh: montañas, bosques y frío. Algunos productos rinden homenaje a un Pokémon, siempre con un aviso legal. Las ilustraciones muestran solo el producto, nunca personajes.
 
 > Proyecto de portfolio. Es un proyecto de fans sin ánimo de lucro y no está afiliado a Nintendo, Game Freak ni The Pokémon Company. No usa ningún recurso gráfico oficial.
 
@@ -133,7 +133,7 @@ docs/            Guía de desarrollo y estado del proyecto
 
 ## Próximos pasos
 
-- Ilustraciones propias de los productos y capturas de pantalla.
+- Capturas de pantalla.
 - Deployment: sesión definitiva, almacenamiento de CVs en la nube y Content-Security-Policy.
 
 ## Autor

@@ -220,6 +220,13 @@ npm test
   publicar, porque necesitan la URL absoluta del dominio
   (`public/og-image.png`, 1200×630).
 
+- **Ilustraciones de producto:** guía y prompts en
+  `docs/ilustraciones-productos.md`. Para añadir o cambiar una: guardar el
+  original como `<slug>.png` en una carpeta y ejecutar
+  `python scripts/prepare_product_images.py <carpeta>` (necesita
+  `pip install pillow`). Genera `frontend/public/products/<slug>.webp`.
+  Revisar antes con zoom que la IA no haya añadido una "firma" falsa.
+
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar

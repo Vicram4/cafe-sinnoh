@@ -6,7 +6,7 @@
 
 Full-stack web app for a fictional artisan coffee shop: menu, online orders for in-store pickup, a loyalty points program with rewards, reviews, job applications with CV upload and a complete admin panel.
 
-The brand is inspired by a place, the Sinnoh region: mountains, forests and cold weather. Some products pay tribute to a Pokémon, always with a legal notice.
+The brand is inspired by a place, the Sinnoh region: mountains, forests and cold weather. Some products pay tribute to a Pokémon, always with a legal notice. The illustrations show only the product, never characters.
 
 > Portfolio project. This is a non-profit fan project and is not affiliated with Nintendo, Game Freak or The Pokémon Company. It does not use any official artwork.
 
@@ -135,7 +135,7 @@ docs/            Development guide and project status (in Spanish)
 
 ## Next steps
 
-- Original product illustrations and screenshots.
+- Screenshots.
 - Deployment: final session strategy, cloud storage for CVs and a Content-Security-Policy.
 
 ## Author
