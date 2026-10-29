@@ -227,6 +227,12 @@ npm test
   `pip install pillow`). Genera `frontend/public/products/<slug>.webp`.
   Revisar antes con zoom que la IA no haya añadido una "firma" falsa.
 
+- **Hero:** `HeroScene.tsx` dibuja la ilustración `public/hero-montanas.webp`
+  dentro de un SVG con el sendero animado encima, en las coordenadas de la
+  imagen (1000x979). Se preparó recortando el cielo y el suelo vacíos del
+  original, igualando el fondo al crema de la web y corrigiendo la sombra
+  lateral. Si se cambia la ilustración, hay que volver a trazar el sendero.
+
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar

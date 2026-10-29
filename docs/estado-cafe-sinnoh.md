@@ -155,6 +155,14 @@ Commits: `63a05c7` y `da8c8af`.
 - Se retocaron tres "firmas" falsas que había añadido la IA, y se corrigieron el fondo y una sombra lateral para que encajen con la web.
 - Pesan unos 28 KB cada una y se cargan solo al acercarse a ellas en la carta.
 
+## 5 duodecies. Nuevo hero
+
+Commit: `939ab92`.
+
+- La montaña geométrica plana de la portada se sustituyó por una ilustración en el mismo estilo que los productos (montañas nevadas, bosque y lago).
+- Se mantiene la animación: un sendero que sube en zigzag por la ladera hasta la cumbre, trazado para que no pise el lago ni los árboles.
+- Con "reducir movimiento", el sendero y el punto de la cumbre aparecen ya completos.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
