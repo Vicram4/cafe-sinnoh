@@ -106,7 +106,7 @@ La guía completa está en [docs/development.md](docs/development.md): desarroll
 
 | | Comando | Qué cubre |
 |---|---|---|
-| Backend | `pytest` (en `backend/`) | 122 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
+| Backend | `pytest` (en `backend/`) | 129 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
 | Frontend | `npm test` (en `frontend/`) | 44 tests: títulos de página, acceso de demo, sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
 La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Dependabot propone cada semana las actualizaciones de dependencias.

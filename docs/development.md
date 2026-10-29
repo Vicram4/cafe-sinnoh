@@ -122,6 +122,10 @@ npm test
   `python -c "import secrets; print(secrets.token_urlsafe(64))"`.
   Los errores de configuración no muestran los valores recibidos
   (`hide_input_in_errors`), para no filtrar secretos en los logs.
+- **Horario del local:** la hora de recogida se comprueba en la zona horaria
+  del local (`SHOP_TIMEZONE`, por defecto `Europe/Madrid`), no en la del
+  servidor: en Docker y en la nube suele ser UTC, y antes se rechazaban las
+  8:30 de España (7:30 UTC) y se aceptaban las 20:30.
 - **Carrito por usuario:** una clave de localStorage por cuenta (por id, no
   por email) y otra sin sesión. Al iniciar sesión se incorpora el carrito
   sin sesión quedándose con la cantidad mayor de cada producto: si la sesión
