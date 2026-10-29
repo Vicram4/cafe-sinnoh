@@ -1,0 +1,14 @@
+# Nada de esto debe entrar en la imagen. Sobre todo .env: la imagen
+# recibe la configuración por variables de entorno al arrancar.
+.env
+.env.*
+.venv/
+__pycache__/
+*.py[cod]
+uploads/
+tests/
+.pytest_cache/
+pytest.ini
+requirements-dev.txt
+Dockerfile
+.dockerignore
