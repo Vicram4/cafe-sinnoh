@@ -1,5 +1,7 @@
 # Publicación (demo de portfolio)
 
+Web: **https://cafe-sinnoh.vercel.app** · Backend: `https://p01--cafe-sinnoh-api--zg9bmddhxlmj.code.run` (403 sin la cabecera secreta).
+
 La demo pública se compone de tres servicios gratuitos:
 
 ```
@@ -85,11 +87,22 @@ cuenta y no tiene un tope de gasto que pare el servicio: hay un aviso de
 gasto por email (Billing). No cambiar el plan de recursos ni añadir servicios
 sin revisarlo.
 
+## Comprobado en la web publicada
+
+- La API responde a través de Vercel y la carta llega de Neon (~0,4 s).
+- La cookie de renovación atraviesa el reenvío: HttpOnly, Secure,
+  `Path=/api/v1/auth`, y rota en cada `POST /auth/refresh`.
+- El límite de login responde 429 al sexto fallo, y una `X-Forwarded-For`
+  inventada no lo evita (Vercel la sobrescribe).
+- La app no usa parámetros de consulta en la API (no se ha comprobado que
+  Vercel los reenvíe).
+- `og:image` y `og:url` apuntan a https://cafe-sinnoh.vercel.app (si cambia
+  el dominio, cambiarlas en `index.html`).
+
 ## Pendiente
 
-- Comprobar en la web publicada que la cookie de sesión atraviesa el reenvío
-  de Vercel (F5 conserva la sesión).
-- `og:image` y `og:url` con la URL absoluta y vista previa en LinkedIn.
+- Vista previa en LinkedIn Post Inspector (no confirmado si el
+  `X-Robots-Tag: noindex` de la imagen afecta).
 - Dominio propio (opcional).
 - Copias de seguridad: no hay datos reales que perder (la demo se regenera
   cada día). Si algún día los hubiera, revisar las opciones de Neon.
