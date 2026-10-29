@@ -1,6 +1,9 @@
-# Entorno de desarrollo: por ahora solo PostgreSQL.
-# El backend y el frontend se ejecutan en local para iterar rápido;
-# los containerizaremos completos en la fase de Docker.
+# Dos formas de uso:
+#   docker compose up -d                        -> solo PostgreSQL, para
+#       desarrollar con uvicorn y "npm run dev" en local.
+#   docker compose --profile app up -d --build  -> todo (db + backend +
+#       frontend con nginx) en http://localhost:8080.
+# Ambas comparten la misma base de datos y la misma carpeta de CVs.
 services:
   db:
     image: postgres:17-alpine
@@ -28,6 +31,48 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  backend:
+    profiles: ["app"]
+    build: ./backend
+    image: cafe-sinnoh-backend
+    container_name: cafe-sinnoh-backend
+    restart: unless-stopped
+    # SECRET_KEY y demás ajustes, los mismos que en desarrollo local.
+    env_file: ./backend/.env
+    environment:
+      # Sustituye la DATABASE_URL del .env (127.0.0.1): dentro de la red de
+      # Docker, la base de datos es el servicio "db".
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CORS_ORIGINS: http://localhost:${APP_PORT:-8080}
+    volumes:
+      # La misma carpeta de CVs que en local, porque la BD también es la
+      # misma: si no, las candidaturas apuntarían a archivos inexistentes.
+      - ./backend/uploads:/app/uploads
+    # Sin "ports": el backend solo es accesible desde nginx, dentro de la
+    # red de Docker. De eso depende que sea seguro confiar en la IP que
+    # nginx le reenvía (ver backend/Dockerfile).
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    profiles: ["app"]
+    build: ./frontend
+    image: cafe-sinnoh-frontend
+    container_name: cafe-sinnoh-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres_data:
