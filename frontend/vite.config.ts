@@ -17,5 +17,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Los tests no deben depender del .env local de cada uno (con el modo demo
+    // activado cambian textos de la web): mismo resultado aquí y en la CI.
+    env: { VITE_DEMO_MODE: 'false' },
   },
 })

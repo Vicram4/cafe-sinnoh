@@ -1,9 +1,12 @@
+import { usePageTitle } from '../hooks/usePageTitle'
+
 // Aviso legal y privacidad de un proyecto personal de portfolio, sin ánimo
 // de lucro: proporcionado a eso, no a un negocio real. El email de contacto
 // es el del autor para este fin, nunca uno personal.
 const CONTACT_EMAIL = 'victorramos.devs@gmail.com'
 
 export function LegalPage() {
+  usePageTitle('Aviso legal y privacidad')
   return (
     <article className="max-w-2xl py-4">
       <h1 className="text-3xl font-semibold">Aviso legal y privacidad</h1>

@@ -1,8 +1,10 @@
 import { MountainLine } from '../components/MountainLine'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Columna estrecha de lectura, como las secciones de texto de la Home. Sin
 // elemento llamativo propio: el único de la web es el hero de la portada.
 export function AboutPage() {
+  usePageTitle('Nosotros')
   return (
     <article className="max-w-xl py-4">
       <h1 className="text-3xl font-semibold">Nosotros</h1>

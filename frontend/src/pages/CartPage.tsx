@@ -3,8 +3,10 @@ import { useCart } from '../hooks/useCart'
 import { formatPriceCents } from '../utils/format'
 import { Button, ButtonLink } from '../components/Button'
 import { Badge } from '../components/Badge'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function CartPage() {
+  usePageTitle('Carrito')
   const { lines, subtotalCents, setQuantity, removeItem, clearCart } = useCart()
 
   if (lines.length === 0) {

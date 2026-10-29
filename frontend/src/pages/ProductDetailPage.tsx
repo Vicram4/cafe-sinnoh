@@ -8,6 +8,7 @@ import { InspirationPanel } from '../components/InspirationPanel'
 import { NotFoundPage } from './NotFoundPage'
 import { useCart } from '../hooks/useCart'
 import { ProductReviews } from '../components/ProductReviews'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -16,6 +17,7 @@ export function ProductDetailPage() {
   const { addItem } = useCart()
 
   const { data: product, isLoading, isError } = useProduct(slug)
+  usePageTitle(product?.name ?? (isError ? 'Producto no encontrado' : 'Carta'))
 
   if (isLoading) {
     return <p className="text-center text-muted-foreground">Cargando producto…</p>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useCategories, useProducts } from '../hooks/useProducts'
 import { ProductCard } from '../components/ProductCard'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name-asc'
 
@@ -12,6 +13,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 ]
 
 export function MenuPage() {
+  usePageTitle('Carta')
   const [search, setSearch] = useState('')
   const [categorySlug, setCategorySlug] = useState<string | null>(null)
   const [sort, setSort] = useState<SortOption>('featured')

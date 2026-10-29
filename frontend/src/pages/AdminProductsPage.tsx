@@ -6,8 +6,10 @@ import { Badge } from '../components/Badge'
 import { Button, ButtonLink } from '../components/Button'
 import { ApiError } from '../services/api/client'
 import type { Product } from '../types/product'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function AdminProductsPage() {
+  usePageTitle('Admin · Productos')
   const { data: products, isLoading, isError } = useProducts()
   const update = useUpdateProduct()
   const remove = useDeleteProduct()

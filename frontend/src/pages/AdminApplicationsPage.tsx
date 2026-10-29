@@ -4,6 +4,7 @@ import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
 import type { ApplicationStatus, JobPosition } from '../types/inbox'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const statuses: ApplicationStatus[] = ['NEW', 'REVIEWED', 'CONTACTED', 'REJECTED']
 
@@ -44,6 +45,7 @@ function saveBlob(blob: Blob, filename: string) {
 }
 
 export function AdminApplicationsPage() {
+  usePageTitle('Admin · Candidaturas')
   const { data: applications, isLoading, isError } = useApplications()
   const update = useUpdateApplicationStatus()
   const downloadCv = useDownloadApplicationCv()

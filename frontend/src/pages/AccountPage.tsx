@@ -1,6 +1,8 @@
 import { useAuth } from '../hooks/useAuth'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function AccountPage() {
+  usePageTitle('Mis datos')
   const { user } = useAuth()
 
   if (!user) return null

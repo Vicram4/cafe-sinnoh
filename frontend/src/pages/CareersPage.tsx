@@ -10,6 +10,7 @@ import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
 import { FormPrivacyNote } from '../components/FormPrivacyNote'
 import { isDemoMode } from '../data/demo'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const CV_MAX_BYTES = 5 * 1024 * 1024
 
@@ -35,6 +36,7 @@ const applicationSchema = z.object({
 type ApplicationForm = z.infer<typeof applicationSchema>
 
 export function CareersPage() {
+  usePageTitle('Trabaja con nosotros')
   const [success, setSuccess] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 

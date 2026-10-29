@@ -11,8 +11,10 @@ import { shopInfo } from '../data/shop'
 import { ProductCard } from '../components/ProductCard'
 import { ButtonLink } from '../components/Button'
 import { MountainScene } from '../components/MountainScene'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function HomePage() {
+  usePageTitle()
   const { data: products } = useProducts()
   const { data: categories } = useCategories()
   const featuredProducts = products?.filter((product) => product.is_featured) ?? []

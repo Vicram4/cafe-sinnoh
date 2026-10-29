@@ -1,12 +1,14 @@
 import { useParams } from 'react-router'
 import { useProducts } from '../hooks/useProducts'
 import { AdminProductForm } from '../components/AdminProductForm'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Una sola página para /admin/products/new (sin :id) y
 // /admin/products/:id/edit. En edición se espera a tener el producto
 // antes de montar el formulario: así los valores iniciales ya son los
 // correctos y no hace falta sincronizarlos con un efecto.
 export function AdminProductFormPage() {
+  usePageTitle('Admin · Producto')
   const { id } = useParams()
   const { data: products, isLoading, isError } = useProducts()
 

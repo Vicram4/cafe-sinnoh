@@ -5,8 +5,10 @@ import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
 import type { AdminUser } from '../types/user'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function AdminUsersPage() {
+  usePageTitle('Admin · Usuarios')
   const { user: me } = useAuth()
   const { data: users, isLoading, isError } = useAdminUsers()
   const update = useUpdateAdminUser()

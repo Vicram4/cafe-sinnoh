@@ -7,6 +7,7 @@ import { createOrder } from '../services/api/orders'
 import { ApiError } from '../services/api/client'
 import { formatPriceCents } from '../utils/format'
 import { Button, ButtonLink } from '../components/Button'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Redondeamos al siguiente cuarto de hora y añadimos 20 minutos de
 // margen, por encima del mínimo de 15 que exige el backend: da un
@@ -26,6 +27,7 @@ function getDefaultPickupTime(): string {
 }
 
 export function CheckoutPage() {
+  usePageTitle('Finalizar pedido')
   const { token, isAuthenticated, isInitializing } = useAuth()
   const { lines, subtotalCents, clearCart } = useCart()
   const navigate = useNavigate()

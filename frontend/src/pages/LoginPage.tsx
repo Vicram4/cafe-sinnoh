@@ -8,6 +8,7 @@ import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { DemoLogin } from '../components/DemoLogin'
 import { isDemoMode } from '../data/demo'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const loginSchema = z.object({
   email: z.string().email('Introduce un email válido.'),
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>
 
 export function LoginPage() {
+  usePageTitle('Iniciar sesión')
   const { login } = useAuth()
   const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)

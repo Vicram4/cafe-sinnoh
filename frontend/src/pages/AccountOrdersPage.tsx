@@ -2,6 +2,7 @@ import { useMyOrders } from '../hooks/useOrders'
 import { formatPriceCents } from '../utils/format'
 import { Badge } from '../components/Badge'
 import type { OrderStatus } from '../types/order'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Un tono de insignia por estado: da lectura rápida sin tener que leer
 // la palabra completa cada vez. "danger" para CANCELLED es coherente
@@ -25,6 +26,7 @@ const statusLabel: Record<OrderStatus, string> = {
 }
 
 export function AccountOrdersPage() {
+  usePageTitle('Mis pedidos')
   const { data: orders, isLoading, isError } = useMyOrders()
 
   if (isLoading) return <p className="text-muted-foreground">Cargando tus pedidos…</p>

@@ -3,8 +3,10 @@ import { useMyPoints, useRedeemReward, useRewards } from '../hooks/usePoints'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { ApiError } from '../services/api/client'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export function AccountPointsPage() {
+  usePageTitle('Mis puntos')
   const { data: points, isLoading: pointsLoading } = useMyPoints()
   const { data: rewards, isLoading: rewardsLoading } = useRewards()
   const redeem = useRedeemReward()

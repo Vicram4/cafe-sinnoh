@@ -5,6 +5,7 @@ import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
 import type { OrderStatus } from '../types/order'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const statusTone: Record<OrderStatus, 'neutral' | 'accent' | 'success' | 'danger'> = {
   PENDING: 'neutral',
@@ -36,6 +37,7 @@ const nextStatus: Partial<Record<OrderStatus, OrderStatus>> = {
 }
 
 export function AdminOrdersPage() {
+  usePageTitle('Admin · Pedidos')
   const { data: orders, isLoading, isError } = useAllOrders()
   const updateStatus = useUpdateOrderStatus()
   const [filter, setFilter] = useState<OrderStatus | 'ALL'>('ALL')

@@ -8,6 +8,7 @@ import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
 import { FormPrivacyNote } from '../components/FormPrivacyNote'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const registerSchema = z.object({
   fullName: z.string().min(2, 'Introduce tu nombre completo.').max(255, 'El nombre es demasiado largo.'),
@@ -22,6 +23,7 @@ const registerSchema = z.object({
 type RegisterForm = z.infer<typeof registerSchema>
 
 export function RegisterPage() {
+  usePageTitle('Crear cuenta')
   const { register: registerUser } = useAuth()
   const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)

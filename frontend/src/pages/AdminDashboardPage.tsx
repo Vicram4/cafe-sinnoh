@@ -1,6 +1,7 @@
 import { useAdminStats } from '../hooks/useAdminStats'
 import { formatPriceCents } from '../utils/format'
 import { Card } from '../components/Card'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const statusLabel: Record<string, string> = {
   PENDING: 'Pendientes',
@@ -12,6 +13,7 @@ const statusLabel: Record<string, string> = {
 }
 
 export function AdminDashboardPage() {
+  usePageTitle('Panel de administración')
   const { data: stats, isLoading, isError } = useAdminStats()
 
   if (isLoading) return <p className="text-muted-foreground">Cargando estadísticas…</p>

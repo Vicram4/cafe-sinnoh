@@ -4,6 +4,7 @@ import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
 import type { ReviewStatus } from '../types/review'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const statusTone: Record<ReviewStatus, 'neutral' | 'success' | 'danger'> = {
   PENDING: 'neutral',
@@ -18,6 +19,7 @@ const statusLabel: Record<ReviewStatus, string> = {
 }
 
 export function AdminReviewsPage() {
+  usePageTitle('Admin · Reseñas')
   const { data: reviews, isLoading, isError } = useAllReviews()
   const moderate = useModerateReview()
   // Se abre en "Pendientes": es el trabajo real del moderador.

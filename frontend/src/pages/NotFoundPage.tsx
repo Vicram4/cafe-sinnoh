@@ -1,4 +1,5 @@
 import { ButtonLink } from '../components/Button'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 interface NotFoundPageProps {
   title?: string
@@ -9,6 +10,7 @@ export function NotFoundPage({
   title = 'Página no encontrada',
   message = 'Esta ruta no aparece en nuestro mapa. Puede que el enlace esté mal escrito o que la página ya no exista.',
 }: NotFoundPageProps) {
+  usePageTitle(title)
   return (
     <section className="max-w-xl py-4">
       <h1 className="text-3xl font-semibold">{title}</h1>

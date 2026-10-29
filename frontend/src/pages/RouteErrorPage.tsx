@@ -1,10 +1,12 @@
 import { useRouteError } from 'react-router'
 import { Button } from '../components/Button'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // Se muestra dentro del layout (con cabecera y navegación) si una página
 // falla al renderizar o no se puede descargar su código, por ejemplo sin
 // conexión o tras publicar una versión nueva mientras se navegaba.
 export function RouteErrorPage() {
+  usePageTitle('Error')
   const error = useRouteError()
   if (import.meta.env.DEV) console.error(error)
 

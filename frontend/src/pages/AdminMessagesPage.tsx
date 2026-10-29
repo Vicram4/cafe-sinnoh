@@ -3,6 +3,7 @@ import { useContactMessages, useSetMessageRead } from '../hooks/useAdminInbox'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { ApiError } from '../services/api/client'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 type Filter = 'UNREAD' | 'READ' | 'ALL'
 
@@ -13,6 +14,7 @@ const filterLabel: Record<Filter, string> = {
 }
 
 export function AdminMessagesPage() {
+  usePageTitle('Admin · Mensajes')
   const { data: messages, isLoading, isError } = useContactMessages()
   const setRead = useSetMessageRead()
   const [filter, setFilter] = useState<Filter>('UNREAD')

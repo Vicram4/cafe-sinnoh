@@ -5,6 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Café Sinnoh</title>
+    <meta name="description" content="Cafetería ficticia: demo de portfolio de una aplicación web full-stack con carta, pedidos, puntos y panel de administración." />
+    <!-- No indexar: es una demo de portfolio y se llega por enlace directo
+         (CV, LinkedIn, GitHub). Ojo: no bloquear también en robots.txt, o
+         Google no podría leer esta etiqueta. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- Vista previa al compartir el enlace (LinkedIn, WhatsApp...). Estos
+         servicios no ejecutan JavaScript: tiene que estar en el HTML. La
+         imagen (og:image) y og:url necesitan la URL absoluta del dominio: se
+         añaden en el deployment, con public/og-image.png. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Café Sinnoh" />
+    <meta property="og:title" content="Café Sinnoh · Demo de portfolio full-stack" />
+    <meta property="og:description" content="Carta, pedidos, programa de puntos y panel de administración. React, TypeScript, FastAPI y PostgreSQL." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#2E4235" />
         <script>
       // Se ejecuta antes de pintar React, para evitar un parpadeo
       // (flash) del tema equivocado al cargar la página.

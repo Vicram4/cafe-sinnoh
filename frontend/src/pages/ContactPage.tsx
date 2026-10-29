@@ -9,6 +9,7 @@ import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
 import { FormPrivacyNote } from '../components/FormPrivacyNote'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Introduce tu nombre.'),
@@ -20,6 +21,7 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>
 
 export function ContactPage() {
+  usePageTitle('Contacto')
   const [success, setSuccess] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
