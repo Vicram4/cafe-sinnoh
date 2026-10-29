@@ -54,7 +54,7 @@ export function PublicLayout() {
           </nav>
 
           <div className="hidden items-center gap-4 whitespace-nowrap lg:flex">
-            <ThemeToggle compact />
+            <ThemeToggle />
                                     <NavLink to="/cart" className="text-muted-foreground hover:text-foreground">
               Carrito{totalItems > 0 && ` (${totalItems})`}
             </NavLink>
@@ -134,8 +134,11 @@ export function PublicLayout() {
                   Entrar
                 </ButtonLink>
               )}
-              <div className="pt-2">
+              <div className="flex items-center gap-3 pt-2">
                 <ThemeToggle />
+                <span aria-hidden="true" className="text-sm text-muted-foreground">
+                  Modo oscuro
+                </span>
               </div>
             </div>
           </nav>

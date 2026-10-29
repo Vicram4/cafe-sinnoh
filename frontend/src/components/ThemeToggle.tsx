@@ -1,54 +1,49 @@
-import type { Theme } from '../context/theme-context'
 import { useTheme } from '../hooks/useTheme'
 
-const options = [
-  { value: 'light', label: 'Claro' },
-  { value: 'dark', label: 'Oscuro' },
-  { value: 'system', label: 'Sistema' },
-] as const
-
-const labels: Record<Theme, string> = { light: 'Claro', dark: 'Oscuro', system: 'Sistema' }
-const nextTheme: Record<Theme, Theme> = { light: 'dark', dark: 'system', system: 'light' }
-
-// Antes era un selector segmentado tipo píldora (bg-muted + botones
-// redondeados). Ahora es una fila de texto con subrayado en la opción
-// activa, más cerca de una etiqueta impresa que de un control de app.
-// "compact": un solo botón que alterna los tres temas, para la cabecera de
-// escritorio, donde las tres opciones a la vez no caben con sesión iniciada.
-export function ThemeToggle({ compact = false }: { compact?: boolean }) {
-  const { theme, setTheme } = useTheme()
-
-  if (compact) {
-    return (
-      <button
-        type="button"
-        onClick={() => setTheme(nextTheme[theme])}
-        aria-label={`Tema: ${labels[theme]}. Pulsa para cambiar a ${labels[nextTheme[theme]]}`}
-        className="whitespace-nowrap text-sm text-muted-foreground hover:text-foreground"
-      >
-        Tema: <span className="font-semibold text-primary">{labels[theme]}</span>
-      </button>
-    )
-  }
+// Interruptor claro/oscuro con la identidad de la marca: rectangular, borde
+// fino y sin sombras (no la típica píldora). El cuadro que se desplaza lleva
+// el icono del modo activo. El deslizamiento solo se anima con
+// "motion-safe", respetando prefers-reduced-motion.
+export function ThemeToggle() {
+  const { isDark, setTheme } = useTheme()
 
   return (
-    <div role="radiogroup" aria-label="Tema de la aplicación" className="flex items-center gap-4 text-sm">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          role="radio"
-          aria-checked={theme === option.value}
-          onClick={() => setTheme(option.value)}
-          className={
-            theme === option.value
-              ? 'font-semibold text-primary underline decoration-2 underline-offset-4'
-              : 'text-muted-foreground hover:text-foreground'
-          }
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isDark}
+      aria-label="Modo oscuro"
+      title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      className="relative h-7 w-14 shrink-0 border border-border bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    >
+      {/* Icono del modo contrario, visible en el hueco que deja el cuadro. */}
+      <span aria-hidden="true" className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground ${isDark ? 'left-1.5' : 'right-1.5'}`}>
+        {isDark ? <SunIcon /> : <MoonIcon />}
+      </span>
+      <span
+        aria-hidden="true"
+        className={`absolute top-0.5 left-0.5 flex h-[22px] w-[22px] items-center justify-center bg-primary text-primary-foreground motion-safe:transition-transform motion-safe:duration-200 ${isDark ? 'translate-x-7' : 'translate-x-0'}`}
+      >
+        {isDark ? <MoonIcon /> : <SunIcon />}
+      </span>
+    </button>
+  )
+}
+
+function SunIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  )
+}
+
+function MoonIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+      <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+    </svg>
   )
 }
