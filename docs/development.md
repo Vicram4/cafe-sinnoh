@@ -118,6 +118,15 @@ npm test
   `python -c "import secrets; print(secrets.token_urlsafe(64))"`.
   Los errores de configuración no muestran los valores recibidos
   (`hide_input_in_errors`), para no filtrar secretos en los logs.
+- **Cabecera secreta del proxy** (`PROXY_SECRET`): en producción el backend
+  tiene URL pública propia (Koyeb), pero solo debe recibir peticiones a
+  través de Vercel, que añade `X-Proxy-Secret` (vercel.json, con el valor en
+  una variable de entorno de Vercel, nunca en el repositorio). Sin ella, el
+  backend responde 403 a todo salvo `/health`. Así nadie puede llamarlo
+  directamente con una `X-Forwarded-For` inventada para saltarse los límites
+  por IP: uvicorn, con `--forwarded-allow-ips='*'`, toma la PRIMERA IP de esa
+  cabecera, que Vercel sobrescribe con la del visitante (Koyeb añade la suya
+  al final). Vacía en desarrollo y Docker local (no se comprueba).
 - **Horario del local:** la hora de recogida se comprueba en la zona horaria
   del local (`SHOP_TIMEZONE`, por defecto `Europe/Madrid`), no en la del
   servidor: en Docker y en la nube suele ser UTC, y antes se rechazaban las

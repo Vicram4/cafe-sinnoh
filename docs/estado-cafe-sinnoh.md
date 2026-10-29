@@ -145,7 +145,7 @@ Commit: `00138ab`.
 - Cada página tiene su título en la pestaña ("Carta · Café Sinnoh").
 - Vista previa preparada para compartir el enlace en LinkedIn o WhatsApp, con su propia imagen. La dirección de la imagen se completa al publicar.
 - Icono propio en la pestaña (antes era el logo de Vite).
-- **Tests:** 125 de backend y 44 de frontend.
+- **Tests:** 130 de backend y 44 de frontend.
 
 ## 5 undecies. Ilustraciones de producto
 
