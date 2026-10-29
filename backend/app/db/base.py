@@ -11,6 +11,7 @@ from app.models.login_attempt import LoginAttempt  # noqa: F401
 from app.models.order import Order, OrderItem  # noqa: F401
 from app.models.point_transaction import PointTransaction  # noqa: F401
 from app.models.product import Product  # noqa: F401
+from app.models.refresh_token import RefreshToken  # noqa: F401
 from app.models.review import Review  # noqa: F401
 from app.models.reward import Reward  # noqa: F401
 from app.models.user import User  # noqa: F401

@@ -1,7 +1,8 @@
 import math
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,14 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserRead
+from app.core.config import get_settings
+from app.services.refresh_tokens import (
+    InactiveUserRefresh,
+    InvalidRefreshToken,
+    end_session,
+    rotate_refresh_token,
+    start_session,
+)
 from app.services.login_attempts import (
     LoginRateLimited,
     clear_failed_logins,
@@ -19,6 +28,12 @@ from app.services.login_attempts import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+# La cookie solo se envía a /api/v1/auth (refresh y logout), no al resto de
+# la API. SameSite=Strict: el navegador no la envía en peticiones que
+# vengan de otra web, lo que evita ataques CSRF contra refresh y logout.
+REFRESH_COOKIE_NAME = "refresh_token"
+REFRESH_COOKIE_PATH = "/api/v1/auth"
 
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
@@ -50,6 +65,7 @@ def login(
     # pero ahí escribes tu email.
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     request: Request,
+    response: Response,
     db: Session = Depends(get_db),
 ) -> Token:
     ip_address = request.client.host if request.client else "unknown"
@@ -80,8 +96,71 @@ def login(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cuenta desactivada.")
 
     clear_failed_logins(db, form_data.username, ip_address)
+    _set_refresh_cookie(response, start_session(db, user.id))
     access_token = create_access_token(subject=user.email)
     return Token(access_token=access_token)
+
+
+@router.post("/refresh", response_model=Token)
+def refresh(request: Request, db: Session = Depends(get_db)) -> Response:
+    """Da un access token nuevo a partir de la cookie de renovación (al
+    recargar la página o cuando el anterior caduca). No usa el header
+    Authorization: el navegador envía la cookie solo."""
+    token = request.cookies.get(REFRESH_COOKIE_NAME)
+    if token is None:
+        return _reject(status.HTTP_401_UNAUTHORIZED, "No hay ninguna sesión que renovar.")
+    try:
+        user, new_token = rotate_refresh_token(db, token)
+    except InvalidRefreshToken:
+        return _reject(status.HTTP_401_UNAUTHORIZED, "La sesión ha caducado. Vuelve a iniciar sesión.")
+    except InactiveUserRefresh:
+        return _reject(status.HTTP_403_FORBIDDEN, "Cuenta desactivada.")
+
+    response = JSONResponse(Token(access_token=create_access_token(subject=user.email)).model_dump())
+    _set_refresh_cookie(response, new_token)
+    return response
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(request: Request, db: Session = Depends(get_db)) -> Response:
+    token = request.cookies.get(REFRESH_COOKIE_NAME)
+    if token is not None:
+        end_session(db, token)
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    _delete_refresh_cookie(response)
+    return response
+
+
+
+def _set_refresh_cookie(response: Response, token: str) -> None:
+    settings = get_settings()
+    response.set_cookie(
+        REFRESH_COOKIE_NAME,
+        token,
+        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+        path=REFRESH_COOKIE_PATH,
+        httponly=True,
+        secure=settings.refresh_cookie_secure,
+        samesite="strict",
+    )
+
+
+def _delete_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(
+        REFRESH_COOKIE_NAME,
+        path=REFRESH_COOKIE_PATH,
+        httponly=True,
+        secure=get_settings().refresh_cookie_secure,
+        samesite="strict",
+    )
+
+
+def _reject(status_code: int, detail: str) -> Response:
+    """Error que además borra la cookie inválida. Con HTTPException no se
+    podría: FastAPI descarta los cambios hechos en la respuesta."""
+    response = JSONResponse({"detail": detail}, status_code=status_code)
+    _delete_refresh_cookie(response)
+    return response
 
 
 @router.get("/me", response_model=UserRead)

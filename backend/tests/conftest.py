@@ -25,6 +25,10 @@ if not _test_url or not (make_url(_test_url).database or "").endswith("_test"):
         "termine en '_test'. Los tests vacían todas sus tablas."
     )
 os.environ["DATABASE_URL"] = _test_url
+# El TestClient usa http://testserver: una cookie "Secure" (solo HTTPS) no
+# volvería al servidor. test_refresh_tokens.py comprueba aparte que, cuando
+# está activado, la cookie sí lleva el atributo Secure.
+os.environ["REFRESH_COOKIE_SECURE"] = "false"
 get_settings.cache_clear()
 
 from alembic import command  # noqa: E402

@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    # Sesión persistente: cookie HttpOnly con un token de renovación
+    # (services/refresh_tokens.py). "Secure" (solo por HTTPS) activado por
+    # defecto; en desarrollo sobre http se desactiva desde el .env.
+    refresh_token_expire_days: int = 7
+    refresh_cookie_secure: bool = True
     cors_origins: str = "http://localhost:5173"
 
     # Límite de intentos de login fallidos (services/login_attempts.py),
