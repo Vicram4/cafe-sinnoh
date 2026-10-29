@@ -45,21 +45,14 @@ def _validate_cv(cv: UploadFile) -> tuple[bytes, str]:
 def create_application(db: Session, payload: JobApplicationCreate, cv: UploadFile | None) -> JobApplication:
     application = JobApplication(**payload.model_dump())
 
-    # Se valida antes de tocar disco o BD: si el CV no es válido, no se
-    # crea la candidatura y el candidato puede corregirlo y reenviar.
+    # Se valida antes de tocar la BD: si el CV no es válido, no se crea la
+    # candidatura y el candidato puede corregirlo y reenviar.
     if cv is not None and cv.filename:
         content, original_name = _validate_cv(cv)
-        application.cv_storage_key = storage.save_cv(content)
+        application.cv_storage_key = storage.save_cv(db, content)
         application.cv_original_name = original_name
 
     db.add(application)
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
-        # Sin esto quedaría en disco un archivo que ninguna fila referencia.
-        if application.cv_storage_key:
-            storage.delete_cv(application.cv_storage_key)
-        raise
+    db.commit()
     db.refresh(application)
     return application

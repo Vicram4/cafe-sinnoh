@@ -1,10 +1,10 @@
-from pathlib import Path
-
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.services import storage
+from app.models.stored_file import StoredFile
 from tests.conftest import API
 
 APPLICATIONS = f"{API}/careers/applications"
@@ -31,8 +31,8 @@ def test_application_without_cv_is_accepted(client: TestClient) -> None:
     assert response.json()["cv_original_name"] is None
 
 
-def test_application_with_valid_pdf_stores_it_under_a_generated_name(
-    client: TestClient, _upload_dir: Path
+def test_application_with_valid_pdf_stores_it_in_the_database_under_a_generated_key(
+    client: TestClient, db: Session
 ) -> None:
     response = _apply(client, ("Currículum José.pdf", VALID_PDF, "application/pdf"))
 
@@ -42,10 +42,10 @@ def test_application_with_valid_pdf_stores_it_under_a_generated_name(
     assert body["cv_original_name"] == "Currículum José.pdf"
     assert "cv_storage_key" not in body
 
-    stored = list((_upload_dir / "cvs").iterdir())
+    stored = db.scalars(select(StoredFile)).all()
     assert len(stored) == 1
-    assert stored[0].name != "Currículum José.pdf"
-    assert stored[0].read_bytes() == VALID_PDF
+    assert stored[0].key != "Currículum José.pdf"
+    assert stored[0].content == VALID_PDF
 
 
 @pytest.mark.parametrize(
@@ -58,13 +58,13 @@ def test_application_with_valid_pdf_stores_it_under_a_generated_name(
     ],
 )
 def test_invalid_cv_is_rejected_and_no_application_is_created(
-    client: TestClient, admin_headers: dict, _upload_dir: Path, cv: tuple, expected_status: int
+    client: TestClient, db: Session, admin_headers: dict, cv: tuple, expected_status: int
 ) -> None:
     response = _apply(client, cv)
 
     assert response.status_code == expected_status
     assert client.get(APPLICATIONS, headers=admin_headers).json() == []
-    assert not (_upload_dir / "cvs").exists()
+    assert db.scalar(select(func.count()).select_from(StoredFile)) == 0
 
 
 def test_cv_larger_than_the_limit_is_rejected(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -110,9 +110,3 @@ def test_admin_listing_never_exposes_the_storage_key(client: TestClient, admin_h
 
     assert listing[0]["has_cv"] is True
     assert "cv_storage_key" not in listing[0]
-
-
-@pytest.mark.parametrize("key", ["../../.env", "..\\..\\.env", "cv.pdf", "ABC.pdf"])
-def test_storage_rejects_keys_that_could_escape_the_upload_folder(key: str) -> None:
-    with pytest.raises(ValueError):
-        storage.read_cv(key)

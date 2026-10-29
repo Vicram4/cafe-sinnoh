@@ -89,13 +89,6 @@ def _clean_database() -> Iterator[None]:
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 
 
-@pytest.fixture(autouse=True)
-def _upload_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Los CVs de los tests van a una carpeta temporal, nunca a backend/uploads."""
-    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
-    return tmp_path
-
-
 @pytest.fixture
 def client() -> Iterator[TestClient]:
     with TestClient(app) as test_client:

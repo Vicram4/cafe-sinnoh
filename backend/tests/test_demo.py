@@ -1,6 +1,5 @@
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -11,6 +10,7 @@ from app.core.config import get_settings
 from app.models.contact_message import ContactMessage
 from app.models.product import Product
 from app.models.reward import Reward
+from app.models.stored_file import StoredFile
 from app.models.user import User
 from app.seed import seed_demo
 from app.seed.reset_demo import DemoModeDisabled, reset
@@ -41,22 +41,20 @@ def test_reset_refuses_to_run_without_demo_mode(db: Session, make_user) -> None:
 
 
 def test_reset_wipes_everything_and_restores_the_demo(
-    client: TestClient, db: Session, make_user, _upload_dir: Path, monkeypatch: pytest.MonkeyPatch
+    client: TestClient, db: Session, make_user, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(get_settings(), "demo_mode", True)
     make_user("visitante@example.com")
     db.add(ContactMessage(name="Spam", email="spam@example.com", message="Compra ya"))
+    db.add(StoredFile(key=f"{'a' * 32}.pdf", content=b"%PDF-"))
     db.commit()
-    cvs = _upload_dir / "cvs"
-    cvs.mkdir()
-    (cvs / f"{'a' * 32}.pdf").write_bytes(b"%PDF-")
 
     reset()
 
     db.expire_all()
     assert _count(db, User, User.email == "visitante@example.com") == 0
     assert _count(db, ContactMessage, ContactMessage.name == "Spam") == 0
-    assert list(cvs.iterdir()) == []
+    assert _count(db, StoredFile) == 0
     assert _count(db, Product) == 12
     assert _count(db, Reward) == 3
     assert _count(db, User) == 2

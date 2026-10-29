@@ -95,7 +95,7 @@ def download_application_cv(
     if application.cv_storage_key is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Esta candidatura no tiene CV.")
 
-    content = storage.read_cv(application.cv_storage_key)
+    content = storage.read_cv(db, application.cv_storage_key)
     if content is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encuentra el archivo del CV.")
 

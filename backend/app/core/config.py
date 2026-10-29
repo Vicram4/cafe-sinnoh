@@ -1,5 +1,4 @@
 from functools import lru_cache
-from pathlib import Path
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -54,10 +53,6 @@ class Settings(BaseSettings):
     shop_closing_hour: int = 20
     min_pickup_lead_minutes: int = 15
 
-    # Ruta absoluta calculada desde este archivo (backend/uploads), para
-    # no depender de la carpeta desde la que se lance uvicorn. Debe
-    # coincidir con la entrada del .gitignore.
-    upload_dir: Path = Path(__file__).resolve().parents[2] / "uploads"
     cv_max_bytes: int = 5 * 1024 * 1024
 
     # env_file le dice a pydantic-settings dónde buscar el .env;

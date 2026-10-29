@@ -1,51 +1,25 @@
 """Almacenamiento de archivos subidos (de momento, solo CVs).
 
-Toda la aplicación pasa por estas tres funciones y solo conoce la
-"clave" del archivo, nunca su ruta. Así, en el deployment se puede
-sustituir el disco local por S3 cambiando únicamente este módulo."""
+Toda la aplicación pasa por estas funciones y solo conoce la "clave" del
+archivo. El contenido se guarda en la tabla stored_files (no en disco: los
+alojamientos gratuitos lo pierden al reiniciar). Para pasar a S3 o similar
+bastaría con cambiar este módulo."""
 
-import re
 import uuid
-from pathlib import Path
 
-from app.core.config import get_settings
+from sqlalchemy.orm import Session
 
-_CV_FOLDER = "cvs"
-# La clave se genera aquí y se guarda en BD; aun así se valida antes de
-# construir una ruta, para que un valor manipulado no pueda salir de la
-# carpeta de subidas (p. ej. "../../.env").
-_KEY_PATTERN = re.compile(r"^[0-9a-f]{32}\.pdf$")
+from app.models.stored_file import StoredFile
 
 
-def _path_for(key: str) -> Path:
-    if not _KEY_PATTERN.fullmatch(key):
-        raise ValueError("Clave de almacenamiento no válida.")
-    return get_settings().upload_dir / _CV_FOLDER / key
-
-
-def save_cv(content: bytes) -> str:
+def save_cv(db: Session, content: bytes) -> str:
+    """Añade el archivo a la sesión sin hacer commit: se guarda en la misma
+    transacción que la candidatura, así que nunca queda un CV huérfano."""
     key = f"{uuid.uuid4().hex}.pdf"
-    path = _path_for(key)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(content)
+    db.add(StoredFile(key=key, content=content))
     return key
 
 
-def read_cv(key: str) -> bytes | None:
-    path = _path_for(key)
-    if not path.is_file():
-        return None
-    return path.read_bytes()
-
-
-def delete_cv(key: str) -> None:
-    _path_for(key).unlink(missing_ok=True)
-
-
-def delete_all_cvs() -> None:
-    """Solo para el reinicio de la demo: vacía el almacenamiento de CVs."""
-    folder = get_settings().upload_dir / _CV_FOLDER
-    if folder.is_dir():
-        for path in folder.iterdir():
-            if _KEY_PATTERN.fullmatch(path.name):
-                path.unlink()
+def read_cv(db: Session, key: str) -> bytes | None:
+    stored = db.get(StoredFile, key)
+    return stored.content if stored is not None else None

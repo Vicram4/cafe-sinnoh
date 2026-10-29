@@ -35,8 +35,8 @@ class JobApplication(Base):
     position: Mapped[JobPosition] = mapped_column(Enum(JobPosition, name="job_position"), nullable=False)
     experience: Mapped[str] = mapped_column(String(2000), nullable=False)
     cover_letter: Mapped[str | None] = mapped_column(String(2000), nullable=True)
-    # El archivo vive en services/storage.py; aquí solo su clave generada
-    # y el nombre original (que nunca se usa como nombre en disco).
+    # El archivo vive en services/storage.py (tabla stored_files); aquí
+    # solo su clave generada y el nombre original elegido por el candidato.
     cv_storage_key: Mapped[str | None] = mapped_column(String(500), nullable=True)
     cv_original_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     status: Mapped[ApplicationStatus] = mapped_column(

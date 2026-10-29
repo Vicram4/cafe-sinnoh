@@ -14,7 +14,6 @@ from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import engine
 from app.seed import seed_demo, seed_products, seed_rewards
-from app.services import storage
 
 
 class DemoModeDisabled(Exception):
@@ -30,7 +29,6 @@ def reset() -> None:
     tables = ", ".join(f'"{table.name}"' for table in Base.metadata.sorted_tables)
     with engine.begin() as conn:
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
-    storage.delete_all_cvs()
 
     seed_products.seed()
     seed_rewards.seed()

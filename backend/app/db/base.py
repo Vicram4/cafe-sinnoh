@@ -14,5 +14,6 @@ from app.models.product import Product  # noqa: F401
 from app.models.rate_limit_event import RateLimitEvent  # noqa: F401
 from app.models.refresh_token import RefreshToken  # noqa: F401
 from app.models.review import Review  # noqa: F401
+from app.models.stored_file import StoredFile  # noqa: F401
 from app.models.reward import Reward  # noqa: F401
 from app.models.user import User  # noqa: F401
