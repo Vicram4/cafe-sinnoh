@@ -18,10 +18,8 @@ COPY alembic ./alembic
 COPY app ./app
 
 # Sin privilegios de root: si alguien explotara la app, no controlaría el
-# contenedor. uploads/ (CVs) es lo único en lo que necesita escribir.
-RUN useradd --create-home --uid 1000 appuser \
-    && mkdir -p /app/uploads \
-    && chown appuser /app/uploads
+# contenedor. No necesita escribir en disco: los CVs van en la BD.
+RUN useradd --create-home --uid 1000 appuser
 USER appuser
 
 EXPOSE 8000
