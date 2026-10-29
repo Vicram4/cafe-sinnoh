@@ -51,8 +51,7 @@ Arquitectura y decisiones:
 - Caché: `/assets` (archivos con huella) un año; `index.html` sin caché,
   para que una versión nueva se cargue siempre.
 - Cabeceras: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`.
-  La CSP queda para el deployment: hay que permitir Google Fonts y el
-  script en línea del modo oscuro de `index.html`.
+  La misma CSP que en Vercel (ver docs/deployment.md).
 - La versión Docker comparte con el desarrollo local la base de datos (y,
   con ella, los CVs).
 - El backend usa `backend/.env` (SECRET_KEY, etc.); Compose sustituye
