@@ -66,7 +66,11 @@ Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E
 
 FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
 
-Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Para el último commit, consultar `git log`.
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Límite de intentos de login COMPLETO. Para el último commit, consultar `git log`.
+
+Repositorio en GitHub, PRIVADO: https://github.com/Vicram4/cafe-sinnoh (remoto `origin`, rama `main`). Push al final de cada bloque, siempre con OK del usuario. Las credenciales están guardadas en Windows (Git Credential Manager), así que Claude puede hacer el push. El historial se revisó antes del primer push: sin `.env`, secretos ni CVs.
+
+Límite de intentos de login (services/login_attempts.py, tabla `login_attempts`, migración 7b776c013cf5): se comprueba ANTES de verificar la contraseña. Dos límites en ventana deslizante de 15 min: 5 fallos por cuenta+IP y 20 por IP (configurables en config.py). No se limita solo por cuenta, porque cualquiera podría bloquear una cuenta ajena. Responde 429 con `Retry-After`. Un login correcto borra los fallos de esa cuenta+IP. Se guarda un HMAC del email (con SECRET_KEY), nunca el email en claro, y las filas de más de 15 min se borran en cada fallo. Detrás de un proxy (Docker/producción), uvicorn necesita `--proxy-headers` y `--forwarded-allow-ips` para ver la IP real; sin eso, todos los clientes compartirían la IP del proxy y el límite por IP los bloquearía a la vez.
 
 Seguridad y optimización:
 - `SECRET_KEY`: config.py rechaza claves de <32 bytes en TODOS los entornos (la app no arranca); `.env.example` la deja vacía con el comando para generarla. `hide_input_in_errors=True` en Settings para que los errores de validación no impriman secretos.
@@ -74,7 +78,7 @@ Seguridad y optimización:
 - Carrito por usuario (CartContext.tsx; claves en cart-context.ts): `cafe-sinnoh:cart:user:<id>` y `cafe-sinnoh:cart:guest`. Al iniciar sesión se incorpora el carrito sin sesión quedándose con la cantidad MAYOR por producto (no la suma, porque F5 cierra sesión y se suele volver a añadir lo mismo). Tras F5 el carrito aparece vacío hasta volver a entrar: es lo esperado.
 - Code splitting: router.tsx carga todas las páginas con `lazy` salvo Home y PublicLayout. Una ruta sin path intermedia aporta `hydrateFallbackElement` (sin él, React Router pinta la página en blanco en la primera carga) y `errorElement` (RouteErrorPage, dentro del layout). PublicLayout muestra una línea fija bajo la cabecera mientras carga una página. JS inicial: 265 KB (82 KB gzip).
 
-Tests: backend 85 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 24 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
+Tests: backend 93 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 24 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
 
 Endpoints añadidos en la FASE 12: POST/PATCH /products, DELETE /products/{id}; GET /reviews/admin/all; PATCH /careers/applications/{id}/status; PATCH /contact/{id}; GET /admin/users; PATCH /admin/users/{id}; GET /orders/admin/all.
 
@@ -84,14 +88,13 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. Docker completo (front + back).
+1. Docker completo (front + back). Configurar uvicorn con `--proxy-headers` si hay proxy delante (ver límite de login).
 2. GitHub: README profesional, capturas, CI (pytest con PostgreSQL de servicio, Vitest, build, lint, pip-audit y npm audit). En CI hay que definir SECRET_KEY (≥32 bytes) y TEST_DATABASE_URL.
 3. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción).
 4. Revisión final del portfolio.
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 
-- El login no limita los intentos (posible fuerza bruta de contraseñas). Señalado por Claude, pendiente de que el usuario decida si se añade.
 - El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos. Un carrito en servidor se descartó por coste/beneficio.
 - La ruta /about sigue siendo PlaceholderPage.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. get_db cierra bien la sesión. Si vuelve, ANTES de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.

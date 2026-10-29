@@ -70,6 +70,27 @@ npm test
   recargar). Se requiere react-router ≥ 8.5.1, que reintenta las descargas
   fallidas de páginas diferidas en lugar de recordar el error.
   JS inicial: 265 KB (82 KB gzip), antes 549 KB.
+- **Límite de intentos de login** (`app/services/login_attempts.py`):
+  - Se comprueba antes de verificar la contraseña: durante un bloqueo, ni
+    la contraseña correcta permite entrar.
+  - 5 fallos por cuenta+IP o 20 por IP en 15 minutos → 429 con
+    `Retry-After`. Valores configurables en `config.py`.
+  - No se limita solo por cuenta: si no, cualquiera podría bloquear la
+    cuenta de otra persona fallando a propósito.
+  - Un login correcto borra los fallos de esa cuenta+IP.
+  - Se guarda un HMAC del email, nunca el email en claro. Los registros de
+    más de 15 minutos se borran solos en cada fallo.
+  - **Detrás de un proxy** (Docker, producción) la IP que llega es la del
+    proxy: arrancar uvicorn con `--proxy-headers --forwarded-allow-ips=<IP
+    del proxy>`. Sin eso, todos los usuarios compartirían IP y el límite
+    por IP los bloquearía a la vez.
+  - Para desbloquear una cuenta en desarrollo:
+    `docker exec cafe-sinnoh-db psql -U sinnoh -d cafe_sinnoh -c "delete from login_attempts;"`
+
+## Repositorio
+
+- GitHub, privado: `https://github.com/Vicram4/cafe-sinnoh` (remoto `origin`).
+- Se sube con `git push` al final de cada bloque de trabajo.
 
 ## Notas del panel de administración (FASE 12)
 
@@ -124,7 +145,6 @@ npm test
 
 ## Pendientes
 
-- El login no limita los intentos (posible fuerza bruta de contraseñas).
 - El carrito sigue en localStorage (uno por cuenta), así que no se comparte
   entre dispositivos.
 - `/about` sigue siendo `PlaceholderPage`.

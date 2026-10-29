@@ -84,6 +84,9 @@ Commits: `958cd82`, `8b41b4d` (backend), `d16e8dc`, `8fbfe5e` (frontend).
 | Dependencias | `pip-audit` y `npm audit` sin vulnerabilidades (se actualizaron dnspython, vite, zod y source-map-js). `requirements.txt` en UTF-8. |
 | Carrito | Uno por cuenta y otro sin sesión. Al entrar, se incorpora el carrito sin sesión sin duplicar cantidades. |
 | Code splitting | JS inicial de 549 KB a 265 KB (82 KB comprimido). El panel de admin solo lo descarga quien entra en él. Página de error propia si una página no carga. |
+| Límite de login | 5 fallos por cuenta+IP o 20 por IP en 15 minutos bloquean el login (429), incluso con la contraseña correcta. Una persona no puede bloquear la cuenta de otra. No se guardan emails en claro. 8 tests. |
+
+El código está en GitHub, en un repositorio privado (`Vicram4/cafe-sinnoh`).
 
 ## 6. Decisiones vigentes
 
@@ -101,14 +104,13 @@ Commits: `958cd82`, `8b41b4d` (backend), `d16e8dc`, `8fbfe5e` (frontend).
 
 ## 7. Siguiente trabajo
 
-1. Docker completo.
+1. Docker completo (con uvicorn leyendo la IP real tras el proxy, por el límite de login).
 2. GitHub (README, capturas, CI que ejecute los tests y las auditorías).
 3. Deployment.
 4. Revisión final del portfolio.
 
 ## 8. Deudas conocidas
 
-- El login no limita los intentos (posible fuerza bruta de contraseñas).
 - El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos.
 - `/about` sigue siendo `PlaceholderPage`.
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
