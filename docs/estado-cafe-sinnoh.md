@@ -124,7 +124,8 @@ Commits: `dd1447d` (backend), `c55c3ea` (frontend) y `4342271` (Dependabot y CI 
 - Registro, contacto y empleo con límite de envíos por IP y un campo trampa invisible contra bots.
 - Los campos del registro tienen límites de longitud (antes un nombre muy largo provocaba un error 500).
 - Dependabot propone cada semana las actualizaciones de dependencias, y la CI se ejecuta también cada lunes.
-- **Tests:** 117 de backend y 36 de frontend.
+- Página "Nosotros" (antes provisional) y páginas propias de "no encontrado". El login enlaza con el registro, y un producto inexistente se indica al momento, sin 7 s de "Cargando…".
+- **Tests:** 117 de backend y 38 de frontend.
 
 ## 6. Decisiones vigentes
 
@@ -152,7 +153,7 @@ Commits: `dd1447d` (backend), `c55c3ea` (frontend) y `4342271` (Dependabot y CI 
 ## 8. Deudas conocidas
 
 - El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos.
-- `/about` sigue siendo `PlaceholderPage`.
+- Revisar los textos de la página "Nosotros" (borrador inicial).
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 
 ## 9. Lecciones del trabajo hasta ahora

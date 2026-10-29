@@ -251,4 +251,4 @@ npm test
 
 - El carrito sigue en localStorage (uno por cuenta), así que no se comparte
   entre dispositivos.
-- `/about` sigue siendo `PlaceholderPage`.
+- Revisar los textos de la página "Nosotros" (borrador inicial).

@@ -106,7 +106,7 @@ The full guide (in Spanish) is in [docs/development.md](docs/development.md): lo
 | | Command | Coverage |
 |---|---|---|
 | Backend | `pytest` (in `backend/`) | 117 tests: auth, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
-| Frontend | `npm test` (in `frontend/`) | 36 tests: session and token refresh, API client, per-user cart, careers form, theme and formatting |
+| Frontend | `npm test` (in `frontend/`) | 38 tests: session and token refresh, API client, per-user cart, careers form, theme and formatting |
 
 GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Dependabot proposes dependency updates weekly.
 
