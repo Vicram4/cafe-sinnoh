@@ -1,0 +1,46 @@
+name: Reiniciar la demo
+
+on:
+  # Cada día a las 04:00 UTC (madrugada en España). GitHub puede retrasar
+  # las ejecuciones programadas unos minutos.
+  schedule:
+    - cron: "0 4 * * *"
+  # Botón "Run workflow" en la pestaña Actions: también sirve para cargar la
+  # demo por primera vez en una base de datos recién creada.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Nunca dos reinicios a la vez sobre la misma base de datos.
+concurrency:
+  group: reset-demo
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    name: Vaciar y volver a sembrar
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # Base de datos de la demo publicada (Neon), guardada como secreto del
+      # repositorio. reset_demo BORRA TODO: solo se ejecuta con DEMO_MODE=true.
+      DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+      DEMO_MODE: "true"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Generar una SECRET_KEY de un solo uso
+        # Settings exige una clave, pero sembrar no la usa para nada que
+        # dependa de la del backend publicado.
+        run: echo "SECRET_KEY=$(python -c 'import secrets; print(secrets.token_urlsafe(64))')" >> "$GITHUB_ENV"
+      # Por si el backend aún no ha arrancado con la última migración.
+      - run: alembic upgrade head
+      - run: python -m app.seed.reset_demo
