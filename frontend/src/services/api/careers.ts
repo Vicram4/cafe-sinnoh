@@ -8,6 +8,8 @@ export interface JobApplicationPayload {
   position: string
   experience: string
   cover_letter?: string | null
+  // Campo trampa anti-bots (ver HoneypotField): debe ir vacío.
+  website?: string
 }
 
 // multipart/form-data (no JSON) para poder adjuntar el CV en la misma petición.

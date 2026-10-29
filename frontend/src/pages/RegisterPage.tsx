@@ -6,11 +6,16 @@ import { z } from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
+import { HoneypotField } from '../components/HoneypotField'
 
 const registerSchema = z.object({
-  fullName: z.string().min(2, 'Introduce tu nombre completo.'),
+  fullName: z.string().min(2, 'Introduce tu nombre completo.').max(255, 'El nombre es demasiado largo.'),
   email: z.string().email('Introduce un email válido.'),
-  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+    .max(128, 'La contraseña no puede superar los 128 caracteres.'),
+  website: z.string().optional(),
 })
 
 type RegisterForm = z.infer<typeof registerSchema>
@@ -29,7 +34,7 @@ export function RegisterPage() {
   async function onSubmit(data: RegisterForm) {
     setServerError(null)
     try {
-      await registerUser({ email: data.email, password: data.password, full_name: data.fullName })
+      await registerUser({ email: data.email, password: data.password, full_name: data.fullName, website: data.website })
       navigate('/')
     } catch (error) {
       setServerError(error instanceof ApiError ? error.message : 'No se pudo conectar con el servidor.')
@@ -41,6 +46,7 @@ export function RegisterPage() {
       <h1 className="text-2xl font-semibold">Crear cuenta</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-4" noValidate>
+        <HoneypotField registration={register('website')} />
         <div>
           <label htmlFor="fullName" className="mb-1 block text-sm font-medium">
             Nombre completo

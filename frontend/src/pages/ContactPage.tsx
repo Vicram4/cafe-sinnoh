@@ -7,11 +7,13 @@ import { shopInfo } from '../data/shop'
 import { submitContactMessage } from '../services/api/contact'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
+import { HoneypotField } from '../components/HoneypotField'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Introduce tu nombre.'),
   email: z.string().email('Introduce un email válido.'),
   message: z.string().min(1, 'Escribe tu mensaje.').max(2000),
+  website: z.string().optional(),
 })
 
 type ContactForm = z.infer<typeof contactSchema>
@@ -71,6 +73,7 @@ export function ContactPage() {
             className="flex flex-col gap-4"
             noValidate
           >
+            <HoneypotField registration={register('website')} />
             <div>
               <label htmlFor="name" className="mb-1 block text-sm font-medium">
                 Nombre

@@ -7,6 +7,7 @@ import { jobPositions } from '../data/positions'
 import { submitJobApplication } from '../services/api/careers'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
+import { HoneypotField } from '../components/HoneypotField'
 
 const CV_MAX_BYTES = 5 * 1024 * 1024
 
@@ -19,6 +20,7 @@ const applicationSchema = z.object({
   }),
   experience: z.string().min(1, 'Cuéntanos tu experiencia.').max(2000),
   coverLetter: z.string().max(2000).optional(),
+  website: z.string().optional(),
   // Solo para avisar antes de enviar: quien decide es el backend, que
   // además comprueba el contenido real del archivo.
   cv: z
@@ -51,6 +53,7 @@ export function CareersPage() {
           position: data.position,
           experience: data.experience,
           cover_letter: data.coverLetter || null,
+          website: data.website,
         },
         data.cv?.[0],
       ),
@@ -90,6 +93,7 @@ export function CareersPage() {
           className="mt-8 flex flex-col gap-4"
           noValidate
         >
+          <HoneypotField registration={register('website')} />
           <div>
             <label htmlFor="fullName" className="mb-1 block text-sm font-medium">
               Nombre completo

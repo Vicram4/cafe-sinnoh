@@ -35,10 +35,20 @@ async function send(path: string, { token, headers, body, ...options }: RequestO
     // El backend siempre devuelve {"detail": "..."} en sus errores
     // (así lo definimos en cada HTTPException de FastAPI).
     const errorBody = await response.json().catch(() => null)
-    throw new ApiError(errorBody?.detail ?? 'Ha ocurrido un error inesperado.', response.status)
+    throw new ApiError(errorMessage(errorBody?.detail) ?? 'Ha ocurrido un error inesperado.', response.status)
   }
 
   return response
+}
+
+function errorMessage(detail: unknown): string | null {
+  if (typeof detail === 'string') return detail
+  // Los 422 de FastAPI traen una lista de errores de validación: se muestra
+  // el primero (sin esto, la página enseñaba "[object Object]").
+  if (Array.isArray(detail) && typeof detail[0]?.msg === 'string') {
+    return detail[0].msg.replace(/^Value error, /, '')
+  }
+  return null
 }
 
 async function request<T>(path: string, options?: RequestOptions): Promise<T> {

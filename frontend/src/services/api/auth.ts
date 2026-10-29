@@ -11,6 +11,8 @@ export interface RegisterPayload {
   password: string
   full_name: string
   phone?: string | null
+  // Campo trampa anti-bots (ver HoneypotField): debe ir vacío.
+  website?: string
 }
 
 export async function loginRequest(email: string, password: string): Promise<LoginResponse> {

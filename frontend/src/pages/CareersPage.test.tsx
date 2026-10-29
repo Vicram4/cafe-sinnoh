@@ -50,6 +50,15 @@ describe('CareersPage', () => {
     expect(input).toHaveAccessibleDescription('Recomendado: adjunta tu CV en PDF, máx. 5 MB.')
   })
 
+  it('el campo trampa anti-bots no es accesible para las personas', () => {
+    renderPage()
+
+    const honeypot = document.querySelector<HTMLInputElement>('input[name="website"]')!
+    expect(honeypot).toHaveAttribute('tabindex', '-1')
+    expect(honeypot.closest('[aria-hidden="true"]')).not.toBeNull()
+    expect(screen.queryByRole('textbox', { name: /no rellenes/i })).toBeNull()
+  })
+
   it('envía la candidatura con el CV adjunto', async () => {
     const user = renderPage()
     await fillRequiredFields(user)

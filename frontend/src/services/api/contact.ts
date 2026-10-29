@@ -5,6 +5,8 @@ export interface ContactMessagePayload {
   name: string
   email: string
   message: string
+  // Campo trampa anti-bots (ver HoneypotField): debe ir vacío.
+  website?: string
 }
 
 export function submitContactMessage(payload: ContactMessagePayload) {

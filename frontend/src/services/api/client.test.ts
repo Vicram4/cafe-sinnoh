@@ -55,6 +55,14 @@ describe('api client', () => {
     expect(error).toMatchObject({ status: 403, message: 'No tienes permisos.' })
   })
 
+  it('en los errores de validación (422) muestra el primer mensaje, no "[object Object]"', async () => {
+    fetchMock.mockResolvedValue(
+      Response.json({ detail: [{ loc: ['body', 'password'], msg: 'Value error, Demasiado corta.' }] }, { status: 422 }),
+    )
+
+    await expect(api.post('/auth/register', {})).rejects.toMatchObject({ status: 422, message: 'Demasiado corta.' })
+  })
+
   it('usa un mensaje genérico si el error no trae JSON', async () => {
     fetchMock.mockResolvedValue(new Response('Internal Server Error', { status: 500 }))
 
