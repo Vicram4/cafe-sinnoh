@@ -127,6 +127,16 @@ Commits: `dd1447d` (backend), `c55c3ea` (frontend) y `4342271` (Dependabot y CI 
 - Página "Nosotros" (antes provisional) y páginas propias de "no encontrado". El login enlaza con el registro, y un producto inexistente se indica al momento, sin 7 s de "Cargando…".
 - **Tests:** 117 de backend y 38 de frontend.
 
+## 5 nonies. Modo demo, aviso legal y fuentes propias
+
+Commits: `e9db6fc`, `23951d1`, `01522f0`, `6692e37` y `601a9e7`.
+
+- **Modo demo:** botones "Entrar como cliente" y "Entrar como admin" en el login, con datos de ejemplo (pedidos, puntos, reseñas y bandeja del admin), y una franja que avisa de que es una demo. Un comando devuelve la demo a su estado inicial; solo funciona con el modo demo activado, para no borrar nunca datos reales.
+- **Aviso legal y privacidad**, proporcionado a un proyecto de fans sin ánimo de lucro, enlazado desde el pie y los formularios. El correo de contacto es el del proyecto, no el personal.
+- **Fuentes servidas desde la propia web:** ya no se envía la IP de los visitantes a Google.
+- Corregidos dos fallos de los scripts de datos que solo aparecían al ejecutarlos como comandos o dos veces seguidas.
+- **Tests:** 122 de backend y 41 de frontend.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -144,11 +154,10 @@ Commits: `dd1447d` (backend), `c55c3ea` (frontend) y `4342271` (Dependabot y CI 
 
 ## 7. Siguiente trabajo
 
-1. Modo demo (cuentas de prueba visibles y reinicio diario de los datos), página de aviso legal y privacidad, y fuentes propias en lugar de Google Fonts.
-2. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
-3. Deployment (incluye HTTPS y la Content-Security-Policy).
-4. Opcional: login con Google.
-5. Capturas, hacer público el repositorio y revisión final del portfolio.
+1. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
+2. Deployment (incluye HTTPS y la Content-Security-Policy).
+3. Opcional: login con Google.
+4. Capturas, hacer público el repositorio y revisión final del portfolio.
 
 ## 8. Deudas conocidas
 

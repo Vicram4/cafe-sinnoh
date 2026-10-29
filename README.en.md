@@ -20,6 +20,7 @@ The user interface is in Spanish; code, database and API are in English.
 - Personal account: profile, order history, points and reward redemption.
 - Reviews only for products that were bought and picked up, moderated before publishing.
 - Careers page (application with a PDF CV) and contact form.
+- Demo mode: one-click customer and admin test accounts, with data reset daily.
 - Light and dark mode, responsive layout and support for `prefers-reduced-motion`.
 
 **Admin**
@@ -99,14 +100,16 @@ Requirements: Git and Docker Desktop.
 
 Database migrations run automatically when the backend starts.
 
+**Demo mode (optional).** For the public version: set `VITE_DEMO_MODE=true` in `.env` and `DEMO_MODE=true` in `backend/.env`, rebuild, and create the test accounts with `docker compose exec backend python -m app.seed.seed_demo`. The login page will show "Entrar como cliente" and "Entrar como admin" buttons. `python -m app.seed.reset_demo` restores the demo to its initial state; it deletes all data, so it only runs with `DEMO_MODE=true`.
+
 ## Development and tests
 
 The full guide (in Spanish) is in [docs/development.md](docs/development.md): local development without Docker, the test database and dependency audits.
 
 | | Command | Coverage |
 |---|---|---|
-| Backend | `pytest` (in `backend/`) | 117 tests: auth, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
-| Frontend | `npm test` (in `frontend/`) | 38 tests: session and token refresh, API client, per-user cart, careers form, theme and formatting |
+| Backend | `pytest` (in `backend/`) | 122 tests: auth, demo mode, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
+| Frontend | `npm test` (in `frontend/`) | 41 tests: demo login, session and token refresh, API client, per-user cart, careers form, theme and formatting |
 
 GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Dependabot proposes dependency updates weekly.
 

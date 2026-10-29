@@ -196,6 +196,22 @@ npm test
   actualización para pip, npm, GitHub Actions y las imágenes Docker. La CI
   también se ejecuta cada lunes, aunque no haya cambios.
 
+- **Fuentes:** Fraunces y Work Sans se sirven desde la propia web
+  (`@fontsource-variable`), no desde Google Fonts.
+- **Aviso legal y privacidad** en `/legal`, enlazado desde el pie y los
+  formularios. Contacto: victorramos.devs@gmail.com.
+- **Modo demo:**
+  - Backend: `DEMO_MODE=true` en `backend/.env`.
+    `python -m app.seed.seed_demo` crea las cuentas de prueba
+    (demo.cliente@example.com / cafe-demo-cliente y
+    demo.admin@example.com / cafe-demo-admin) con datos de ejemplo, sin
+    borrar nada. `python -m app.seed.reset_demo` BORRA TODO y vuelve a
+    sembrar; se niega a ejecutarse sin `DEMO_MODE=true`. En la demo
+    publicada se programará una vez al día.
+  - Frontend: `VITE_DEMO_MODE=true` (en `frontend/.env` para desarrollo, en
+    el `.env` de la raíz para Docker) muestra el aviso de demo, los botones de
+    cuentas de prueba en el login y el aviso de no subir CVs reales.
+
 ## Notas del panel de administración (FASE 12)
 
 - Productos: desactivar (`is_available = false`) es la vía normal para retirar
@@ -251,4 +267,4 @@ npm test
 
 - El carrito sigue en localStorage (uno por cuenta), así que no se comparte
   entre dispositivos.
-- Revisar los textos de la página "Nosotros" (borrador inicial).
+- Programar el reinicio diario de la demo al publicarla (deployment).

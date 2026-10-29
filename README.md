@@ -18,6 +18,7 @@ La marca se inspira en un lugar, la región de Sinnoh: montañas, bosques y frí
 - Cuenta personal: datos, historial de pedidos, puntos y canje de recompensas.
 - Reseñas solo de productos comprados y recogidos, moderadas antes de publicarse.
 - Trabaja con nosotros (candidatura con CV en PDF) y formulario de contacto.
+- Modo demo: cuentas de prueba de cliente y de admin con un clic, y reinicio diario de los datos.
 - Modo claro y oscuro, diseño adaptable y respeto a `prefers-reduced-motion`.
 
 **Administración**
@@ -97,14 +98,16 @@ Requisitos: Git y Docker Desktop.
 
 Las migraciones de la base de datos se aplican solas al arrancar el backend.
 
+**Modo demo (opcional).** Para la versión pública: pon `VITE_DEMO_MODE=true` en `.env` y `DEMO_MODE=true` en `backend/.env`, vuelve a construir y crea las cuentas de prueba con `docker compose exec backend python -m app.seed.seed_demo`. El login mostrará los botones "Entrar como cliente" y "Entrar como admin". `python -m app.seed.reset_demo` devuelve la demo a su estado inicial; borra todos los datos, por eso solo funciona con `DEMO_MODE=true`.
+
 ## Desarrollo y tests
 
 La guía completa está en [docs/development.md](docs/development.md): desarrollo sin Docker, base de datos de test y auditorías.
 
 | | Comando | Qué cubre |
 |---|---|---|
-| Backend | `pytest` (en `backend/`) | 117 tests: autenticación, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
-| Frontend | `npm test` (en `frontend/`) | 38 tests: sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
+| Backend | `pytest` (en `backend/`) | 122 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
+| Frontend | `npm test` (en `frontend/`) | 41 tests: acceso de demo, sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
 La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Dependabot propone cada semana las actualizaciones de dependencias.
 
