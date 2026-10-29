@@ -4,7 +4,9 @@ export const shopInfo = {
   name: 'Café Sinnoh',
   address: 'Calle Ciudad Jubileo, 14, 28020 Madrid',
   phone: '+34 910 000 000',
-  email: 'hola@cafesinnoh.com',
+  // .example está reservado para ejemplos (RFC 2606): nunca será de nadie,
+  // así que ningún visitante enviará correos a un desconocido.
+  email: 'hola@cafesinnoh.example',
   hours: [
     { days: 'Lunes a viernes', time: '08:00 - 20:00' },
     { days: 'Sábados', time: '09:00 - 21:00' },

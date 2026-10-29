@@ -45,13 +45,21 @@ export function Footer() {
                 Contacto
               </Link>
             </li>
+            <li>
+              <Link to="/legal" className="text-muted-foreground hover:text-primary">
+                Aviso legal y privacidad
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
       <p className="border-t border-border p-4 text-center text-xs text-muted-foreground">
                 © {currentYear} {shopInfo.name}. Proyecto de fans sin ánimo de lucro, no afiliado a
-        Nintendo, Game Freak ni The Pokémon Company.
+        Nintendo, Game Freak ni The Pokémon Company.{' '}
+        <Link to="/legal" className="underline underline-offset-2 hover:text-primary">
+          Aviso legal y privacidad
+        </Link>
       </p>
     </footer>
   )

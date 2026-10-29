@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
+import { FormPrivacyNote } from '../components/FormPrivacyNote'
 
 const registerSchema = z.object({
   fullName: z.string().min(2, 'Introduce tu nombre completo.').max(255, 'El nombre es demasiado largo.'),
@@ -98,6 +99,7 @@ export function RegisterPage() {
         <Button type="submit" disabled={isSubmitting} className="mt-2">
           {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
         </Button>
+        <FormPrivacyNote />
       </form>
 
       <p className="mt-6 text-sm text-muted-foreground">

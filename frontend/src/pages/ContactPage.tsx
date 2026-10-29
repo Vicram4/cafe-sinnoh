@@ -8,6 +8,7 @@ import { submitContactMessage } from '../services/api/contact'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
+import { FormPrivacyNote } from '../components/FormPrivacyNote'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Introduce tu nombre.'),
@@ -121,6 +122,7 @@ export function ContactPage() {
             <Button type="submit" disabled={isSubmitting || mutation.isPending} className="self-start">
               {mutation.isPending ? 'Enviando…' : 'Enviar mensaje'}
             </Button>
+            <FormPrivacyNote />
           </form>
         )}
       </div>

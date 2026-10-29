@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CareersPage } from './CareersPage'
 import { submitJobApplication } from '../services/api/careers'
@@ -12,9 +13,11 @@ const submitMock = vi.mocked(submitJobApplication)
 function renderPage() {
   const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } })
   render(
-    <QueryClientProvider client={queryClient}>
-      <CareersPage />
-    </QueryClientProvider>,
+    <MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <CareersPage />
+      </QueryClientProvider>
+    </MemoryRouter>,
   )
   // applyAccept: false para poder elegir un archivo que no es PDF, como
   // haría alguien que cambia el filtro del selector a "Todos los archivos".

@@ -8,6 +8,7 @@ import { submitJobApplication } from '../services/api/careers'
 import { ApiError } from '../services/api/client'
 import { Button } from '../components/Button'
 import { HoneypotField } from '../components/HoneypotField'
+import { FormPrivacyNote } from '../components/FormPrivacyNote'
 
 const CV_MAX_BYTES = 5 * 1024 * 1024
 
@@ -206,6 +207,7 @@ export function CareersPage() {
           <Button type="submit" disabled={isSubmitting || mutation.isPending} className="mt-2 self-start">
             {mutation.isPending ? 'Enviando…' : 'Enviar candidatura'}
           </Button>
+          <FormPrivacyNote />
         </form>
       )}
     </section>
