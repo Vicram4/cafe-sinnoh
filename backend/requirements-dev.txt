@@ -4,3 +4,5 @@
 pytest==9.2.0
 # El TestClient de Starlette 1.7 busca primero httpx2 (y si no, httpx).
 httpx2==2.16.0
+# Auditoría de vulnerabilidades: pip-audit -r requirements.txt -r requirements-dev.txt
+pip-audit==2.10.1
