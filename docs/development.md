@@ -218,7 +218,7 @@ npm test
   pone su título con `usePageTitle`. Las etiquetas Open Graph (vista previa
   al compartir) están en `index.html`; `og:image` y `og:url` se añaden al
   publicar, porque necesitan la URL absoluta del dominio
-  (`public/og-image.png`, 1200×630).
+  (`public/og-image.jpg`, 1200×630).
 
 - **Ilustraciones de producto:** guía y prompts en
   `docs/ilustraciones-productos.md`. Para añadir o cambiar una: guardar el
