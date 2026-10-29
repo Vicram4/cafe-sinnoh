@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 from app.models.user import UserRole
 
@@ -11,9 +11,15 @@ class UserCreate(BaseModel):
     email-validator, instalado como dependencia de FastAPI)."""
 
     email: EmailStr
-    password: str
-    full_name: str
-    phone: str | None = None
+    # Máximo de 128: Argon2 es lento a propósito, y sin límite una
+    # contraseña de megabytes serviría para saturar el servidor.
+    password: str = Field(min_length=8, max_length=128)
+    # Los mismos máximos que las columnas: sin ellos, un valor más largo
+    # llegaba a PostgreSQL y provocaba un error 500.
+    full_name: str = Field(min_length=2, max_length=255)
+    phone: str | None = Field(default=None, max_length=30)
+    # Campo trampa anti-bots: invisible en el formulario, debe llegar vacío.
+    website: str | None = None
 
 
 class UserRead(BaseModel):

@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.api.v1.deps import require_admin
+from app.api.v1.deps import form_rate_limit, reject_if_honeypot_filled, require_admin
 from app.db.session import get_db
 from app.models.job_application import JobApplication
 from app.models.user import User
@@ -28,11 +28,14 @@ def _application_form(
     position: Annotated[str, Form()],
     experience: Annotated[str, Form()],
     cover_letter: Annotated[str | None, Form()] = None,
+    # Campo trampa anti-bots: invisible en el formulario, debe llegar vacío.
+    website: Annotated[str | None, Form()] = None,
 ) -> JobApplicationCreate:
     """FastAPI 0.141 no reparte un modelo Form() en campos cuando el
     endpoint también recibe un archivo, así que se leen uno a uno y se
     valida con el mismo esquema de antes (las reglas siguen en un solo
     sitio). Los errores se devuelven como el 422 estándar."""
+    reject_if_honeypot_filled(website)
     try:
         return JobApplicationCreate(
             full_name=full_name,
@@ -49,7 +52,12 @@ def _application_form(
         ) from error
 
 
-@router.post("/applications", response_model=JobApplicationRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/applications",
+    response_model=JobApplicationRead,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(form_rate_limit("careers"))],
+)
 def submit_application(
     payload: Annotated[JobApplicationCreate, Depends(_application_form)],
     cv: Annotated[UploadFile | None, File()] = None,

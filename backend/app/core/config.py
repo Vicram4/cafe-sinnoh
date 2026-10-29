@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     login_max_failures_per_account: int = 5
     login_max_failures_per_ip: int = 20
     login_failure_window_minutes: int = 15
+    # Anti-spam de los formularios públicos (registro, contacto, empleo):
+    # envíos por IP y por formulario en una ventana de N minutos.
+    form_max_submissions: int = 5
+    form_window_minutes: int = 60
 
     # Horario del local (hora local, formato 24h) y minutos mínimos de
     # margen entre el momento del pedido y la hora de recogida elegida,

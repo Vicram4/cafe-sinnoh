@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.v1.deps import require_admin
+from app.api.v1.deps import form_rate_limit, reject_if_honeypot_filled, require_admin
 from app.db.session import get_db
 from app.models.contact_message import ContactMessage
 from app.models.user import User
@@ -16,9 +16,15 @@ from app.schemas.contact_message import (
 router = APIRouter(prefix="/contact", tags=["contact"])
 
 
-@router.post("", response_model=ContactMessageRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=ContactMessageRead,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(form_rate_limit("contact"))],
+)
 def submit_contact_message(payload: ContactMessageCreate, db: Session = Depends(get_db)) -> ContactMessage:
-    message = ContactMessage(**payload.model_dump())
+    reject_if_honeypot_filled(payload.website)
+    message = ContactMessage(**payload.model_dump(exclude={"website"}))
     db.add(message)
     db.commit()
     db.refresh(message)

@@ -6,13 +6,14 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import form_rate_limit, get_current_user, reject_if_honeypot_filled
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserRead
 from app.core.config import get_settings
+from app.services.passwords import WeakPasswordError, check_password_strength
 from app.services.refresh_tokens import (
     InactiveUserRefresh,
     InvalidRefreshToken,
@@ -36,8 +37,19 @@ REFRESH_COOKIE_NAME = "refresh_token"
 REFRESH_COOKIE_PATH = "/api/v1/auth"
 
 
-@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(form_rate_limit("register"))],
+)
 def register(payload: UserCreate, db: Session = Depends(get_db)) -> User:
+    reject_if_honeypot_filled(payload.website)
+    try:
+        check_password_strength(payload.password, payload.email)
+    except WeakPasswordError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing is not None:
         raise HTTPException(

@@ -23,7 +23,7 @@ def test_register_creates_user_without_exposing_password(client: TestClient) -> 
 def test_register_rejects_duplicate_email(client: TestClient, user: User) -> None:
     response = client.post(
         f"{API}/auth/register",
-        json={"email": user.email, "password": "otra123", "full_name": "Duplicada"},
+        json={"email": user.email, "password": "otra-clave-larga", "full_name": "Duplicada"},
     )
 
     assert response.status_code == 409

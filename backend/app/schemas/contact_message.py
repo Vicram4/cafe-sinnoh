@@ -7,6 +7,8 @@ class ContactMessageCreate(BaseModel):
     name: str = Field(min_length=2, max_length=150)
     email: EmailStr
     message: str = Field(min_length=1, max_length=2000)
+    # Campo trampa anti-bots: invisible en el formulario, debe llegar vacío.
+    website: str | None = None
 
 
 class ContactMessageReadUpdate(BaseModel):
