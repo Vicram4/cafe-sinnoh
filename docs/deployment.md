@@ -84,7 +84,9 @@ vuelve a sembrar productos, recompensas y las cuentas de demo.
 
 Todo en planes gratuitos. Northflank pide una tarjeta para verificar la
 cuenta y no tiene un tope de gasto que pare el servicio: hay un aviso de
-gasto por email (Billing). No cambiar el plan de recursos ni añadir servicios
+gasto por email de 1 $ (Billing → Manage alerts). El "$50 billing limit" que
+muestra Billing es el umbral de facturación (factura anticipada), no un tope.
+Si llegara el aviso: Pause en el servicio. No cambiar el plan de recursos ni añadir servicios
 sin revisarlo.
 
 ## Comprobado en la web publicada
@@ -98,11 +100,13 @@ sin revisarlo.
   Vercel los reenvíe).
 - `og:image` y `og:url` apuntan a https://cafe-sinnoh.vercel.app (si cambia
   el dominio, cambiarlas en `index.html`).
+- Comprobado por el usuario (2026-10-30): F5 conserva la sesión y "Salir" la
+  cierra, pedido con recogida a las 8:30, panel de admin, móvil, IP real del
+  visitante en los registros de Northflank y vista previa en LinkedIn Post
+  Inspector.
 
 ## Pendiente
 
-- Vista previa en LinkedIn Post Inspector (no confirmado si el
-  `X-Robots-Tag: noindex` de la imagen afecta).
 - Dominio propio (opcional).
 - Copias de seguridad: no hay datos reales que perder (la demo se regenera
   cada día). Si algún día los hubiera, revisar las opciones de Neon.
