@@ -189,8 +189,11 @@ def seed() -> None:
             existing = db.query(Product).filter(Product.slug == data["slug"]).first()
             if existing is not None:
                 continue
-            category_slug = data.pop("category_slug")
-            product = Product(category_id=categories_by_slug[category_slug].id, **data)
+            # Copia sin "category_slug": hacer pop() sobre data modificaba la
+            # lista PRODUCTS y una segunda siembra en el mismo proceso (el
+            # reinicio de la demo) fallaba con KeyError.
+            fields = {key: value for key, value in data.items() if key != "category_slug"}
+            product = Product(category_id=categories_by_slug[data["category_slug"]].id, **fields)
             db.add(product)
 
         db.commit()

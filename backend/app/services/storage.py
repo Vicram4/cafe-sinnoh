@@ -40,3 +40,12 @@ def read_cv(key: str) -> bytes | None:
 
 def delete_cv(key: str) -> None:
     _path_for(key).unlink(missing_ok=True)
+
+
+def delete_all_cvs() -> None:
+    """Solo para el reinicio de la demo: vacía el almacenamiento de CVs."""
+    folder = get_settings().upload_dir / _CV_FOLDER
+    if folder.is_dir():
+        for path in folder.iterdir():
+            if _KEY_PATTERN.fullmatch(path.name):
+                path.unlink()

@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     ejecución simplemente devolvería None sin avisar."""
 
     environment: str = "development"
+    # Solo con DEMO_MODE=true se puede ejecutar el reinicio de la demo
+    # (app/seed/reset_demo.py), que BORRA todos los datos.
+    demo_mode: bool = False
     database_url: str
     # Solo la usan los tests (tests/conftest.py), que sustituyen con ella
     # DATABASE_URL antes de arrancar la app.
