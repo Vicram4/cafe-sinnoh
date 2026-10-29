@@ -186,14 +186,21 @@ def seed() -> None:
             categories_by_slug[data["slug"]] = existing
 
         for data in PRODUCTS:
+            # Ilustración servida por el frontend (frontend/public/products),
+            # generada con scripts/prepare_product_images.py.
+            image_url = f"/products/{data['slug']}.webp"
             existing = db.query(Product).filter(Product.slug == data["slug"]).first()
             if existing is not None:
+                # Solo rellena la imagen si falta: no pisa la que haya puesto
+                # un admin desde el panel.
+                if existing.image_url is None:
+                    existing.image_url = image_url
                 continue
             # Copia sin "category_slug": hacer pop() sobre data modificaba la
             # lista PRODUCTS y una segunda siembra en el mismo proceso (el
             # reinicio de la demo) fallaba con KeyError.
             fields = {key: value for key, value in data.items() if key != "category_slug"}
-            product = Product(category_id=categories_by_slug[data["category_slug"]].id, **fields)
+            product = Product(category_id=categories_by_slug[data["category_slug"]].id, image_url=image_url, **fields)
             db.add(product)
 
         db.commit()

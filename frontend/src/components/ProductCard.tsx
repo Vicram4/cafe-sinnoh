@@ -18,7 +18,15 @@ export function ProductCard({ product }: ProductCardProps) {
             generes las ilustraciones finales. */}
                 <div className="mb-3 flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
           {product.image_url ? (
-            <img src={product.image_url} alt="" className="h-full w-full object-cover" />
+            <img
+              src={product.image_url}
+              alt=""
+              width={640}
+              height={640}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           ) : (
             <span className="text-sm">Sin imagen</span>
           )}

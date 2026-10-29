@@ -44,7 +44,14 @@ export function ProductDetailPage() {
       <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="flex aspect-square items-center justify-center border border-border bg-muted text-muted-foreground">
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
+            <img
+              src={product.image_url}
+              alt={`Ilustración de ${product.name}`}
+              width={640}
+              height={640}
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           ) : (
             <span>Sin imagen</span>
           )}
