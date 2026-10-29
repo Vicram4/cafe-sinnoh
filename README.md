@@ -50,7 +50,8 @@ flowchart LR
 ## Decisiones técnicas destacadas
 
 **Seguridad**
-- JWT solo en memoria (estado de React), nunca en `localStorage`: un XSS no puede robar la sesión. A cambio, recargar la página cierra la sesión (decisión consciente, que se revisará en el deployment).
+- Sesión en dos piezas: un JWT de corta duración solo en memoria (nunca en `localStorage`) y un token de renovación en una cookie `HttpOnly` + `SameSite=Strict` que JavaScript no puede leer. Un XSS no puede robar la sesión, y aun así se conserva al recargar la página.
+- Los tokens de renovación rotan en cada uso: si reaparece uno ya usado (señal de copia), se revoca toda la sesión. En la base de datos solo se guarda su hash, y cerrar sesión la revoca también en el servidor.
 - Cada petición consulta el usuario en la BD: un cambio de rol o una desactivación surten efecto al instante, aunque el token siga siendo válido.
 - Límite de intentos de login por cuenta + IP y por IP, comprobado antes que la contraseña. Se guarda un HMAC del email, nunca el email en claro.
 - La app no arranca con una `SECRET_KEY` de menos de 32 bytes, y los errores de configuración no muestran secretos.
@@ -100,8 +101,8 @@ La guía completa está en [docs/development.md](docs/development.md): desarroll
 
 | | Comando | Qué cubre |
 |---|---|---|
-| Backend | `pytest` (en `backend/`) | 93 tests: autenticación, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
-| Frontend | `npm test` (en `frontend/`) | 27 tests: cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
+| Backend | `pytest` (en `backend/`) | 102 tests: autenticación, sesión persistente, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
+| Frontend | `npm test` (en `frontend/`) | 34 tests: sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
 La CI de GitHub Actions ejecuta en cada push los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker.
 

@@ -106,11 +106,22 @@ Commits: `ca4e3fa` (backend), `ab351f8` (frontend y nginx), `248b2cd` (Compose).
 - **CI con GitHub Actions:** tests, lint, build, auditorías de dependencias e imágenes Docker en cada push. Se simuló antes en contenedores Linux limpios.
 - **Tests:** 93 de backend y 27 de frontend.
 
+## 5 septies. Sesión persistente al recargar
+
+Commits: `354f412` (backend) y `bd70fde` (frontend).
+
+- Al pulsar F5 ya no se pierde la sesión. El token principal sigue solo en memoria; lo que sobrevive es un token de renovación en una cookie que JavaScript no puede leer.
+- Cada renovación invalida el token anterior. Si alguien reutiliza uno ya usado, se cierra toda la sesión. "Salir" la cierra también en el servidor.
+- Funciona con varias pestañas a la vez, sin que el sistema lo confunda con un robo.
+- Comprobado en un navegador real, tanto en desarrollo como en Docker.
+- **Tests:** 102 de backend y 34 de frontend.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
 - SQLAlchemy síncrono.
-- JWT solo access token y solo en memoria. Se pierde la sesión al recargar y no es un bug. Decisión definitiva aplazada al deployment.
+- Sesión: token principal solo en memoria y token de renovación en cookie `HttpOnly` con rotación. La sesión se mantiene al recargar.
+- Es un proyecto personal de fans sin ánimo de lucro, no un negocio: lo legal y el SEO se hacen en proporción a eso. La web no se indexará en Google.
 - `get_current_user` consulta siempre la base de datos y rechaza cuentas desactivadas en cada petición.
 - snake_case idéntico en frontend y backend.
 - Dinero siempre en céntimos.
@@ -122,10 +133,12 @@ Commits: `ca4e3fa` (backend), `ab351f8` (frontend y nginx), `248b2cd` (Compose).
 
 ## 7. Siguiente trabajo
 
-1. Deployment (incluye la Content-Security-Policy).
-2. Capturas para el README, cuando estén las ilustraciones de los productos.
-3. Hacer público el repositorio (decisión del autor).
-4. Revisión final del portfolio (completar `docs/architecture.md` y decidir la licencia).
+1. Seguridad básica: contraseña mínima, protección anti-spam en formularios, Dependabot y revisión semanal automática.
+2. Modo demo (cuentas de prueba visibles y reinicio diario de los datos), página de aviso legal y privacidad, y fuentes propias en lugar de Google Fonts.
+3. SEO mínimo: títulos por página y vista previa al compartir. Sin indexar en Google.
+4. Deployment (incluye HTTPS y la Content-Security-Policy).
+5. Opcional: login con Google.
+6. Capturas, hacer público el repositorio y revisión final del portfolio.
 
 ## 8. Deudas conocidas
 

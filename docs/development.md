@@ -70,6 +70,7 @@ Arquitectura y decisiones:
 2. Backend: `cd backend`, `.\.venv\Scripts\Activate.ps1`,
    `uvicorn app.main:app --reload` → http://127.0.0.1:8000/docs
 3. Frontend: `cd frontend`, `npm run dev` → http://localhost:5173
+   (Vite reenvía `/api` a uvicorn en el puerto 8000: tiene que estar en marcha)
 4. Parar la BD: `docker compose down` (los datos se conservan).
    Borrar también los datos: `docker compose down -v`.
 
@@ -123,9 +124,25 @@ npm test
   (`hide_input_in_errors`), para no filtrar secretos en los logs.
 - **Carrito por usuario:** una clave de localStorage por cuenta (por id, no
   por email) y otra sin sesión. Al iniciar sesión se incorpora el carrito
-  sin sesión quedándose con la cantidad mayor de cada producto: como F5
-  cierra la sesión, es habitual volver a añadir lo mismo, y sumar lo
-  duplicaría. Tras F5 el carrito aparece vacío hasta volver a entrar.
+  sin sesión quedándose con la cantidad mayor de cada producto: si la sesión
+  caduca, es habitual volver a añadir lo mismo antes de entrar, y sumar lo
+  duplicaría.
+- **Sesión persistente** (`app/services/refresh_tokens.py`, `AuthContext.tsx`):
+  - Access token JWT de 30 minutos, solo en memoria. Token de renovación de
+    7 días en una cookie `HttpOnly`, `SameSite=Strict` y `Path=/api/v1/auth`:
+    JavaScript no puede leerla y el navegador no la envía desde otras webs.
+  - `POST /auth/refresh` rota el token en cada uso. Si llega uno ya usado,
+    se revoca toda la sesión (alguien tiene una copia). `POST /auth/logout`
+    la revoca en el servidor. En la BD solo se guarda el SHA-256 del token.
+  - El frontend renueva solo, 60 s antes de que caduque el access token.
+    Las renovaciones se hacen de una en una, también entre pestañas (Web
+    Locks): dos rotaciones simultáneas parecerían un robo.
+  - `REFRESH_COOKIE_SECURE`: `false` sobre http (desarrollo y Docker local)
+    y `true` en producción con HTTPS (es el valor por defecto).
+  - La cookie exige que web y API compartan origen: en desarrollo, Vite
+    reenvía `/api` a uvicorn (`vite.config.ts`), y en Docker lo hace nginx.
+  - Para cerrar todas las sesiones en desarrollo:
+    `docker exec cafe-sinnoh-db psql -U sinnoh -d cafe_sinnoh -c "delete from refresh_tokens;"`
 - **Code splitting:** todas las páginas salvo la Home se cargan con `lazy`
   de React Router. Una ruta sin path intermedia aporta
   `hydrateFallbackElement` (sin él, la primera carga de una página diferida

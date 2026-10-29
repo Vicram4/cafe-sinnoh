@@ -45,7 +45,7 @@ Frontend: `src/context` + `src/hooks` (Contexts en patrón fijo de 3 archivos: x
 
 - Monorepo frontend/backend con entornos separados.
 - SQLAlchemy síncrono.
-- JWT solo access token, SOLO en memoria (React state), nunca localStorage/cookie; se pierde la sesión al recargar (F5) y NO es un bug. Decisión definitiva de sesión aplazada a la fase de deployment.
+- Sesión (decisión cerrada el 2026-10-29): access token JWT (30 min) SOLO en memoria (React state), nunca en localStorage; más un token de renovación (7 días) en cookie HttpOnly + SameSite=Strict + Path=/api/v1/auth, con rotación en cada uso y revocación de la familia entera si reaparece un token ya usado. F5 conserva la sesión. En BD solo se guarda el SHA-256 del token. Ver services/refresh_tokens.py y AuthContext.tsx.
 - get_current_user SIEMPRE consulta la BD (rol y is_active surten efecto inmediato). Rechaza cuentas desactivadas (403) en cada petición.
 - snake_case idéntico en backend y frontend, sin capa de traducción.
 - Dinero siempre en céntimos (entero).
@@ -79,10 +79,17 @@ Límite de intentos de login (services/login_attempts.py, tabla `login_attempts`
 Seguridad y optimización:
 - `SECRET_KEY`: config.py rechaza claves de <32 bytes en TODOS los entornos (la app no arranca); `.env.example` la deja vacía con el comando para generarla. `hide_input_in_errors=True` en Settings para que los errores de validación no impriman secretos.
 - Dependencias: `pip-audit` en requirements-dev.txt (`pip-audit -r requirements.txt -r requirements-dev.txt`), `npm audit` en 0. requirements.txt ya está en UTF-8.
-- Carrito por usuario (CartContext.tsx; claves en cart-context.ts): `cafe-sinnoh:cart:user:<id>` y `cafe-sinnoh:cart:guest`. Al iniciar sesión se incorpora el carrito sin sesión quedándose con la cantidad MAYOR por producto (no la suma, porque F5 cierra sesión y se suele volver a añadir lo mismo). Tras F5 el carrito aparece vacío hasta volver a entrar: es lo esperado.
+- Carrito por usuario (CartContext.tsx; claves en cart-context.ts): `cafe-sinnoh:cart:user:<id>` y `cafe-sinnoh:cart:guest`. Al iniciar sesión se incorpora el carrito sin sesión quedándose con la cantidad MAYOR por producto (no la suma: si la sesión caduca, se suele volver a añadir lo mismo antes de entrar).
+
+Sesión persistente (backend 354f412, frontend bd70fde; migración ee131cba46c3, tabla `refresh_tokens`):
+- Endpoints: el login además pone la cookie; `POST /auth/refresh` (rota y devuelve un access token nuevo; 401 sin cookie, si caducó o si se reutiliza un token, y entonces revoca la familia; 403 si la cuenta está desactivada) y `POST /auth/logout` (revoca en el servidor y borra la cookie). Los errores de refresh devuelven JSONResponse para poder borrar la cookie (con HTTPException se perderían los cambios de la respuesta).
+- `REFRESH_COOKIE_SECURE`: "false" en desarrollo y en Docker local (http); en producción con HTTPS, "true" (el valor por defecto). conftest.py lo fuerza a "false" porque el TestClient usa http.
+- Frontend: al cargar, si existe la pista `cafe-sinnoh:has-session` en localStorage (no sensible; evita pedir renovación a quien nunca inició sesión), se llama a refresh. Mientras tanto `isInitializing` hace esperar a AccountLayout, AdminLayout y CheckoutPage, y la cabecera no muestra "Entrar". El token se renueva solo 60 s antes de caducar (y al volver a la pestaña). Las renovaciones se serializan con una única petición por pestaña y Web Locks entre pestañas: dos rotaciones simultáneas con la misma cookie parecerían un robo.
+- Desarrollo: Vite reenvía `/api` a uvicorn (vite.config.ts) y `VITE_API_URL=/api/v1`, así que web y API comparten origen, como en Docker y en producción. Hace falta para la cookie.
+- Comprobado en Edge sin interfaz, en :5173 y :8080: cookie HttpOnly no legible desde JS, F5 conserva la sesión, entrada directa a /account, dos pestañas recargando a la vez sin falsa detección de robo, y "Salir" seguido de F5 queda sin sesión. Al probar con CDP, fijar el ancho de TODAS las pestañas a ≥1024 px: por debajo, "Hola, …" queda oculto en el menú ☰ y parece que no hay sesión.
 - Code splitting: router.tsx carga todas las páginas con `lazy` salvo Home y PublicLayout. Una ruta sin path intermedia aporta `hydrateFallbackElement` (sin él, React Router pinta la página en blanco en la primera carga) y `errorElement` (RouteErrorPage, dentro del layout). PublicLayout muestra una línea fija bajo la cabecera mientras carga una página. JS inicial: 265 KB (82 KB gzip).
 
-Tests: backend 93 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 24 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
+Tests: backend 102 (`pytest` desde `backend/` con `.venv` activo; solo necesita Docker, no uvicorn), frontend 34 (`npm test` desde `frontend/`). Los tests de backend usan la BD `cafe_sinnoh_test` (TEST_DATABASE_URL en `.env`): conftest.py sustituye DATABASE_URL antes de importar la app, se niega a arrancar si el nombre no termina en `_test`, crea la BD si falta, aplica las migraciones reales y vacía las tablas (TRUNCATE) tras cada test. Los CVs de los tests van a una carpeta temporal. Antes de commitear cambios de backend o frontend, ejecutar también sus tests.
 
 Endpoints añadidos en la FASE 12: POST/PATCH /products, DELETE /products/{id}; GET /reviews/admin/all; PATCH /careers/applications/{id}/status; PATCH /contact/{id}; GET /admin/users; PATCH /admin/users/{id}; GET /orders/admin/all.
 
@@ -92,10 +99,14 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción; CSP; revisar si las migraciones se siguen aplicando al arrancar el contenedor o en un paso aparte).
-2. Capturas para el README, cuando el usuario tenga las ilustraciones de los productos.
-3. Hacer público el repositorio: lo decide y lo hace el usuario.
-4. Revisión final del portfolio (incluye completar docs/architecture.md, que sigue "en construcción", y decidir la licencia: ahora no hay ninguna).
+Plan acordado el 2026-10-29 (proyecto personal de fans sin ánimo de lucro, no un negocio: legal y SEO proporcionados a eso):
+1. ~~Sesión persistente al recargar~~ (HECHO).
+2. Seguridad básica: longitud mínima de contraseña y rechazo de las más comunes (ahora UserCreate.password no tiene restricciones); límite por IP y campo trampa anti-bots en registro, contacto y empleo; Dependabot, ejecución semanal programada de la CI y protección de la rama main.
+3. Modo demo: cuentas de demostración visibles en el login (cliente y admin), aviso fijo "Demo de portfolio: no se procesan pedidos reales", reinicio automático diario de los datos (también borra CVs y spam). Página única "Aviso legal y privacidad" (proyecto de fans sin ánimo de lucro, no afiliado, qué datos se guardan, cuánto tiempo, contacto victorramos.devs@gmail.com para borrado; NUNCA el email personal del usuario). Fuentes alojadas en el propio servidor, sin Google Fonts: no se envía la IP a Google y facilita la CSP.
+4. SEO mínimo: título y descripción por página (React 19 admite <title>/<meta> en componentes), Open Graph para la vista previa en LinkedIn, y NO INDEXAR (noindex) por decisión del usuario, para mantener un perfil bajo por el tema Pokémon.
+5. Deployment (dominio, HTTPS, REFRESH_COOKIE_SECURE=true, SECRET_KEY propia de producción, CSP, copias de seguridad; almacenamiento de CVs; revisar si las migraciones se aplican al arrancar el contenedor o en un paso aparte).
+6. Opcional: login con Google (necesita dominio y la página de privacidad publicada). CodeQL y Lighthouse cuando el repositorio sea público.
+7. Capturas para el README cuando el usuario tenga las ilustraciones; hacer público el repositorio (lo decide y lo hace el usuario); revisión final (docs/architecture.md sigue "en construcción", licencia sin decidir, README de perfil de GitHub con el email profesional como enlace).
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 
