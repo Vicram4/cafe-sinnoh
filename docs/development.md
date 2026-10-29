@@ -2,15 +2,78 @@
 
 ## Requisitos
 
-Git, Node.js 22.22+ o 24.15+ (lo exigen Vitest 5 y jsdom 30), Python 3.14, Docker Desktop.
+- Solo para ejecutar la app con Docker: Git y Docker Desktop.
+- Para desarrollar: además, Node.js 22.22+ o 24.15+ (lo exigen Vitest 5 y
+  jsdom 30) y Python 3.14.
 
-## Base de datos local
+## Configuración inicial (una sola vez)
 
-1. Copiar `.env.example` a `.env` y elegir una contraseña.
-2. Iniciar: `docker compose up -d`
-3. Comprobar: `docker compose ps` (debe aparecer `healthy`).
-4. Parar: `docker compose down` (los datos se conservan).
+1. Copiar `.env.example` (raíz) a `.env` y elegir una contraseña para
+   PostgreSQL. Evitar en ella los caracteres `@ : / % #`: va dentro de una
+   URL de conexión y la romperían.
+2. Copiar `backend/.env.example` a `backend/.env`: poner la misma contraseña
+   en `DATABASE_URL` y `TEST_DATABASE_URL`, y generar una `SECRET_KEY` con
+   `python -c "import secrets; print(secrets.token_urlsafe(64))"`.
+3. (Solo para desarrollar el frontend) copiar `frontend/.env.example` a
+   `frontend/.env`.
+
+## Opción A: toda la app en Docker
+
+```powershell
+docker compose --profile app up -d --build
+```
+
+- Web en **http://localhost:8080**. nginx sirve el frontend compilado y
+  reenvía `/api` al backend: mismo origen, sin CORS.
+- El backend aplica las migraciones pendientes al arrancar.
+- En una base de datos nueva, cargar los datos iniciales (idempotente):
+  ```powershell
+  docker compose exec backend python -m app.seed.seed_products
+  docker compose exec backend python -m app.seed.seed_rewards
+  ```
+- Tras cambiar código, volver a ejecutar el mismo comando (`--build`
+  reconstruye solo lo que ha cambiado).
+- Ver logs: `docker compose logs -f backend` (o `frontend`).
+- Parar solo la app y dejar la BD: `docker compose stop backend frontend`.
+- Parar todo: `docker compose --profile app down` (los datos se conservan;
+  `down -v` los borraría).
+
+Arquitectura y decisiones:
+- Solo nginx publica un puerto (`127.0.0.1:8080`). El backend no publica
+  ninguno: solo nginx llega a él dentro de la red de Docker. Por eso uvicorn
+  puede confiar en la IP del cliente que reenvía nginx (`--proxy-headers
+  --forwarded-allow-ips='*'`), que necesita el límite de login.
+- nginx resuelve el nombre `backend` en cada petición (`resolver
+  127.0.0.11`), no solo al arrancar: así no falla si el backend aún no está
+  listo ni se queda con una IP antigua tras reiniciarse.
+- `client_max_body_size 6m`: sin esto, nginx rechazaría los CVs de más de
+  1 MB.
+- Caché: `/assets` (archivos con huella) un año; `index.html` sin caché,
+  para que una versión nueva se cargue siempre.
+- Cabeceras: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`.
+  La CSP queda para el deployment: hay que permitir Google Fonts y el
+  script en línea del modo oscuro de `index.html`.
+- La versión Docker comparte con el desarrollo local la base de datos y la
+  carpeta `backend/uploads` (CVs), montada en el contenedor. En Linux, el
+  contenedor escribe como el usuario 1000: si la carpeta pertenece a otro
+  usuario, la subida de CVs fallaría por permisos (en Windows y macOS no
+  pasa).
+- El backend usa `backend/.env` (SECRET_KEY, etc.); Compose sustituye
+  `DATABASE_URL` para apuntar al servicio `db`.
+- Ni `.env`, ni `.venv`, ni `node_modules`, ni los tests ni los CVs entran en
+  las imágenes (`.dockerignore`).
+
+## Opción B: desarrollo local
+
+1. Solo la base de datos: `docker compose up -d`
+   (comprobar con `docker compose ps` que aparece `healthy`).
+2. Backend: `cd backend`, `.\.venv\Scripts\Activate.ps1`,
+   `uvicorn app.main:app --reload` → http://127.0.0.1:8000/docs
+3. Frontend: `cd frontend`, `npm run dev` → http://localhost:5173
+4. Parar la BD: `docker compose down` (los datos se conservan).
    Borrar también los datos: `docker compose down -v`.
+
+Las opciones A y B pueden funcionar a la vez.
 
 ## Convenciones de commits
 

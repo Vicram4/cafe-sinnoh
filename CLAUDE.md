@@ -9,7 +9,7 @@ El dueño tiene formación DAW y Marketing, y lleva ~1 año sin desarrollar de f
 - Responder y explicar SIEMPRE en español.
 - Trabajo incremental: bloques sustanciales pero verificables (backend primero, probar en /docs, luego frontend, probar en navegador). Nunca generar el proyecto entero de golpe.
 - Commits pequeños, separados backend/frontend, con prefijos feat:/fix:/docs:/chore:/test:/refactor:.
-- ANTES de cada commit: mostrar `git status` y esperar confirmación del usuario. Antes de commitear frontend: `npm run build`, `npm run lint` y `npm test` limpios (desde la carpeta frontend), sin avisos (el de bundle >500 KB ya está resuelto; no subir `chunkSizeWarningLimit` para esconderlo). Antes de commitear backend: `pytest`.
+- Commits y push (desde 2026-10-29, a petición del usuario): commitear SIN esperar confirmación cuando build, lint y tests estén en verde, mostrando el `git status` y lo que entra en cada commit. Hacer push a GitHub al cerrar cada bloque. SÍ hay que pedir: comprobaciones manuales (con pasos numerados), la opinión del usuario en decisiones con alternativas reales y confirmación antes de acciones difíciles de deshacer (borrar datos, reescribir historial/force push, hacer público el repo, desplegar). Antes de commitear frontend: `npm run build`, `npm run lint` y `npm test` limpios (desde la carpeta frontend), sin avisos (el de bundle >500 KB ya está resuelto; no subir `chunkSizeWarningLimit` para esconderlo). Antes de commitear backend: `pytest`.
 - Comprobar siempre que `.venv`, `.env` y `node_modules` NUNCA se suban.
 - Comentarios de código solo cuando expliquen lógica, arquitectura o seguridad importantes. Nunca comentarios obvios.
 - Verificar la documentación actual de una librería antes de usarla; no fiarse de memoria desactualizada.
@@ -33,7 +33,7 @@ Testing: backend con pytest 9.2 + httpx2 (lo pide el TestClient de Starlette 1.7
 
 ## Entorno del usuario
 
-Windows + PowerShell 5.1, monorepo en `C:\dev\cafe-sinnoh`. Los caracteres raros (Ã³) al leer archivos con Get-Content son solo codificación de PowerShell; los archivos deben guardarse en UTF-8. Los avisos "CRLF will be replaced by LF" son cosméticos. Comandos de npm siempre desde `frontend/`; uvicorn, alembic y pip desde `backend/` con `.venv` activo (`.\.venv\Scripts\Activate.ps1`). Antes de probar: Docker (PostgreSQL), uvicorn (`uvicorn app.main:app --reload`) y `npm run dev` deben estar en marcha.
+Windows + PowerShell 5.1, monorepo en `C:\dev\cafe-sinnoh`. Los caracteres raros (Ã³) al leer archivos con Get-Content son solo codificación de PowerShell; los archivos deben guardarse en UTF-8. Los avisos "CRLF will be replaced by LF" son cosméticos. Comandos de npm siempre desde `frontend/`; uvicorn, alembic y pip desde `backend/` con `.venv` activo (`.\.venv\Scripts\Activate.ps1`). Antes de probar en desarrollo: Docker (PostgreSQL), uvicorn (`uvicorn app.main:app --reload`) y `npm run dev` deben estar en marcha (web en :5173). Alternativa: toda la app en Docker con `docker compose --profile app up -d --build` (web en :8080). Ambas comparten BD y CVs y pueden convivir. Tras cambios de código, la versión Docker solo se actualiza volviendo a ejecutar ese comando.
 
 ## Arquitectura
 
@@ -66,7 +66,9 @@ Paleta: cream #F1E9DA (fondo), paper #FAF6ED, espresso #33261C (texto), bark #6E
 
 FASE 12 (panel de administración) COMPLETA. Panel con 7 apartados: Dashboard, Pedidos, Productos (CRUD), Reseñas (moderación), Candidaturas, Mensajes, Usuarios.
 
-Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Límite de intentos de login COMPLETO. Para el último commit, consultar `git log`.
+Subida de CV COMPLETA (commits 29dc50d backend, be504c2 frontend). Testing COMPLETO (backend a8eb922 + a676b0f, frontend cd0f143 + b89f34a). Seguridad y optimización COMPLETO (958cd82, 8b41b4d, d16e8dc, 8fbfe5e). Límite de intentos de login COMPLETO. Docker completo HECHO (ca4e3fa, ab351f8, 248b2cd; pendiente de la prueba del usuario en el navegador en :8080). Para el último commit, consultar `git log`.
+
+Docker (detalle en docs/development.md): perfil `app` en docker-compose.yml (sin perfil solo arranca `db`, como antes). Backend: python:3.14-slim, usuario sin root, aplica `alembic upgrade head` al arrancar, uvicorn con `--proxy-headers --forwarded-allow-ips='*'` (seguro SOLO porque el backend no publica puertos), usa `backend/.env` con DATABASE_URL sustituida por el servicio `db`, monta `./backend/uploads`. Frontend: build con node:24-alpine y nginx:1.30-alpine; nginx en :8080 sirve la SPA (fallback a index.html) y reenvía `/api` al backend con `resolver 127.0.0.11` (resolución por petición), `client_max_body_size 6m` (CVs), caché larga solo en `/assets` y cabeceras de seguridad básicas. En nginx, un `add_header` dentro de un `location` anula los del `server`: por eso la caché se pone con `expires`. CSP pendiente para el deployment (Google Fonts + script en línea del tema en index.html).
 
 Repositorio en GitHub, PRIVADO: https://github.com/Vicram4/cafe-sinnoh (remoto `origin`, rama `main`). Push al final de cada bloque, siempre con OK del usuario. Las credenciales están guardadas en Windows (Git Credential Manager), así que Claude puede hacer el push. El historial se revisó antes del primer push: sin `.env`, secretos ni CVs.
 
@@ -88,10 +90,9 @@ Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (US
 
 ## Siguiente trabajo (en este orden)
 
-1. Docker completo (front + back). Configurar uvicorn con `--proxy-headers` si hay proxy delante (ver límite de login).
-2. GitHub: README profesional, capturas, CI (pytest con PostgreSQL de servicio, Vitest, build, lint, pip-audit y npm audit). En CI hay que definir SECRET_KEY (≥32 bytes) y TEST_DATABASE_URL.
-3. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción).
-4. Revisión final del portfolio.
+1. GitHub: README profesional, capturas, CI (pytest con PostgreSQL de servicio, Vitest, build, lint, pip-audit, npm audit y build de las imágenes Docker). En CI hay que definir SECRET_KEY (≥32 bytes) y TEST_DATABASE_URL.
+2. Deployment (decidir sesión JWT definitiva; almacenamiento de CVs en S3 u otro, cambiando solo storage.py; SECRET_KEY propia de producción; CSP; revisar si las migraciones se siguen aplicando al arrancar el contenedor o en un paso aparte).
+3. Revisión final del portfolio.
 
 ## Pendientes y deudas conocidas (no corregir ahora salvo petición)
 

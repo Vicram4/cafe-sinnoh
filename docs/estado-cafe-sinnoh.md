@@ -88,6 +88,16 @@ Commits: `958cd82`, `8b41b4d` (backend), `d16e8dc`, `8fbfe5e` (frontend).
 
 El código está en GitHub, en un repositorio privado (`Vicram4/cafe-sinnoh`).
 
+## 5 quinquies. Docker completo
+
+Commits: `ca4e3fa` (backend), `ab351f8` (frontend y nginx), `248b2cd` (Compose).
+
+- `docker compose --profile app up -d --build` arranca toda la app en `http://localhost:8080`. Sin el perfil, solo arranca la base de datos, como antes.
+- nginx sirve la web compilada y reenvía `/api` al backend, en el mismo origen y sin CORS. Solo nginx publica un puerto.
+- El backend aplica las migraciones al arrancar, no se ejecuta como root y recibe la IP real del cliente (necesaria para el límite de login).
+- Comprobado: subida de CVs de más de 1 MB a través de nginx, recarga en rutas internas, caché correcta y cabeceras de seguridad.
+- También se corrigió `index.html`: título "Café Sinnoh" e idioma español.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -104,10 +114,9 @@ El código está en GitHub, en un repositorio privado (`Vicram4/cafe-sinnoh`).
 
 ## 7. Siguiente trabajo
 
-1. Docker completo (con uvicorn leyendo la IP real tras el proxy, por el límite de login).
-2. GitHub (README, capturas, CI que ejecute los tests y las auditorías).
-3. Deployment.
-4. Revisión final del portfolio.
+1. GitHub (README, capturas, CI que ejecute los tests, las auditorías y el build de las imágenes Docker).
+2. Deployment (incluye la Content-Security-Policy).
+3. Revisión final del portfolio.
 
 ## 8. Deudas conocidas
 
@@ -124,6 +133,7 @@ El código está en GitHub, en un repositorio privado (`Vicram4/cafe-sinnoh`).
 - En Windows, `localhost` en `DATABASE_URL` hacía que cada conexión nueva tardase más de 8 s. Se usa `127.0.0.1`.
 - La documentación web de una librería puede ir por delante de la versión instalada (pasó con FastAPI y los modelos `Form()`): si algo no cuadra, comprobar el código de la versión instalada.
 - Un test que nunca ha fallado no demuestra nada: romper el código a propósito una vez confirma que lo vigila.
+- En Docker, los fallos más traicioneros vienen de valores por defecto que no se ven: nginx limita los envíos a 1 MB, resuelve los nombres de host solo al arrancar y un `add_header` en un `location` borra los del `server`. Hay que probar el caso real (un CV de más de 1 MB) y no solo que la web carga.
 
 ## 10. Estado de la herramienta de trabajo
 
