@@ -1,6 +1,7 @@
+import math
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -10,6 +11,12 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserRead
+from app.services.login_attempts import (
+    LoginRateLimited,
+    clear_failed_logins,
+    ensure_login_allowed,
+    record_failed_login,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -42,14 +49,28 @@ def login(
     # de "username": en /docs, ese campo se llama "username" mismo,
     # pero ahí escribes tu email.
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    request: Request,
     db: Session = Depends(get_db),
 ) -> Token:
+    ip_address = request.client.host if request.client else "unknown"
+    try:
+        ensure_login_allowed(db, form_data.username, ip_address)
+    except LoginRateLimited as error:
+        minutes = math.ceil(error.retry_after_seconds / 60)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Demasiados intentos fallidos. Vuelve a intentarlo en {minutes} "
+            f"{'minuto' if minutes == 1 else 'minutos'}.",
+            headers={"Retry-After": str(error.retry_after_seconds)},
+        ) from error
+
     user = db.query(User).filter(User.email == form_data.username).first()
 
     # Un único mensaje genérico para email no encontrado y contraseña
     # incorrecta: así no revelamos a un atacante si un email concreto
     # está registrado o no.
     if user is None or not verify_password(form_data.password, user.password_hash):
+        record_failed_login(db, form_data.username, ip_address)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email o contraseña incorrectos.",
@@ -58,6 +79,7 @@ def login(
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cuenta desactivada.")
 
+    clear_failed_logins(db, form_data.username, ip_address)
     access_token = create_access_token(subject=user.email)
     return Token(access_token=access_token)
 

@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     cors_origins: str = "http://localhost:5173"
 
+    # Límite de intentos de login fallidos (services/login_attempts.py),
+    # contados en una ventana deslizante de N minutos.
+    login_max_failures_per_account: int = 5
+    login_max_failures_per_ip: int = 20
+    login_failure_window_minutes: int = 15
+
     # Horario del local (hora local, formato 24h) y minutos mínimos de
     # margen entre el momento del pedido y la hora de recogida elegida,
     # para dar tiempo a prepararlo. Simplificado a un único horario
