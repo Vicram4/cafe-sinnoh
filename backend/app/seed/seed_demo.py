@@ -12,6 +12,9 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
+# Registra TODOS los modelos: sin esto, al ejecutarlo como comando SQLAlchemy
+# no conoce la tabla rewards y falla al resolver las claves foráneas.
+import app.db.base  # noqa: F401
 from app.core.security import hash_password
 from app.db.session import SessionLocal
 from app.models.contact_message import ContactMessage

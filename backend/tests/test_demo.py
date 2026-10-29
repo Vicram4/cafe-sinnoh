@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -82,3 +84,11 @@ def test_seeding_the_demo_twice_does_not_duplicate_it(db: Session, monkeypatch: 
     seed_demo.seed()
 
     assert _count(db, User) == 2
+
+
+def test_seed_scripts_work_when_run_as_commands() -> None:
+    """Así se ejecutan en la demo publicada: en un proceso nuevo, sin la app
+    cargada. Usa la BD de test (DATABASE_URL ya apunta a ella)."""
+    for module in ("app.seed.seed_products", "app.seed.seed_rewards", "app.seed.seed_demo"):
+        result = subprocess.run([sys.executable, "-m", module], capture_output=True, text=True, timeout=120)
+        assert result.returncode == 0, result.stderr
