@@ -1,74 +1,100 @@
 import { createBrowserRouter } from 'react-router'
 import { PublicLayout } from './layouts/PublicLayout'
 import { PlaceholderPage } from './pages/PlaceholderPage'
-import { MenuPage } from './pages/MenuPage'
-import { ProductDetailPage } from './pages/ProductDetailPage'
 import { HomePage } from './pages/HomePage'
-import { LoginPage } from './pages/LoginPage'
-import { RegisterPage } from './pages/RegisterPage'
-import { CartPage } from './pages/CartPage'
-import { CheckoutPage } from './pages/CheckoutPage'
-import { AccountLayout } from './layouts/AccountLayout'
-import { AccountPage } from './pages/AccountPage'
-import { AccountOrdersPage } from './pages/AccountOrdersPage'
-import { AccountPointsPage } from './pages/AccountPointsPage'
-import { CareersPage } from './pages/CareersPage'
-import { ContactPage } from './pages/ContactPage'
-import { AdminLayout } from './layouts/AdminLayout'
-import { AdminDashboardPage } from './pages/AdminDashboardPage'
-import { AdminOrdersPage } from './pages/AdminOrdersPage'
-import { AdminProductsPage } from './pages/AdminProductsPage'
-import { AdminProductFormPage } from './pages/AdminProductFormPage'
-import { AdminReviewsPage } from './pages/AdminReviewsPage'
-import { AdminApplicationsPage } from './pages/AdminApplicationsPage'
-import { AdminMessagesPage } from './pages/AdminMessagesPage'
-import { AdminUsersPage } from './pages/AdminUsersPage'
+import { RouteErrorPage } from './pages/RouteErrorPage'
 
-// Mapa de rutas de la aplicación. Todas cuelgan del layout público, que
-// aporta la cabecera común. Más adelante /account y /admin tendrán su propio
-// layout y protección de acceso (la seguridad real siempre estará en el backend).
+// Code splitting por rutas: solo la Home y el layout van en el paquete
+// inicial; el resto de páginas se descarga al visitarlas ("lazy"). Así un
+// cliente nunca descarga el código del panel de administración.
+// La seguridad real de /account y /admin sigue estando en el backend.
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <PublicLayout />,
     children: [
-            { index: true, element: <HomePage /> },
-            { path: 'menu', element: <MenuPage /> },
-      // ":slug" es un parámetro: /menu/espresso-monte-corona
-            { path: 'menu/:slug', element: <ProductDetailPage /> },
-            { path: 'cart', element: <CartPage /> },
-      { path: 'checkout', element: <CheckoutPage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
       {
-        path: 'account',
-        element: <AccountLayout />,
+        // Ruta sin URL propia: hace que la carga inicial y los errores se
+        // muestren dentro del layout, con la cabecera y la navegación.
+        hydrateFallbackElement: <p className="text-muted-foreground">Cargando…</p>,
+        errorElement: <RouteErrorPage />,
         children: [
-          { index: true, element: <AccountPage /> },
-          { path: 'orders', element: <AccountOrdersPage /> },
-          { path: 'points', element: <AccountPointsPage /> },
+          { index: true, element: <HomePage /> },
+          { path: 'menu', lazy: () => import('./pages/MenuPage').then((m) => ({ Component: m.MenuPage })) },
+          // ":slug" es un parámetro: /menu/espresso-monte-corona
+          {
+            path: 'menu/:slug',
+            lazy: () => import('./pages/ProductDetailPage').then((m) => ({ Component: m.ProductDetailPage })),
+          },
+          { path: 'cart', lazy: () => import('./pages/CartPage').then((m) => ({ Component: m.CartPage })) },
+          { path: 'checkout', lazy: () => import('./pages/CheckoutPage').then((m) => ({ Component: m.CheckoutPage })) },
+          { path: 'login', lazy: () => import('./pages/LoginPage').then((m) => ({ Component: m.LoginPage })) },
+          { path: 'register', lazy: () => import('./pages/RegisterPage').then((m) => ({ Component: m.RegisterPage })) },
+          {
+            path: 'account',
+            lazy: () => import('./layouts/AccountLayout').then((m) => ({ Component: m.AccountLayout })),
+            children: [
+              { index: true, lazy: () => import('./pages/AccountPage').then((m) => ({ Component: m.AccountPage })) },
+              {
+                path: 'orders',
+                lazy: () => import('./pages/AccountOrdersPage').then((m) => ({ Component: m.AccountOrdersPage })),
+              },
+              {
+                path: 'points',
+                lazy: () => import('./pages/AccountPointsPage').then((m) => ({ Component: m.AccountPointsPage })),
+              },
+            ],
+          },
+          { path: 'about', element: <PlaceholderPage title="Nosotros" /> },
+          { path: 'careers', lazy: () => import('./pages/CareersPage').then((m) => ({ Component: m.CareersPage })) },
+          { path: 'contact', lazy: () => import('./pages/ContactPage').then((m) => ({ Component: m.ContactPage })) },
+          {
+            path: 'admin',
+            lazy: () => import('./layouts/AdminLayout').then((m) => ({ Component: m.AdminLayout })),
+            children: [
+              {
+                index: true,
+                lazy: () => import('./pages/AdminDashboardPage').then((m) => ({ Component: m.AdminDashboardPage })),
+              },
+              {
+                path: 'orders',
+                lazy: () => import('./pages/AdminOrdersPage').then((m) => ({ Component: m.AdminOrdersPage })),
+              },
+              {
+                path: 'products',
+                lazy: () => import('./pages/AdminProductsPage').then((m) => ({ Component: m.AdminProductsPage })),
+              },
+              {
+                path: 'products/new',
+                lazy: () => import('./pages/AdminProductFormPage').then((m) => ({ Component: m.AdminProductFormPage })),
+              },
+              {
+                path: 'products/:id/edit',
+                lazy: () => import('./pages/AdminProductFormPage').then((m) => ({ Component: m.AdminProductFormPage })),
+              },
+              {
+                path: 'reviews',
+                lazy: () => import('./pages/AdminReviewsPage').then((m) => ({ Component: m.AdminReviewsPage })),
+              },
+              {
+                path: 'applications',
+                lazy: () =>
+                  import('./pages/AdminApplicationsPage').then((m) => ({ Component: m.AdminApplicationsPage })),
+              },
+              {
+                path: 'messages',
+                lazy: () => import('./pages/AdminMessagesPage').then((m) => ({ Component: m.AdminMessagesPage })),
+              },
+              {
+                path: 'users',
+                lazy: () => import('./pages/AdminUsersPage').then((m) => ({ Component: m.AdminUsersPage })),
+              },
+            ],
+          },
+          // "*" recoge cualquier URL que no coincida con las anteriores (error 404).
+          { path: '*', element: <PlaceholderPage title="Página no encontrada" /> },
         ],
       },
-      { path: 'about', element: <PlaceholderPage title="Nosotros" /> },
-      { path: 'careers', element: <CareersPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      {
-        path: 'admin',
-        element: <AdminLayout />,
-        children: [
-          { index: true, element: <AdminDashboardPage /> },
-          { path: 'orders', element: <AdminOrdersPage /> },
-          { path: 'products', element: <AdminProductsPage /> },
-          { path: 'products/new', element: <AdminProductFormPage /> },
-          { path: 'products/:id/edit', element: <AdminProductFormPage /> },
-          { path: 'reviews', element: <AdminReviewsPage /> },
-          { path: 'applications', element: <AdminApplicationsPage /> },
-          { path: 'messages', element: <AdminMessagesPage /> },
-          { path: 'users', element: <AdminUsersPage /> },
-        ],
-      },
-      // "*" recoge cualquier URL que no coincida con las anteriores (error 404).
-      { path: '*', element: <PlaceholderPage title="Página no encontrada" /> },
     ],
   },
 ])

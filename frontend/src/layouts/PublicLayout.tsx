@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router'
+import { NavLink, Outlet, useNavigation } from 'react-router'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { Button, ButtonLink } from '../components/Button'
 import { useAuth } from '../hooks/useAuth'
@@ -20,6 +20,9 @@ export function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
     const { user, logout } = useAuth()
   const { totalItems } = useCart()
+  // Mientras se descarga el código de la página siguiente, el router
+  // mantiene la actual en pantalla; esta señal indica que algo está pasando.
+  const isLoadingPage = useNavigation().state === 'loading'
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -132,6 +135,16 @@ export function PublicLayout() {
               </div>
             </div>
           </nav>
+        )}
+
+        {/* Línea fija, sin animación: respeta prefers-reduced-motion por diseño. */}
+        {isLoadingPage && (
+          <>
+            <div aria-hidden="true" className="absolute inset-x-0 -bottom-px h-0.5 bg-primary" />
+            <p role="status" className="sr-only">
+              Cargando página…
+            </p>
+          </>
         )}
       </header>
 
