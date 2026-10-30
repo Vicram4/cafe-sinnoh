@@ -61,7 +61,7 @@ PRODUCTS = [
     {
         "slug": "te-helado-lago-verity",
         "name": "Té helado Lago Verity",
-        "description": "Té negro frío con un toque cítrico, servido con hielo y una rodaja de limón.",
+        "description": "Té negro frío con un toque cítrico, servido con hielo y una rodaja de naranja.",
         "price_cents": 250,
         "category_slug": "bebidas",
         "ingredients": ["Té negro", "Limón", "Azúcar de caña"],
