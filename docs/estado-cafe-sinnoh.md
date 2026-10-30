@@ -187,7 +187,6 @@ Commit: `939ab92`.
 ## 8. Deudas conocidas
 
 - El carrito sigue en localStorage (uno por cuenta): no se comparte entre dispositivos.
-- Revisar los textos de la página "Nosotros" (borrador inicial).
 - Incidencia sin explicar: una vez apareció `QueuePool limit of size 5 overflow 10 reached`. Si vuelve, antes de reiniciar uvicorn ejecutar `select state, count(*) from pg_stat_activity where datname = current_database() group by state;` y guardar el resultado.
 
 ## 9. Lecciones del trabajo hasta ahora

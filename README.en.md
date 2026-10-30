@@ -158,6 +158,10 @@ docs/            Development and deployment guides, screenshots and project stat
 - Google sign-in (optional).
 - Custom domain.
 
+## License
+
+No open-source license: all rights reserved. The code is published so that it can be read and evaluated, but no permission is granted to copy, modify or redistribute it. This includes the Café Sinnoh brand and the illustrations. Pokémon and related names are trademarks of their respective owners.
+
 ## Author
 
 Built by [Vicram4](https://github.com/Vicram4).

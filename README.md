@@ -156,6 +156,10 @@ docs/            Guías de desarrollo y de publicación, capturas y estado del p
 - Inicio de sesión con Google (opcional).
 - Dominio propio.
 
+## Licencia
+
+Sin licencia de código abierto: todos los derechos reservados. El código está publicado para que se pueda leer y evaluar, pero no se concede permiso para copiarlo, modificarlo ni redistribuirlo. Esto incluye la marca Café Sinnoh y las ilustraciones. Pokémon y los nombres relacionados son marcas de sus respectivos propietarios.
+
 ## Autor
 
 Desarrollado por [Vicram4](https://github.com/Vicram4).
