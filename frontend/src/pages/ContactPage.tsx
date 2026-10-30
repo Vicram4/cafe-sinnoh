@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { z } from '../utils/zod'
 import { useMutation } from '@tanstack/react-query'
 import { shopInfo } from '../data/shop'
 import { submitContactMessage } from '../services/api/contact'
