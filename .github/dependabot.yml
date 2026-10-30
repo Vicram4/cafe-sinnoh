@@ -21,6 +21,12 @@ updates:
       npm-minor-patch:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    # Los tipos de Node deben seguir la versión de Node que se usa (24, la
+    # de la imagen de Docker): los de una mayor permitirían usar funciones
+    # que Node 24 no tiene. Se cambian a mano junto con la imagen.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
