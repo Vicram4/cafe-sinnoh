@@ -163,6 +163,17 @@ Commit: `939ab92`.
 - Se mantiene la animación: un sendero que sube en zigzag por la ladera hasta la cumbre, trazado para que no pise el lago ni los árboles.
 - Con "reducir movimiento", el sendero y el punto de la cumbre aparecen ya completos.
 
+## 5 terdecies. Publicación y repositorio público (completo, 2026-10-30)
+
+- Horario de recogida validado en la zona horaria del local (`SHOP_TIMEZONE`, Europe/Madrid), no en la del servidor (en Docker y en la nube es UTC: se rechazaban las 8:30).
+- CVs guardados en la base de datos (tabla `stored_files`), porque los alojamientos gratuitos no conservan archivos.
+- Cabecera secreta `X-Proxy-Secret`: el backend publicado solo responde a lo que llega a través de Vercel.
+- CSP estricta sin `'unsafe-inline'` ni `eval` (hash del script del tema, vigilado por un test; zod en modo `jitless`).
+- Publicada en **https://cafe-sinnoh.vercel.app**: Vercel (web) + Northflank Sandbox (backend Docker, siempre encendido) + Neon Free (PostgreSQL 17). Reinicio diario de la demo con GitHub Actions. Aviso de gasto de 1 $ en Northflank. Detalle en `docs/deployment.md`.
+- Dependabot revisado: FastAPI 0.162, React 19.3, TypeScript 7, `@hookform/resolvers` 6; `@types/node` se queda en 24.
+- README con demo, capturas, arquitectura de producción, licencia (ninguna: todos los derechos reservados) y mención a Claude Code como asistente.
+- Repositorio público tras revisar el historial completo. CodeQL, secret scanning, Dependabot alerts y `main` protegida contra borrado y force push.
+
 ## 6. Decisiones vigentes
 
 - Monorepo con frontend y backend separados.
@@ -180,9 +191,7 @@ Commit: `939ab92`.
 
 ## 7. Siguiente trabajo
 
-1. Deployment (incluye HTTPS y la Content-Security-Policy).
-2. Opcional: login con Google.
-3. Capturas, hacer público el repositorio y revisión final del portfolio.
+El plan está completo. Opcional: dominio propio, login con Google y auditoría Lighthouse. Mantenimiento: revisar las actualizaciones semanales de Dependabot.
 
 ## 8. Deudas conocidas
 
@@ -198,6 +207,11 @@ Commit: `939ab92`.
 - En Windows, `localhost` en `DATABASE_URL` hacía que cada conexión nueva tardase más de 8 s. Se usa `127.0.0.1`.
 - La documentación web de una librería puede ir por delante de la versión instalada (pasó con FastAPI y los modelos `Form()`): si algo no cuadra, comprobar el código de la versión instalada.
 - Un test que nunca ha fallado no demuestra nada: romper el código a propósito una vez confirma que lo vigila.
+- Las condiciones de los servicios gratuitos cambian: la documentación de Koyeb aún describía un plan gratuito que ya no existía para cuentas nuevas. Antes de guiar al usuario por un servicio, comprobar sus anuncios recientes.
+- Lo que funciona en local puede depender del entorno: la validación del horario usaba la hora del servidor y solo falló en Docker (UTC). Probar en el entorno real.
+- Una CSP estricta destapa código de terceros: zod probaba `new Function` y lo registraba como violación aunque capturase el error.
+- En Windows, `npm run dev` en marcha bloquea archivos de `node_modules`, y `npm ci` falla a medias (EPERM). Parar Vite antes, o probar en un `git worktree` aparte.
+- Las ramas de Dependabot pueden partir de una versión antigua de `main`: aplicar el cambio sobre el `main` actual y probarlo ahí.
 - En Docker, los fallos más traicioneros vienen de valores por defecto que no se ven: nginx limita los envíos a 1 MB, resuelve los nombres de host solo al arrancar y un `add_header` en un `location` borra los del `server`. Hay que probar el caso real (un CV de más de 1 MB) y no solo que la web carga.
 
 ## 10. Estado de la herramienta de trabajo

@@ -300,4 +300,4 @@ npm test
 
 - El carrito sigue en localStorage (uno por cuenta), así que no se comparte
   entre dispositivos.
-- Programar el reinicio diario de la demo al publicarla (deployment).
+- Opcional: dominio propio, login con Google y auditoría Lighthouse.
