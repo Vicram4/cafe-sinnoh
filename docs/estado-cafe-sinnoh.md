@@ -86,7 +86,7 @@ Commits: `958cd82`, `8b41b4d` (backend), `d16e8dc`, `8fbfe5e` (frontend).
 | Code splitting | JS inicial de 549 KB a 265 KB (82 KB comprimido). El panel de admin solo lo descarga quien entra en él. Página de error propia si una página no carga. |
 | Límite de login | 5 fallos por cuenta+IP o 20 por IP en 15 minutos bloquean el login (429), incluso con la contraseña correcta. Una persona no puede bloquear la cuenta de otra. No se guardan emails en claro. 8 tests. |
 
-El código está en GitHub, en un repositorio privado (`Vicram4/cafe-sinnoh`).
+El código está en GitHub, en un repositorio público desde el 2026-10-30 (`Vicram4/cafe-sinnoh`), sin licencia.
 
 ## 5 quinquies. Docker completo
 
