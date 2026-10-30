@@ -172,4 +172,6 @@ No open-source license: all rights reserved. The code is published so that it ca
 
 ## Author
 
-Built by [Vicram4](https://github.com/Vicram4).
+Built by [Vicram4](https://github.com/Vicram4), with [Claude Code](https://claude.com/claude-code) as a coding assistant. I led the project: the idea and the brand, the product, design and technology decisions, the illustrations, and the review and testing of every block before calling it done.
+
+Contact: [victorramos.devs@gmail.com](mailto:victorramos.devs@gmail.com)

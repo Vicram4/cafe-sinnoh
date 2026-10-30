@@ -170,4 +170,6 @@ Sin licencia de código abierto: todos los derechos reservados. El código está
 
 ## Autor
 
-Desarrollado por [Vicram4](https://github.com/Vicram4).
+Desarrollado por [Vicram4](https://github.com/Vicram4), con [Claude Code](https://claude.com/claude-code) como asistente de programación. Yo he dirigido el proyecto: la idea y la marca, las decisiones de producto, diseño y tecnologías, las ilustraciones, y la revisión y prueba de cada bloque antes de darlo por terminado.
+
+Contacto: [victorramos.devs@gmail.com](mailto:victorramos.devs@gmail.com)
