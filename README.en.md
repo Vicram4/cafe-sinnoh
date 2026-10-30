@@ -10,6 +10,20 @@ The brand is inspired by a place, the Sinnoh region: mountains, forests and cold
 
 > Portfolio project. This is a non-profit fan project and is not affiliated with Nintendo, Game Freak or The Pokémon Company. It does not use any official artwork.
 
+## Demo
+
+**[cafe-sinnoh.vercel.app](https://cafe-sinnoh.vercel.app)** (the interface is in Spanish)
+
+On the login page, the **Entrar como cliente** (customer) and **Entrar como admin** buttons open the demo accounts without typing anything. The data is reset every day, so feel free to place orders, moderate reviews or edit products.
+
+| | |
+|---|---|
+| ![Home page, light mode](docs/screenshots/home.webp) | ![Home page, dark mode](docs/screenshots/home-oscuro.webp) |
+| ![Menu with search, categories and sorting](docs/screenshots/carta.webp) | ![Product page](docs/screenshots/producto.webp) |
+| ![Admin dashboard](docs/screenshots/admin.webp) | <img src="docs/screenshots/movil-carta.webp" alt="Menu on mobile" width="240"> |
+
+The illustrations (products and the home page mountains) were generated with AI from my own prompts and then retouched; they show only products and landscapes. The process is described in [docs/ilustraciones-productos.md](docs/ilustraciones-productos.md) (in Spanish).
+
 The user interface is in Spanish; code, database and API are in English.
 
 ## Features
@@ -33,21 +47,26 @@ The user interface is in Spanish; code, database and API are in English.
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, react-hook-form + Zod |
 | Backend | Python 3.14, FastAPI, SQLAlchemy 2 (sync), Alembic, Pydantic, PyJWT, pwdlib (Argon2) |
 | Database | PostgreSQL 17 |
-| Infrastructure | Docker, Docker Compose, nginx, GitHub Actions |
+| Infrastructure | Docker, Docker Compose, nginx, GitHub Actions; deployed on Vercel, Northflank and Neon |
 | Quality | pytest, Vitest, Testing Library, Oxlint, pip-audit, npm audit |
 
 ## Architecture
 
+In production (free plans):
+
 ```mermaid
 flowchart LR
-    U[Browser] -->|"localhost:8080"| N["nginx<br/>built React app"]
-    N -->|"/api"| B["FastAPI<br/>(uvicorn)"]
-    B --> D[("PostgreSQL 17<br/>(data and CVs)")]
+    U[Browser] --> V["Vercel<br/>built React app"]
+    V -->|"/api + secret header"| B["Northflank<br/>FastAPI in Docker"]
+    B --> D[("Neon<br/>PostgreSQL 17<br/>(data and CVs)")]
 ```
 
+Locally, the same backend image runs behind nginx (`docker compose --profile app up`). Deployment details are in [docs/deployment.md](docs/deployment.md) (in Spanish).
+
+- **Monorepo:** `backend/` and `frontend/` in one repository, with separate environments and dependencies. Spanish UI; code, tables and API in English.
 - **Layered backend:** `api` (HTTP routes), `services` (business logic, no HTTP), `models` (SQLAlchemy), `schemas` (Pydantic; internal data such as password hashes is never exposed).
 - **The backend is the source of truth:** prices, availability, roles, statuses and points are always computed and validated on the server. The client never sends a price.
-- **Same origin:** nginx serves the app and proxies `/api` to the backend, so no CORS is needed in production.
+- **Same origin:** Vercel (or nginx locally) serves the app and proxies `/api` to the backend, so no CORS is needed and the session cookie can be `SameSite=Strict`.
 
 ## Notable technical decisions
 
@@ -59,7 +78,9 @@ flowchart LR
 - Passwords need at least 8 characters; common passwords and those containing the user's email are rejected (instead of uppercase/symbol rules, following NIST guidance).
 - Public forms (sign-up, contact and careers) are protected against spam with a per-IP submission limit and an invisible honeypot field, with no captcha.
 - The app refuses to start with a `SECRET_KEY` shorter than 32 bytes, and configuration errors never print secrets.
-- CVs are validated by extension, MIME type and the `%PDF-` signature, stored under a random name and downloadable by admins only.
+- CVs are validated by extension, MIME type and the `%PDF-` signature, stored in the database under a random key and downloadable by admins only.
+- Strict Content-Security-Policy, with no `'unsafe-inline'` and no `eval`: the only inline script (the theme one, to avoid a flash on load) is allowed by its hash, and a test checks that the hash is still correct.
+- The deployed backend only answers requests that come through Vercel (secret header), so nobody can call it directly with a forged IP to get around the per-IP limits.
 
 **Data**
 - Money is always stored in cents (integers).
@@ -67,7 +88,7 @@ flowchart LR
 - Points are a ledger: the balance is a sum, never a column that could drift. Points for an order can never be awarded twice.
 
 **Frontend**
-- Route-based code splitting: the initial JavaScript is 82 KB gzipped, and only admins ever download the admin panel.
+- Route-based code splitting: the initial JavaScript is about 113 KB gzipped. The admin panel and the forms (with their validation) are only downloaded by those who open them.
 - One cart per account on the same browser, merged on login without duplicating quantities.
 
 ## Running with Docker
@@ -129,13 +150,13 @@ frontend/
     pages/ layouts/ components/
     context/ hooks/     Global state (session, cart, theme)
     services/api/       Centralized HTTP client
-docs/            Development guide and project status (in Spanish)
+docs/            Development and deployment guides, screenshots and project status (in Spanish)
 ```
 
 ## Next steps
 
-- Screenshots.
-- Deployment: HTTPS, backups and a Content-Security-Policy.
+- Google sign-in (optional).
+- Custom domain.
 
 ## Author
 
