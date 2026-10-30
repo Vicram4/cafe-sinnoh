@@ -177,7 +177,8 @@ npm test
 
 ## Repositorio
 
-- GitHub, privado: `https://github.com/Vicram4/cafe-sinnoh` (remoto `origin`).
+- GitHub, PÚBLICO desde el 2026-10-30: `https://github.com/Vicram4/cafe-sinnoh` (remoto `origin`). Sin licencia (todos los derechos reservados).
+- Seguridad del repositorio: CodeQL (default setup, desde Settings → Code security; no hay archivo de workflow), Dependabot alerts, secret scanning con push protection y un ruleset `main` que bloquea borrar la rama y el force push (sin exigir PR: se sigue subiendo directamente a `main`).
 - Se sube con `git push` al final de cada bloque de trabajo.
 - CI con GitHub Actions (`.github/workflows/ci.yml`), en cada push a `main`
   y en cada pull request. Tres trabajos en paralelo:

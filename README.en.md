@@ -48,7 +48,7 @@ The user interface is in Spanish; code, database and API are in English.
 | Backend | Python 3.14, FastAPI, SQLAlchemy 2 (sync), Alembic, Pydantic, PyJWT, pwdlib (Argon2) |
 | Database | PostgreSQL 17 |
 | Infrastructure | Docker, Docker Compose, nginx, GitHub Actions; deployed on Vercel, Northflank and Neon |
-| Quality | pytest, Vitest, Testing Library, Oxlint, pip-audit, npm audit |
+| Quality and security | pytest, Vitest, Testing Library, Oxlint, pip-audit, npm audit, CodeQL, Dependabot |
 
 ## Architecture
 
@@ -131,7 +131,15 @@ The full guide (in Spanish) is in [docs/development.md](docs/development.md): lo
 | Backend | `pytest` (in `backend/`) | 130 tests: auth, demo mode, persistent sessions, passwords, anti-spam, orders, points, admin permissions, CVs and login rate limiting, against a PostgreSQL test database |
 | Frontend | `npm test` (in `frontend/`) | 46 tests: CSP, page titles, demo login, session and token refresh, API client, per-user cart, careers form, theme and formatting |
 
-GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Dependabot proposes dependency updates weekly.
+GitHub Actions CI runs the tests, lint, build, dependency audits and Docker image builds on every push and every Monday even without changes. Northflank and Vercel deploy every change on `main` automatically.
+
+**Repository hygiene:**
+- CodeQL scans the Python and TypeScript code and the GitHub Actions workflows for vulnerabilities.
+- Secret scanning with push protection: GitHub blocks any push that accidentally includes a key.
+- Dependabot proposes dependency updates weekly. Each one is tested before it is applied, and major version bumps are reviewed by hand (for example, the Node types follow the Node version in use).
+- The `main` branch cannot be deleted or rewritten (force push).
+- Before the repository went public, its full history was reviewed: no `.env` file, key, CV or personal data has ever been committed.
+- The daily demo reset is also a GitHub Actions workflow, using the database URL stored as a repository secret.
 
 ## Project structure
 

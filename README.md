@@ -46,7 +46,7 @@ Las ilustraciones (productos y montañas de la portada) se generaron con IA a pa
 | Backend | Python 3.14, FastAPI, SQLAlchemy 2 (síncrono), Alembic, Pydantic, PyJWT, pwdlib (Argon2) |
 | Base de datos | PostgreSQL 17 |
 | Infraestructura | Docker, Docker Compose, nginx, GitHub Actions; publicado en Vercel, Northflank y Neon |
-| Calidad | pytest, Vitest, Testing Library, Oxlint, pip-audit, npm audit |
+| Calidad y seguridad | pytest, Vitest, Testing Library, Oxlint, pip-audit, npm audit, CodeQL, Dependabot |
 
 ## Arquitectura
 
@@ -129,7 +129,15 @@ La guía completa está en [docs/development.md](docs/development.md): desarroll
 | Backend | `pytest` (en `backend/`) | 130 tests: autenticación, modo demo, sesión persistente, contraseñas, anti-spam, pedidos, puntos, permisos de admin, CVs y límite de login, contra un PostgreSQL de test |
 | Frontend | `npm test` (en `frontend/`) | 46 tests: CSP, títulos de página, acceso de demo, sesión y renovación del token, cliente de la API, carrito por usuario, formulario de empleo, tema y formatos |
 
-La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Dependabot propone cada semana las actualizaciones de dependencias.
+La CI de GitHub Actions ejecuta en cada push, y cada lunes aunque no haya cambios, los tests, el lint, el build, las auditorías de dependencias y la construcción de las imágenes Docker. Northflank y Vercel publican solos cada cambio en `main`.
+
+**Cuidado del repositorio:**
+- CodeQL analiza el código Python, TypeScript y los flujos de GitHub Actions en busca de vulnerabilidades.
+- Secret scanning con push protection: GitHub bloquea cualquier push que incluya una clave por error.
+- Dependabot propone cada semana las actualizaciones de dependencias. Cada una se prueba antes de aplicarla, y los saltos de versión mayor se revisan a mano (por ejemplo, los tipos de Node siguen la versión de Node que se usa).
+- La rama `main` no se puede borrar ni reescribir (*force push*).
+- Antes de hacer público el repositorio se revisó el historial completo: ningún `.env`, clave, CV ni dato personal se ha subido nunca.
+- El reinicio diario de la demo también es un flujo de GitHub Actions, que usa la URL de la base de datos guardada como secreto del repositorio.
 
 ## Estructura
 
