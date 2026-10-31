@@ -97,6 +97,14 @@ Subida de CV: POST /careers/applications es multipart/form-data (CV opcional; 41
 
 Datos de prueba: usuarios test@cafesinnoh.com (ADMIN) y maria@cafesinnoh.com (USER); 12 productos y 3 recompensas sembrados. No guardar contraseñas en este archivo.
 
+## ⚠️ INCIDENCIA ABIERTA (2026-10-31): Northflank caído tras un ataque
+
+- Northflank sufrió un incidente de seguridad (detectado el 2026-10-30 11:43 UTC; su página de estado, https://status.northflank.com, pide dar por robadas TODAS las variables de entorno). Desde entonces sus servicios están en "Major outage" y el backend publicado responde 503 incluso en /health: la demo no permite iniciar sesión ni ver la carta. Sin fecha de recuperación.
+- Hecho el 2026-10-31: contraseña de Neon (neondb_owner) cambiada y secreto DEMO_DATABASE_URL de GitHub actualizado; reset-demo en verde con la nueva. El repositorio está intacto (sin commits ni ramas ajenos). Se pidió al usuario desinstalar la app de Northflank en GitHub (https://github.com/settings/installations) y bloquear/vigilar la tarjeta: NO confirmado si lo hizo.
+- Pendiente: SECRET_KEY y PROXY_SECRET de Northflank también se dan por robadas. Al volver a poner el backend en marcha (donde sea) hay que generar dos nuevas; la PROXY_SECRET nueva va también en Vercel (y volver a publicar Vercel para que la coja). En Northflank sigue la DATABASE_URL antigua (ya no vale): aunque Northflank vuelva, el backend no arrancará hasta cambiarla.
+- Decisión pendiente del usuario: (A) esperar a Northflank, o (B) pasar el backend a Render (recomendado: misma imagen Docker; cambiar `dest` en frontend/vercel.json; se duerme ~1 min). El usuario quiso esperar al 2026-11-01 y volver a comprobar. Para comprobar: `curl https://p01--cafe-sinnoh-api--zg9bmddhxlmj.code.run/health` (200 = vivo) y la página de estado.
+- Al cerrar la incidencia, actualizar esta sección, docs/deployment.md y, si se cambia de proveedor, el README (arquitectura y "Cuidado del repositorio").
+
 ## Siguiente trabajo (en este orden)
 
 Plan acordado el 2026-10-29 (proyecto personal de fans sin ánimo de lucro, no un negocio: legal y SEO proporcionados a eso). COMPLETADO el 2026-10-30 salvo los opcionales del punto 6:

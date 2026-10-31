@@ -2,6 +2,8 @@
 
 Web: **https://cafe-sinnoh.vercel.app** · Backend: `https://p01--cafe-sinnoh-api--zg9bmddhxlmj.code.run` (403 sin la cabecera secreta).
 
+> **Incidencia abierta (2026-10-31):** Northflank sufrió un ataque (sus variables de entorno se dan por robadas) y sus servicios siguen caídos; la demo no funciona. Ya se cambió la contraseña de Neon y el secreto `DEMO_DATABASE_URL`. Faltan `SECRET_KEY` y `PROXY_SECRET` nuevas al volver a poner el backend en marcha. Detalle en `CLAUDE.md`.
+
 La demo pública se compone de tres servicios gratuitos:
 
 ```
